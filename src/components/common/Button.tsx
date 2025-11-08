@@ -9,19 +9,19 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+    const baseStyles = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
     
     const variants = {
-      primary: 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800',
-      secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400',
-      outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50 active:bg-primary-100',
-      ghost: 'text-gray-700 hover:bg-gray-100 active:bg-gray-200',
-      danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
+      primary: 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80',
+      secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/70',
+      outline: 'border-2 border-primary text-primary hover:bg-primary/10 active:bg-primary/20',
+      ghost: 'text-foreground hover:bg-muted active:bg-muted/80',
+      danger: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 active:bg-destructive/80',
     };
     
     const sizes = {
       sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
+      md: 'px-4 py-2.5 text-base',
       lg: 'px-6 py-3 text-lg',
     };
 

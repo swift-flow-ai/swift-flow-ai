@@ -29,6 +29,14 @@ export function WorkflowsList() {
       
       const data = await workflowService.getWorkflows(currentWorkspace.id, params);
       setWorkflows(data.workflows);
+      
+      console.log('Loaded workflows:', {
+        filter,
+        search,
+        count: data.workflows.length,
+        total: data.total,
+        workflows: data.workflows.map(w => ({ id: w.id, name: w.name, status: w.status }))
+      });
     } catch (error) {
       console.error('Failed to load workflows:', error);
     } finally {
@@ -97,27 +105,63 @@ export function WorkflowsList() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filter === 'all' 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'bg-muted text-foreground hover:bg-muted/80'
             }`}
           >
             All
+            {filter === 'all' && (
+              <span className="ml-2 px-1.5 py-0.5 rounded bg-primary-foreground/20 text-xs">
+                {workflows.length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setFilter('active')}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'active' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filter === 'active' 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'bg-muted text-foreground hover:bg-muted/80'
             }`}
           >
             Active
+            {filter === 'active' && (
+              <span className="ml-2 px-1.5 py-0.5 rounded bg-primary-foreground/20 text-xs">
+                {workflows.length}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setFilter('draft')}
-            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'draft' ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filter === 'draft' 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'bg-muted text-foreground hover:bg-muted/80'
             }`}
           >
             Draft
+            {filter === 'draft' && (
+              <span className="ml-2 px-1.5 py-0.5 rounded bg-primary-foreground/20 text-xs">
+                {workflows.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setFilter('paused')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filter === 'paused' 
+                ? 'bg-primary text-primary-foreground shadow-sm' 
+                : 'bg-muted text-foreground hover:bg-muted/80'
+            }`}
+          >
+            Paused
+            {filter === 'paused' && (
+              <span className="ml-2 px-1.5 py-0.5 rounded bg-primary-foreground/20 text-xs">
+                {workflows.length}
+              </span>
+            )}
           </button>
         </div>
       </div>
