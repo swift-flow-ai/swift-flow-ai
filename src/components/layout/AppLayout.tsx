@@ -43,7 +43,8 @@ export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Auto-collapse sidebar on workflow builder/viewer routes
-  const isWorkflowCanvas = location.pathname.startsWith('/workflows/') && location.pathname !== '/workflows';
+  const isWorkflowCanvas = (location.pathname.startsWith('/workflows/') && location.pathname !== '/workflows') || 
+                           location.pathname === '/workflows/new';
 
   const toggleTheme = () => {
     setTheme(actualTheme === 'dark' ? 'light' : 'dark');

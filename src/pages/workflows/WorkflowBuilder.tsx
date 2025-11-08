@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -13,7 +13,7 @@ import ReactFlow, {
   Panel,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '../../components/common';
 import {
@@ -22,12 +22,15 @@ import {
   Plus,
   ArrowLeft,
   Zap,
+  Eye,
 } from 'lucide-react';
 import { TriggerNode } from '../../components/workflow/nodes/TriggerNode';
 import { ActionNode } from '../../components/workflow/nodes/ActionNode';
 import { ConditionNode } from '../../components/workflow/nodes/ConditionNode';
 import { ApprovalNode } from '../../components/workflow/nodes/ApprovalNode';
 import { NodePalette } from '../../components/workflow/NodePalette';
+import { workflowService } from '../../services/workflow.service';
+import { useWorkspace } from '../../hooks/useWorkspace';
 
 const nodeTypes = {
   trigger: TriggerNode,
@@ -56,14 +59,43 @@ const initialNodes: Node[] = [
 const initialEdges: Edge[] = [];
 
 export function WorkflowBuilder() {
-  // const { workflowId } = useParams<{ workflowId: string }>();
+  const { workflowId } = useParams<{ workflowId: string }>();
   const navigate = useNavigate();
+  const { currentWorkspace } = useWorkspace();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [workflowName, setWorkflowName] = useState('Untitled Workflow');
   const [showPalette, setShowPalette] = useState(true);
+
+  // Load existing workflow if editing
+  useEffect(() => {
+    if (workflowId && currentWorkspace) {
+      loadWorkflow();
+    }
+  }, [workflowId, currentWorkspace]);
+
+  const loadWorkflow = async () => {
+    if (!workflowId || !currentWorkspace) return;
+    
+    setIsLoading(true);
+    try {
+      const data = await workflowService.getWorkflow(currentWorkspace.id, workflowId);
+      setWorkflowName(data.name);
+      
+      // Load workflow definition
+      if (data.definition) {
+        setNodes((data.definition.nodes as Node[]) || initialNodes);
+        setEdges((data.definition.edges as Edge[]) || initialEdges);
+      }
+    } catch (error) {
+      console.error('Failed to load workflow:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -103,6 +135,23 @@ export function WorkflowBuilder() {
     // In real app, would deploy workflow
   };
 
+  const handlePreview = () => {
+    if (workflowId) {
+      navigate(`/workflows/${workflowId}`);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="h-[calc(100vh-4rem)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading workflow...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
       {/* Header */}
@@ -135,6 +184,12 @@ export function WorkflowBuilder() {
             <Plus className="h-4 w-4 mr-2" />
             {showPalette ? 'Hide' : 'Show'} Palette
           </Button>
+          {workflowId && (
+            <Button variant="secondary" onClick={handlePreview}>
+              <Eye className="h-4 w-4 mr-2" />
+              Preview
+            </Button>
+          )}
           <Button variant="secondary" onClick={handleTest}>
             <Play className="h-4 w-4 mr-2" />
             Test

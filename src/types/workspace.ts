@@ -71,6 +71,7 @@ export interface Workflow {
     avgDuration: string;
     lastRun?: string;
   };
+  definition?: WorkflowDefinition;
   createdAt: string;
   updatedAt: string;
 }

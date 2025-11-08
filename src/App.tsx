@@ -12,6 +12,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { WorkflowsList } from './pages/workflows/WorkflowsList';
 import { WorkflowBuilder } from './pages/workflows/WorkflowBuilder';
+import { WorkflowViewer } from './pages/workflows/WorkflowViewer';
 import { ApprovalsList } from './pages/approvals/ApprovalsList';
 import { ApprovalDetail } from './pages/approvals/ApprovalDetail';
 import { TeamPage } from './pages/team/TeamPage';
@@ -71,7 +72,8 @@ function App() {
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="workflows" element={<WorkflowsList />} />
                 <Route path="workflows/new" element={<WorkflowBuilder />} />
-                <Route path="workflows/:workflowId" element={<WorkflowBuilder />} />
+                <Route path="workflows/:workflowId" element={<WorkflowViewer />} />
+                <Route path="workflows/:workflowId/edit" element={<WorkflowBuilder />} />
                 <Route path="approvals" element={<ApprovalsList />} />
                 <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
                 <Route path="marketplace" element={<MarketplacePage />} />
