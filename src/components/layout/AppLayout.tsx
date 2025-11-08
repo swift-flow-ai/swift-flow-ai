@@ -28,7 +28,7 @@ const navigation = [
   { name: 'Approvals', href: '/approvals', icon: CheckSquare },
   { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
   { name: 'Team', href: '/team', icon: Users },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Workspace', href: '/workspace-settings', icon: Settings },
 ];
 
 export function AppLayout() {
@@ -216,11 +216,11 @@ export function AppLayout() {
                 </div>
                 
                 <Link
-                  to="/settings"
+                  to="/workspace-settings"
                   className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted transition-colors text-foreground"
                 >
                   <User className="h-4 w-4" />
-                  <span className="text-sm">Profile Settings</span>
+                  <span className="text-sm">Workspace Settings</span>
                 </Link>
 
                 <button

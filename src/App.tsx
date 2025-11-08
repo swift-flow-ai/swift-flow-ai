@@ -6,13 +6,13 @@ import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import { WorkspaceSelector } from './pages/workspace/WorkspaceSelector';
 import { WorkspaceCreate } from './pages/workspace/WorkspaceCreate';
+import { WorkspaceSettings } from './pages/workspace/WorkspaceSettings';
 import { InviteTeam } from './pages/workspace/InviteTeam';
 import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { WorkflowsList } from './pages/workflows/WorkflowsList';
 import { ApprovalsList } from './pages/approvals/ApprovalsList';
 import { ApprovalDetail } from './pages/approvals/ApprovalDetail';
-import { SettingsPage } from './pages/settings/SettingsPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import './index.css';
 
@@ -70,7 +70,7 @@ function App() {
                 <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
                 <Route path="marketplace" element={<div>Marketplace (TODO)</div>} />
                 <Route path="team" element={<div>Team (TODO)</div>} />
-                <Route path="settings" element={<SettingsPage />} />
+                <Route path="workspace-settings" element={<WorkspaceSettings />} />
               </Route>
 
               {/* Fallback */}

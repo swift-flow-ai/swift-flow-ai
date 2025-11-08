@@ -13,13 +13,19 @@ export async function enableMocking() {
     return;
   }
 
-  console.info('🔶 MSW is enabled. API calls will be mocked.');
+  console.info('🔶 MSW is enabled. Starting service worker...');
+  console.info(`📍 API Base URL: ${config.apiBaseUrl}`);
+  console.info(`📦 Total handlers: ${handlers.length}`);
 
   return worker.start({
-    onUnhandledRequest: 'bypass', // Don't warn about unhandled requests
+    onUnhandledRequest: 'warn', // Warn about unhandled requests for debugging
     serviceWorker: {
       url: '/mockServiceWorker.js',
     },
+  }).then(() => {
+    console.info('✅ MSW Service Worker started successfully!');
+  }).catch((error) => {
+    console.error('❌ MSW Service Worker failed to start:', error);
   });
 }
 
