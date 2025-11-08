@@ -216,6 +216,55 @@ export interface InstalledIntegration {
 }
 
 // Analytics types
+export interface WorkspaceAnalytics {
+  period: string;
+  metrics: {
+    totalExecutions: number;
+    successRate: number;
+    avgDuration: string;
+    totalCost: number;
+    timeSaved: string;
+    roi: number;
+  };
+  trends: {
+    executionsChange: number;
+    successRateChange: number;
+    costChange: number;
+  };
+  executionTimeline: Array<{
+    date: string;
+    executions: number;
+    successful: number;
+    failed: number;
+    cost: number;
+  }>;
+  successRateTimeline: Array<{
+    date: string;
+    rate: number;
+  }>;
+  costTimeline: Array<{
+    date: string;
+    cost: number;
+  }>;
+  topWorkflows: Array<{
+    id: string;
+    name: string;
+    executions: number;
+    successRate: number;
+    avgDuration: string;
+    cost: number;
+  }>;
+  bottlenecks: Array<{
+    workflowId: string;
+    workflowName: string;
+    nodeId: string;
+    nodeName: string;
+    avgDelay: string;
+    impact: 'high' | 'medium' | 'low';
+    recommendation: string;
+  }>;
+}
+
 export interface WorkflowAnalytics {
   workflowId: string;
   period: string;

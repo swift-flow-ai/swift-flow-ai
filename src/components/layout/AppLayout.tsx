@@ -17,7 +17,8 @@ import {
   User,
   PanelLeftClose,
   PanelLeft,
-  Activity
+  Activity,
+  BarChart3
 } from 'lucide-react';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useTheme } from '../../hooks/useTheme';
@@ -29,6 +30,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Workflows', href: '/workflows', icon: Zap },
   { name: 'Executions', href: '/executions', icon: Activity },
+  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   { name: 'Approvals', href: '/approvals', icon: CheckSquare },
   { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
   { name: 'Team', href: '/team', icon: Users },

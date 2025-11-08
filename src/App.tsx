@@ -15,6 +15,7 @@ import { WorkflowBuilder } from './pages/workflows/WorkflowBuilder';
 import { WorkflowViewer } from './pages/workflows/WorkflowViewer';
 import { ExecutionsList } from './pages/executions/ExecutionsList';
 import { ExecutionDetail } from './pages/executions/ExecutionDetail';
+import { AnalyticsDashboard } from './pages/analytics/AnalyticsDashboard';
 import { ApprovalsList } from './pages/approvals/ApprovalsList';
 import { ApprovalDetail } from './pages/approvals/ApprovalDetail';
 import { TeamPage } from './pages/team/TeamPage';
@@ -78,6 +79,7 @@ function App() {
                 <Route path="workflows/:workflowId/edit" element={<WorkflowBuilder />} />
                 <Route path="executions" element={<ExecutionsList />} />
                 <Route path="executions/:executionId" element={<ExecutionDetail />} />
+                <Route path="analytics" element={<AnalyticsDashboard />} />
                 <Route path="approvals" element={<ApprovalsList />} />
                 <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
                 <Route path="marketplace" element={<MarketplacePage />} />
