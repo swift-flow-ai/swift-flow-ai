@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { workflowService } from '../../services/workflow.service';
 import { Workflow } from '../../types/workspace';
@@ -11,6 +11,7 @@ import { EmptyState } from '../../components/common/EmptyState';
 import { Zap, Plus, Search, Play, Pause, Archive } from 'lucide-react';
 
 export function WorkflowsList() {
+  const navigate = useNavigate();
   const { currentWorkspace } = useWorkspace();
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -71,7 +72,10 @@ export function WorkflowsList() {
             Manage and monitor your automation workflows
           </p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
+        <button 
+          onClick={() => navigate('/workflows/new')}
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+        >
           <Plus className="h-4 w-4" />
           Create Workflow
         </button>
