@@ -69,7 +69,7 @@ export function WorkspaceSelector() {
                   </div>
 
                   {workspace.pendingApprovals > 0 && (
-                    <div className="mt-3 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-xs font-medium">
+                    <div className="mt-3 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 text-xs font-medium">
                       {workspace.pendingApprovals} pending approvals
                     </div>
                   )}

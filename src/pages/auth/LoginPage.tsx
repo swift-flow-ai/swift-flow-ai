@@ -44,7 +44,8 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await login(formData);
-      navigate('/dashboard');
+      // Redirect to workspace selector to let user choose workspace
+      navigate('/select-workspace');
     } catch (error) {
       const err = error as { message?: string };
       setApiError(err.message || 'Login failed. Please try again.');
@@ -170,7 +171,7 @@ export default function LoginPage() {
           className="mt-8 text-center"
         >
           <p className="text-sm text-muted-foreground">
-            © 2025 FlowAI. All rights reserved.
+            © 2025 Swift Flow AI. All rights reserved.
           </p>
         </motion.div>
       </div>

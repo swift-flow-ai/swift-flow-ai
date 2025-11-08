@@ -234,7 +234,7 @@ export default function SignupPage() {
           className="mt-8 text-center"
         >
           <p className="text-sm text-muted-foreground">
-            © 2025 FlowAI. All rights reserved.
+            © 2025 Swift Flow AI. All rights reserved.
           </p>
         </motion.div>
       </div>

@@ -261,7 +261,7 @@ export function AppLayout() {
                   <item.icon className="h-5 w-5" />
                   {item.name}
                   {item.name === 'Approvals' && currentWorkspace && currentWorkspace.pendingApprovals > 0 && (
-                    <span className="ml-auto px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 text-xs font-medium">
+                    <span className="ml-auto px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 text-xs font-medium">
                       {currentWorkspace.pendingApprovals}
                     </span>
                   )}
