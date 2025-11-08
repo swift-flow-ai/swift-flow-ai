@@ -14,6 +14,8 @@ import { WorkflowsList } from './pages/workflows/WorkflowsList';
 import { ApprovalsList } from './pages/approvals/ApprovalsList';
 import { ApprovalDetail } from './pages/approvals/ApprovalDetail';
 import { TeamPage } from './pages/team/TeamPage';
+import { MarketplacePage } from './pages/marketplace/MarketplacePage';
+import { AppDetailPage } from './pages/marketplace/AppDetailPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import './index.css';
 
@@ -69,7 +71,8 @@ function App() {
                 <Route path="workflows/:workflowId" element={<div>Workflow Detail (TODO)</div>} />
                 <Route path="approvals" element={<ApprovalsList />} />
                 <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
-                <Route path="marketplace" element={<div>Marketplace (TODO)</div>} />
+                <Route path="marketplace" element={<MarketplacePage />} />
+                <Route path="marketplace/:appId" element={<AppDetailPage />} />
                 <Route path="team" element={<TeamPage />} />
                 <Route path="workspace-settings" element={<WorkspaceSettings />} />
               </Route>
