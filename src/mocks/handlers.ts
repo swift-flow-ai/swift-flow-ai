@@ -5,6 +5,7 @@ import { approvalHandlers } from './handlers/approval.handlers';
 import { workspaceManagementHandlers } from './handlers/workspace-management.handlers';
 import { executionHandlers } from './handlers/execution.handlers';
 import { analyticsHandlers } from './handlers/analytics.handlers';
+import { templateHandlers } from './handlers/template.handlers';
 
 // Combine all handlers
 export const handlers = [
@@ -15,5 +16,6 @@ export const handlers = [
   ...workspaceManagementHandlers,
   ...executionHandlers,
   ...analyticsHandlers,
+  ...templateHandlers,
 ];
 

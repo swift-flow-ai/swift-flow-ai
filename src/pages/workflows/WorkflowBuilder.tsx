@@ -23,6 +23,7 @@ import {
   ArrowLeft,
   Zap,
   Eye,
+  BookmarkPlus,
 } from 'lucide-react';
 import { TriggerNode } from '../../components/workflow/nodes/TriggerNode';
 import { ActionNode } from '../../components/workflow/nodes/ActionNode';
@@ -30,6 +31,7 @@ import { ConditionNode } from '../../components/workflow/nodes/ConditionNode';
 import { ApprovalNode } from '../../components/workflow/nodes/ApprovalNode';
 import { NodePalette } from '../../components/workflow/NodePalette';
 import { workflowService } from '../../services/workflow.service';
+import { templateService } from '../../services/template.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
 
 const nodeTypes = {
@@ -69,6 +71,15 @@ export function WorkflowBuilder() {
   const [isLoading, setIsLoading] = useState(false);
   const [workflowName, setWorkflowName] = useState('Untitled Workflow');
   const [showPalette, setShowPalette] = useState(true);
+  const [showSaveAsTemplate, setShowSaveAsTemplate] = useState(false);
+  const [templateData, setTemplateData] = useState({
+    name: '',
+    description: '',
+    category: 'custom',
+    tags: '',
+    isPublic: false,
+  });
+  const [isSavingTemplate, setIsSavingTemplate] = useState(false);
 
   // Load existing workflow if editing
   useEffect(() => {
@@ -141,6 +152,32 @@ export function WorkflowBuilder() {
     }
   };
 
+  const handleSaveAsTemplate = async () => {
+    if (!workflowId || !currentWorkspace) {
+      alert('Please save the workflow first before creating a template');
+      return;
+    }
+
+    setIsSavingTemplate(true);
+    try {
+      const tags = templateData.tags.split(',').map((t) => t.trim()).filter(Boolean);
+      await templateService.saveAsTemplate(currentWorkspace.id, workflowId, {
+        name: templateData.name,
+        description: templateData.description,
+        category: templateData.category,
+        tags,
+        isPublic: templateData.isPublic,
+      });
+      setShowSaveAsTemplate(false);
+      alert('Template created successfully!');
+    } catch (error) {
+      console.error('Failed to save as template:', error);
+      alert('Failed to create template');
+    } finally {
+      setIsSavingTemplate(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="h-[calc(100vh-4rem)] flex items-center justify-center">
@@ -185,10 +222,16 @@ export function WorkflowBuilder() {
             {showPalette ? 'Hide' : 'Show'} Palette
           </Button>
           {workflowId && (
-            <Button variant="secondary" onClick={handlePreview}>
-              <Eye className="h-4 w-4 mr-2" />
-              Preview
-            </Button>
+            <>
+              <Button variant="secondary" onClick={handlePreview}>
+                <Eye className="h-4 w-4 mr-2" />
+                Preview
+              </Button>
+              <Button variant="secondary" onClick={() => setShowSaveAsTemplate(true)}>
+                <BookmarkPlus className="h-4 w-4 mr-2" />
+                Save as Template
+              </Button>
+            </>
           )}
           <Button variant="secondary" onClick={handleTest}>
             <Play className="h-4 w-4 mr-2" />
@@ -482,6 +525,109 @@ export function WorkflowBuilder() {
           </motion.div>
         )}
       </div>
+
+      {/* Save as Template Dialog */}
+      {showSaveAsTemplate && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-card border border-border rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+          >
+            <h2 className="text-2xl font-bold mb-4">Save as Template</h2>
+            <p className="text-muted-foreground mb-6">
+              Make this workflow available as a template for others to use
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Template Name <span className="text-destructive">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={templateData.name}
+                  onChange={(e) => setTemplateData({ ...templateData, name: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Enter template name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Description <span className="text-destructive">*</span>
+                </label>
+                <textarea
+                  value={templateData.description}
+                  onChange={(e) => setTemplateData({ ...templateData, description: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="Describe what this template does..."
+                  rows={3}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Category</label>
+                <select
+                  value={templateData.category}
+                  onChange={(e) => setTemplateData({ ...templateData, category: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="custom">Custom</option>
+                  <option value="hr">HR</option>
+                  <option value="finance">Finance</option>
+                  <option value="sales">Sales</option>
+                  <option value="support">Support</option>
+                  <option value="operations">Operations</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Tags</label>
+                <input
+                  type="text"
+                  value={templateData.tags}
+                  onChange={(e) => setTemplateData({ ...templateData, tags: e.target.value })}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  placeholder="automation, approval, onboarding (comma-separated)"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isPublic"
+                  checked={templateData.isPublic}
+                  onChange={(e) => setTemplateData({ ...templateData, isPublic: e.target.checked })}
+                  className="h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-primary"
+                />
+                <label htmlFor="isPublic" className="text-sm font-medium">
+                  Make this template public (visible to all users)
+                </label>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <Button
+                variant="secondary"
+                onClick={() => setShowSaveAsTemplate(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleSaveAsTemplate}
+                isLoading={isSavingTemplate}
+                className="flex-1"
+              >
+                <BookmarkPlus className="h-4 w-4 mr-2" />
+                Create Template
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }

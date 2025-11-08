@@ -22,6 +22,8 @@ import { TeamPage } from './pages/team/TeamPage';
 import { MarketplacePage } from './pages/marketplace/MarketplacePage';
 import { AppDetailPage } from './pages/marketplace/AppDetailPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
+import { TemplateMarketplace } from './pages/templates/TemplateMarketplace';
+import { TemplateDetail } from './pages/templates/TemplateDetail';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import './index.css';
 
@@ -82,6 +84,8 @@ function App() {
                 <Route path="analytics" element={<AnalyticsDashboard />} />
                 <Route path="approvals" element={<ApprovalsList />} />
                 <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
+                <Route path="templates" element={<TemplateMarketplace />} />
+                <Route path="templates/:templateId" element={<TemplateDetail />} />
                 <Route path="marketplace" element={<MarketplacePage />} />
                 <Route path="marketplace/:appId" element={<AppDetailPage />} />
                 <Route path="team" element={<TeamPage />} />

@@ -215,6 +215,37 @@ export interface InstalledIntegration {
   };
 }
 
+// Template types
+export interface WorkflowTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: 'hr' | 'sales' | 'support' | 'operations' | 'finance' | 'custom';
+  icon?: string;
+  thumbnail?: string;
+  featured: boolean;
+  verified: boolean;
+  usageCount: number;
+  rating: number;
+  definition: WorkflowDefinition;
+  variables: Array<{
+    key: string;
+    label: string;
+    type: 'text' | 'number' | 'email' | 'select';
+    required: boolean;
+    defaultValue?: string;
+    options?: string[];
+  }>;
+  createdBy: {
+    id: string;
+    name: string;
+    type: 'system' | 'user' | 'community';
+  };
+  tags: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Analytics types
 export interface WorkspaceAnalytics {
   period: string;
