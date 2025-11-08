@@ -188,9 +188,13 @@ export function AppLayout() {
                       ))}
                     </div>
                     <div className="px-3 py-2 border-t border-border mt-2">
-                      <button className="text-sm text-primary hover:underline">
+                      <Link 
+                        to="/notifications"
+                        className="text-sm text-primary hover:underline block"
+                        onClick={() => setShowNotifications(false)}
+                      >
                         View all notifications
-                      </button>
+                      </Link>
                     </div>
                   </motion.div>
                 </>

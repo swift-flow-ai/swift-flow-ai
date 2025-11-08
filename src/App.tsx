@@ -16,6 +16,7 @@ import { ApprovalDetail } from './pages/approvals/ApprovalDetail';
 import { TeamPage } from './pages/team/TeamPage';
 import { MarketplacePage } from './pages/marketplace/MarketplacePage';
 import { AppDetailPage } from './pages/marketplace/AppDetailPage';
+import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import './index.css';
 
@@ -74,6 +75,7 @@ function App() {
                 <Route path="marketplace" element={<MarketplacePage />} />
                 <Route path="marketplace/:appId" element={<AppDetailPage />} />
                 <Route path="team" element={<TeamPage />} />
+                <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="workspace-settings" element={<WorkspaceSettings />} />
               </Route>
 
