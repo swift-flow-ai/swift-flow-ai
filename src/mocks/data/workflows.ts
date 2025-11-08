@@ -19,6 +19,67 @@ export const mockWorkflows: Workflow[] = [
       avgDuration: '8.5 days',
       lastRun: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
     },
+    definition: {
+      nodes: [
+        {
+          id: '1',
+          type: 'trigger',
+          position: { x: 250, y: 50 },
+          data: { 
+            label: 'New Hire Webhook',
+            description: 'Triggered when HR adds a new employee',
+            triggerType: 'webhook',
+            config: { method: 'POST', path: '/new-hire' }
+          },
+        },
+        {
+          id: '2',
+          type: 'action',
+          position: { x: 250, y: 200 },
+          data: { 
+            label: 'Create Email Account',
+            description: 'Set up company email via Google Workspace',
+            app: 'google-workspace'
+          },
+        },
+        {
+          id: '3',
+          type: 'action',
+          position: { x: 250, y: 350 },
+          data: { 
+            label: 'Send Welcome Email',
+            description: 'Send welcome email with onboarding checklist',
+            app: 'gmail'
+          },
+        },
+        {
+          id: '4',
+          type: 'approval',
+          position: { x: 250, y: 500 },
+          data: { 
+            label: 'Manager Approval',
+            description: 'Manager approves equipment and access',
+            approvers: ['manager']
+          },
+        },
+        {
+          id: '5',
+          type: 'action',
+          position: { x: 250, y: 650 },
+          data: { 
+            label: 'Assign Buddy',
+            description: 'Assign onboarding buddy from team',
+            app: 'slack'
+          },
+        },
+      ],
+      edges: [
+        { id: 'e1-2', source: '1', target: '2' },
+        { id: 'e2-3', source: '2', target: '3' },
+        { id: 'e3-4', source: '3', target: '4' },
+        { id: 'e4-5', source: '4', target: '5' },
+      ],
+    },
     createdAt: '2024-08-15T09:00:00Z',
     updatedAt: '2025-01-10T14:22:00Z',
   },
@@ -40,6 +101,77 @@ export const mockWorkflows: Workflow[] = [
       avgDuration: '2.3 hours',
       lastRun: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
     },
+    definition: {
+      nodes: [
+        {
+          id: '1',
+          type: 'trigger',
+          position: { x: 100, y: 50 },
+          data: { 
+            label: 'Invoice Received',
+            description: 'Triggered when invoice is uploaded',
+            triggerType: 'webhook'
+          },
+        },
+        {
+          id: '2',
+          type: 'action',
+          position: { x: 100, y: 200 },
+          data: { 
+            label: 'Extract Invoice Data',
+            description: 'AI extracts invoice details',
+            app: 'ai-ocr'
+          },
+        },
+        {
+          id: '3',
+          type: 'condition',
+          position: { x: 100, y: 350 },
+          data: { 
+            label: 'Check Amount',
+            description: 'Route based on invoice amount',
+          },
+        },
+        {
+          id: '4',
+          type: 'approval',
+          position: { x: 300, y: 500 },
+          data: { 
+            label: 'Manager Approval',
+            description: 'For amounts < $5000',
+            approvers: ['manager']
+          },
+        },
+        {
+          id: '5',
+          type: 'approval',
+          position: { x: -100, y: 500 },
+          data: { 
+            label: 'CFO Approval',
+            description: 'For amounts >= $5000',
+            approvers: ['cfo']
+          },
+        },
+        {
+          id: '6',
+          type: 'action',
+          position: { x: 100, y: 650 },
+          data: { 
+            label: 'Process Payment',
+            description: 'Initiate payment via accounting system',
+            app: 'quickbooks'
+          },
+        },
+      ],
+      edges: [
+        { id: 'e1-2', source: '1', target: '2' },
+        { id: 'e2-3', source: '2', target: '3' },
+        { id: 'e3-4', source: '3', target: '4', label: '< $5000' },
+        { id: 'e3-5', source: '3', target: '5', label: '>= $5000' },
+        { id: 'e4-6', source: '4', target: '6' },
+        { id: 'e5-6', source: '5', target: '6' },
+      ],
+    },
     createdAt: '2024-07-01T10:30:00Z',
     updatedAt: '2024-12-15T11:45:00Z',
   },
@@ -60,6 +192,65 @@ export const mockWorkflows: Workflow[] = [
       successRate: 94.3,
       avgDuration: '15 minutes',
       lastRun: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+    },
+    definition: {
+      nodes: [
+        {
+          id: '1',
+          type: 'trigger',
+          position: { x: 250, y: 50 },
+          data: { 
+            label: 'Ticket Created',
+            description: 'New support ticket via email',
+            triggerType: 'email'
+          },
+        },
+        {
+          id: '2',
+          type: 'action',
+          position: { x: 250, y: 200 },
+          data: { 
+            label: 'AI Classification',
+            description: 'Classify ticket urgency and category',
+            app: 'openai'
+          },
+        },
+        {
+          id: '3',
+          type: 'condition',
+          position: { x: 250, y: 350 },
+          data: { 
+            label: 'Route by Category',
+            description: 'Determine team assignment',
+          },
+        },
+        {
+          id: '4',
+          type: 'action',
+          position: { x: 450, y: 500 },
+          data: { 
+            label: 'Assign to Tech Support',
+            description: 'Technical issues',
+            app: 'zendesk'
+          },
+        },
+        {
+          id: '5',
+          type: 'action',
+          position: { x: 50, y: 500 },
+          data: { 
+            label: 'Assign to Billing',
+            description: 'Billing inquiries',
+            app: 'zendesk'
+          },
+        },
+      ],
+      edges: [
+        { id: 'e1-2', source: '1', target: '2' },
+        { id: 'e2-3', source: '2', target: '3' },
+        { id: 'e3-4', source: '3', target: '4', label: 'Technical' },
+        { id: 'e3-5', source: '3', target: '5', label: 'Billing' },
+      ],
     },
     createdAt: '2024-06-10T08:15:00Z',
     updatedAt: '2025-01-08T16:30:00Z',
