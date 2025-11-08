@@ -13,6 +13,7 @@ import { Dashboard } from './pages/dashboard/Dashboard';
 import { WorkflowsList } from './pages/workflows/WorkflowsList';
 import { ApprovalsList } from './pages/approvals/ApprovalsList';
 import { ApprovalDetail } from './pages/approvals/ApprovalDetail';
+import { TeamPage } from './pages/team/TeamPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import './index.css';
 
@@ -69,7 +70,7 @@ function App() {
                 <Route path="approvals" element={<ApprovalsList />} />
                 <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
                 <Route path="marketplace" element={<div>Marketplace (TODO)</div>} />
-                <Route path="team" element={<div>Team (TODO)</div>} />
+                <Route path="team" element={<TeamPage />} />
                 <Route path="workspace-settings" element={<WorkspaceSettings />} />
               </Route>
 
