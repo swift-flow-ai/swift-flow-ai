@@ -215,6 +215,80 @@ export interface InstalledIntegration {
   };
 }
 
+// Integration types
+export interface Integration {
+  id: string;
+  name: string; // Custom name for this integration instance (e.g., "Slack 1", "Production Stripe")
+  appId: string;
+  appName: string;
+  appIcon?: string;
+  workspaceId: string;
+  status: 'connected' | 'disconnected' | 'error' | 'configuring';
+  authType: 'oauth2' | 'api_key' | 'basic' | 'custom';
+  config: {
+    clientId?: string;
+    scopes?: string[];
+    redirectUri?: string;
+    apiKey?: string;
+    apiUrl?: string;
+    [key: string]: any;
+  };
+  credentials?: {
+    accessToken?: string;
+    refreshToken?: string;
+    expiresAt?: string;
+    [key: string]: any;
+  };
+  metadata: {
+    connectedBy: string;
+    connectedAt: string;
+    lastTestedAt?: string;
+    lastTestStatus?: 'success' | 'failed';
+    lastError?: string;
+  };
+  settings: {
+    enabled: boolean;
+    autoRefresh: boolean;
+    notifications: boolean;
+    [key: string]: any;
+  };
+}
+
+export interface IntegrationApp {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  authType: 'oauth2' | 'api_key' | 'basic' | 'custom';
+  authConfig: {
+    authUrl?: string;
+    tokenUrl?: string;
+    scopes?: string[];
+    requiredFields?: Array<{
+      key: string;
+      label: string;
+      type: 'text' | 'password' | 'url' | 'select';
+      required: boolean;
+      placeholder?: string;
+      options?: string[];
+    }>;
+  };
+  capabilities: string[];
+  documentation?: string;
+}
+
+export interface ConnectionTestResult {
+  success: boolean;
+  message: string;
+  details?: {
+    latency?: number;
+    apiVersion?: string;
+    accountInfo?: any;
+  };
+  error?: string;
+}
+
 // Template types
 export interface WorkflowTemplate {
   id: string;

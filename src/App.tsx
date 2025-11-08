@@ -24,6 +24,9 @@ import { AppDetailPage } from './pages/marketplace/AppDetailPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import { TemplateMarketplace } from './pages/templates/TemplateMarketplace';
 import { TemplateDetail } from './pages/templates/TemplateDetail';
+import { IntegrationsList } from './pages/integrations/IntegrationsList';
+import { AddIntegration } from './pages/integrations/AddIntegration';
+import { IntegrationConfig } from './pages/integrations/IntegrationConfig';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import './index.css';
 
@@ -86,6 +89,10 @@ function App() {
                 <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
                 <Route path="templates" element={<TemplateMarketplace />} />
                 <Route path="templates/:templateId" element={<TemplateDetail />} />
+                <Route path="integrations" element={<IntegrationsList />} />
+                <Route path="integrations/add" element={<AddIntegration />} />
+                <Route path="integrations/configure/:appId" element={<IntegrationConfig />} />
+                <Route path="integrations/:integrationId" element={<IntegrationConfig />} />
                 <Route path="marketplace" element={<MarketplacePage />} />
                 <Route path="marketplace/:appId" element={<AppDetailPage />} />
                 <Route path="team" element={<TeamPage />} />

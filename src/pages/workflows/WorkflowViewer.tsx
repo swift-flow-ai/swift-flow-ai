@@ -23,14 +23,20 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Activity,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import { TriggerNode } from '../../components/workflow/nodes/TriggerNode';
 import { ActionNode } from '../../components/workflow/nodes/ActionNode';
 import { ConditionNode } from '../../components/workflow/nodes/ConditionNode';
 import { ApprovalNode } from '../../components/workflow/nodes/ApprovalNode';
 import { workflowService } from '../../services/workflow.service';
+import { executionService } from '../../services/execution.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
-import { Workflow } from '../../types';
+import { Workflow, WorkflowExecution } from '../../types';
 
 const nodeTypes = {
   trigger: TriggerNode,
@@ -48,11 +54,15 @@ export function WorkflowViewer() {
   const [edges, setEdges] = useState<Edge[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
+  const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
+  const [isLoadingExecutions, setIsLoadingExecutions] = useState(false);
+  const [showExecutions, setShowExecutions] = useState(true);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
 
   useEffect(() => {
     if (workflowId && currentWorkspace) {
       loadWorkflow();
+      loadExecutions();
     }
   }, [workflowId, currentWorkspace]);
 
@@ -73,6 +83,23 @@ export function WorkflowViewer() {
       console.error('Failed to load workflow:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadExecutions = async () => {
+    if (!workflowId || !currentWorkspace) return;
+    
+    setIsLoadingExecutions(true);
+    try {
+      const data = await executionService.getExecutions(currentWorkspace.id, {
+        workflowId,
+        limit: 10,
+      });
+      setExecutions(data.executions);
+    } catch (error) {
+      console.error('Failed to load executions:', error);
+    } finally {
+      setIsLoadingExecutions(false);
     }
   };
 
@@ -137,6 +164,40 @@ export function WorkflowViewer() {
         return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400';
       default:
         return 'bg-gray-500/10 text-gray-600 dark:text-gray-400';
+    }
+  };
+
+  const getExecutionStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-500/10 text-green-600 dark:text-green-400';
+      case 'running':
+        return 'bg-blue-500/10 text-blue-600 dark:text-blue-400';
+      case 'failed':
+        return 'bg-red-500/10 text-red-600 dark:text-red-400';
+      case 'waiting':
+        return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400';
+      case 'queued':
+        return 'bg-gray-500/10 text-gray-600 dark:text-gray-400';
+      default:
+        return 'bg-gray-500/10 text-gray-600 dark:text-gray-400';
+    }
+  };
+
+  const getExecutionStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'running':
+        return <Loader2 className="h-4 w-4 animate-spin" />;
+      case 'failed':
+        return <XCircle className="h-4 w-4" />;
+      case 'waiting':
+        return <Clock className="h-4 w-4" />;
+      case 'queued':
+        return <AlertCircle className="h-4 w-4" />;
+      default:
+        return <Activity className="h-4 w-4" />;
     }
   };
 
@@ -337,6 +398,121 @@ export function WorkflowViewer() {
             </div>
           </motion.div>
         )}
+
+        {/* Executions Panel */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="absolute bottom-0 right-0 w-96 bg-card border-l border-t border-border rounded-tl-lg shadow-lg overflow-hidden"
+        >
+          {/* Header */}
+          <div
+            className="px-4 py-3 border-b border-border flex items-center justify-between cursor-pointer hover:bg-muted/50 transition-colors"
+            onClick={() => setShowExecutions(!showExecutions)}
+          >
+            <div className="flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" />
+              <h3 className="font-semibold">Recent Executions</h3>
+              <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full">
+                {executions.length}
+              </span>
+            </div>
+            {showExecutions ? (
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <ChevronUp className="h-4 w-4 text-muted-foreground" />
+            )}
+          </div>
+
+          {/* Executions List */}
+          {showExecutions && (
+            <div className="max-h-96 overflow-y-auto">
+              {isLoadingExecutions ? (
+                <div className="p-8 text-center">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">Loading executions...</p>
+                </div>
+              ) : executions.length === 0 ? (
+                <div className="p-8 text-center">
+                  <Activity className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No executions yet</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-border">
+                  {executions.map((execution) => (
+                    <div
+                      key={execution.id}
+                      onClick={() => navigate(`/executions/${execution.id}`)}
+                      className="p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {getExecutionStatusIcon(execution.status)}
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs font-medium ${getExecutionStatusColor(
+                              execution.status
+                            )}`}
+                          >
+                            {execution.status}
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(execution.startedAt).toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      <div className="text-sm space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Started:</span>
+                          <span className="font-medium">
+                            {new Date(execution.startedAt).toLocaleTimeString()}
+                          </span>
+                        </div>
+                        {execution.duration && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-muted-foreground">Duration:</span>
+                            <span className="font-medium">{execution.duration}</span>
+                          </div>
+                        )}
+                        {execution.status === 'running' && execution.progress !== undefined && (
+                          <div className="mt-2">
+                            <div className="flex items-center justify-between text-xs mb-1">
+                              <span className="text-muted-foreground">Progress</span>
+                              <span className="font-medium">{execution.progress}%</span>
+                            </div>
+                            <div className="w-full bg-muted rounded-full h-1.5">
+                              <div
+                                className="bg-primary h-1.5 rounded-full transition-all"
+                                style={{ width: `${execution.progress}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {execution.error && (
+                        <div className="mt-2 text-xs text-red-600 dark:text-red-400 line-clamp-2">
+                          {execution.error.message}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {executions.length > 0 && (
+                <div className="p-3 border-t border-border text-center">
+                  <button
+                    onClick={() => navigate(`/executions?workflowId=${workflowId}`)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    View all executions →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );
