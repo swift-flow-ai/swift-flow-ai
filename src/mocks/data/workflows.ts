@@ -1,4 +1,5 @@
 import { Workflow } from '../../types/workspace';
+import { Node, Edge } from 'reactflow';
 
 export const mockWorkflows: Workflow[] = [
   {
@@ -72,13 +73,13 @@ export const mockWorkflows: Workflow[] = [
             app: 'slack'
           },
         },
-      ],
+      ] as Node[],
       edges: [
         { id: 'e1-2', source: '1', target: '2' },
         { id: 'e2-3', source: '2', target: '3' },
         { id: 'e3-4', source: '3', target: '4' },
         { id: 'e4-5', source: '4', target: '5' },
-      ],
+      ] as Edge[],
     },
     createdAt: '2024-08-15T09:00:00Z',
     updatedAt: '2025-01-10T14:22:00Z',
@@ -162,7 +163,7 @@ export const mockWorkflows: Workflow[] = [
             app: 'quickbooks'
           },
         },
-      ],
+      ] as Node[],
       edges: [
         { id: 'e1-2', source: '1', target: '2' },
         { id: 'e2-3', source: '2', target: '3' },
@@ -170,7 +171,7 @@ export const mockWorkflows: Workflow[] = [
         { id: 'e3-5', source: '3', target: '5', label: '>= $5000' },
         { id: 'e4-6', source: '4', target: '6' },
         { id: 'e5-6', source: '5', target: '6' },
-      ],
+      ] as Edge[],
     },
     createdAt: '2024-07-01T10:30:00Z',
     updatedAt: '2024-12-15T11:45:00Z',
@@ -244,13 +245,13 @@ export const mockWorkflows: Workflow[] = [
             app: 'zendesk'
           },
         },
-      ],
+      ] as Node[],
       edges: [
         { id: 'e1-2', source: '1', target: '2' },
         { id: 'e2-3', source: '2', target: '3' },
         { id: 'e3-4', source: '3', target: '4', label: 'Technical' },
         { id: 'e3-5', source: '3', target: '5', label: 'Billing' },
-      ],
+      ] as Edge[],
     },
     createdAt: '2024-06-10T08:15:00Z',
     updatedAt: '2025-01-08T16:30:00Z',

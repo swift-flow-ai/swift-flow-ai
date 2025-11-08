@@ -77,8 +77,8 @@ export interface Workflow {
 }
 
 export interface WorkflowDefinition {
-  nodes: WorkflowNode[];
-  edges: WorkflowEdge[];
+  nodes: any[]; // ReactFlow Node[]
+  edges: any[]; // ReactFlow Edge[]
 }
 
 export interface WorkflowNode {
@@ -108,13 +108,40 @@ export interface WorkflowExecution {
   currentNode?: string;
   input: Record<string, unknown>;
   output?: Record<string, unknown>;
+  error?: {
+    message: string;
+    nodeId?: string;
+    timestamp: string;
+  };
+  trace?: ExecutionTrace[];
   startedAt: string;
   completedAt?: string;
   estimatedCompletion?: string;
+  duration?: string;
   triggeredBy: {
     type: 'manual' | 'webhook' | 'schedule' | 'api';
     user?: { id: string; name: string };
   };
+}
+
+export interface ExecutionTrace {
+  nodeId: string;
+  nodeName: string;
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+  startedAt?: string;
+  completedAt?: string;
+  duration?: number;
+  input?: Record<string, unknown>;
+  output?: Record<string, unknown>;
+  error?: string;
+  logs?: ExecutionLog[];
+}
+
+export interface ExecutionLog {
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  message: string;
+  metadata?: Record<string, unknown>;
 }
 
 // Approval types

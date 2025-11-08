@@ -16,7 +16,8 @@ import {
   LogOut,
   User,
   PanelLeftClose,
-  PanelLeft
+  PanelLeft,
+  Activity
 } from 'lucide-react';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useTheme } from '../../hooks/useTheme';
@@ -27,6 +28,7 @@ import { cn } from '../../utils';
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Workflows', href: '/workflows', icon: Zap },
+  { name: 'Executions', href: '/executions', icon: Activity },
   { name: 'Approvals', href: '/approvals', icon: CheckSquare },
   { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
   { name: 'Team', href: '/team', icon: Users },
