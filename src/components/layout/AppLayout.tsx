@@ -14,7 +14,9 @@ import {
   Sun,
   Moon,
   LogOut,
-  User
+  User,
+  PanelLeftClose,
+  PanelLeft
 } from 'lucide-react';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useTheme } from '../../hooks/useTheme';
@@ -38,6 +40,10 @@ export function AppLayout() {
   const { user, logout } = useAuth();
   const { setTheme, actualTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Auto-collapse sidebar on workflow builder/viewer routes
+  const isWorkflowCanvas = location.pathname.startsWith('/workflows/') && location.pathname !== '/workflows';
 
   const toggleTheme = () => {
     setTheme(actualTheme === 'dark' ? 'light' : 'dark');
@@ -243,11 +249,29 @@ export function AppLayout() {
       <div className="flex">
         {/* Sidebar */}
         <aside 
-          className="sticky top-16 h-[calc(100vh-4rem)] w-64 border-r border-border p-4"
+          className={cn(
+            "sticky top-16 h-[calc(100vh-4rem)] border-r border-border transition-all duration-300",
+            sidebarCollapsed ? "w-16 p-2" : "w-64 p-4"
+          )}
           style={{
             backgroundColor: actualTheme === 'dark' ? 'hsl(0, 0%, 3.9%)' : 'hsl(0, 0%, 100%)',
           }}
         >
+          {/* Collapse Toggle */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {sidebarCollapsed ? (
+                <PanelLeft className="h-5 w-5" />
+              ) : (
+                <PanelLeftClose className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+
           <nav className="space-y-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + '/');
@@ -259,15 +283,24 @@ export function AppLayout() {
                     "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all",
                     isActive 
                       ? "bg-primary/10 text-primary" 
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    sidebarCollapsed && "justify-center"
                   )}
+                  title={sidebarCollapsed ? item.name : undefined}
                 >
-                  <item.icon className="h-5 w-5" />
-                  {item.name}
-                  {item.name === 'Approvals' && currentWorkspace && currentWorkspace.pendingApprovals > 0 && (
-                    <span className="ml-auto px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 text-xs font-medium">
-                      {currentWorkspace.pendingApprovals}
-                    </span>
+                  <item.icon className="h-5 w-5 flex-shrink-0" />
+                  {!sidebarCollapsed && (
+                    <>
+                      {item.name}
+                      {item.name === 'Approvals' && currentWorkspace && currentWorkspace.pendingApprovals > 0 && (
+                        <span className="ml-auto px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 text-xs font-medium">
+                          {currentWorkspace.pendingApprovals}
+                        </span>
+                      )}
+                    </>
+                  )}
+                  {sidebarCollapsed && item.name === 'Approvals' && currentWorkspace && currentWorkspace.pendingApprovals > 0 && (
+                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-yellow-500" />
                   )}
                 </Link>
               );
@@ -276,12 +309,16 @@ export function AppLayout() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">
+        <main className={cn(
+          "flex-1 transition-all duration-300",
+          isWorkflowCanvas ? "p-0" : "p-8"
+        )}>
           <motion.div
             key={location.pathname}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
+            className="h-full"
           >
             <Outlet />
           </motion.div>
