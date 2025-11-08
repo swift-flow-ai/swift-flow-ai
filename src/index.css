@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark theme (default) */
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 5% 15%;
+    --card-foreground: 0 0% 98%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 144 61% 20%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 144 61% 20%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 25%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142 76% 36%;
+  }
+
+  .dark {
+    /* Dark theme (same as root default) */
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 5% 15%;
+    --card-foreground: 0 0% 98%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 144 61% 20%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 144 61% 20%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 25%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142 76% 36%;
+  }
+
+  .light {
+    /* Light theme */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 98%;
+    --card-foreground: 240 10% 3.9%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 142 76% 36%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 142 76% 36%;
+  }
+  
+  body {
+    @apply antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+  
+  .btn-primary {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  
+  .btn-primary:hover {
+    @apply opacity-90;
+  }
+  
+  .btn-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+  }
+  
+  .btn-secondary:hover {
+    @apply opacity-90;
+  }
+  
+  .input {
+    @apply w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--input));
+  }
+  
+  .input:focus {
+    box-shadow: 0 0 0 2px hsl(var(--ring));
+  }
+  
+  .card {
+    @apply rounded-lg shadow-sm p-6;
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+  }
+}
