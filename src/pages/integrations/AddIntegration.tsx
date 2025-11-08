@@ -71,7 +71,7 @@ export function AddIntegration() {
       {/* Header */}
       <div>
         <button
-          onClick={() => navigate('/integrations')}
+          onClick={() => navigate('/app/integrations')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -133,7 +133,7 @@ export function AddIntegration() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              onClick={() => navigate(`/integrations/configure/${app.id}`)}
+              onClick={() => navigate(`/app/integrations/configure/${app.id}`)}
               className="bg-card border border-border rounded-lg p-6 hover:border-primary/50 hover:shadow-lg transition-all cursor-pointer group"
             >
               {/* Icon & Name */}

@@ -20,7 +20,8 @@ import {
   Activity,
   BarChart3,
   BookTemplate,
-  Plug
+  Plug,
+  FileText
 } from 'lucide-react';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useTheme } from '../../hooks/useTheme';
@@ -29,16 +30,17 @@ import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../utils';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Workflows', href: '/workflows', icon: Zap },
-  { name: 'Executions', href: '/executions', icon: Activity },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-  { name: 'Templates', href: '/templates', icon: BookTemplate },
-  { name: 'Integrations', href: '/integrations', icon: Plug },
-  { name: 'Approvals', href: '/approvals', icon: CheckSquare },
-  { name: 'Marketplace', href: '/marketplace', icon: ShoppingBag },
-  { name: 'Team', href: '/team', icon: Users },
-  { name: 'Workspace', href: '/workspace-settings', icon: Settings },
+  { name: 'Dashboard', href: '/app/dashboard', icon: LayoutDashboard },
+  { name: 'Workflows', href: '/app/workflows', icon: Zap },
+  { name: 'Executions', href: '/app/executions', icon: Activity },
+  { name: 'Analytics', href: '/app/analytics', icon: BarChart3 },
+  { name: 'Templates', href: '/app/templates', icon: BookTemplate },
+  { name: 'Integrations', href: '/app/integrations', icon: Plug },
+  { name: 'Audit Logs', href: '/app/audit', icon: FileText },
+  { name: 'Approvals', href: '/app/approvals', icon: CheckSquare },
+  { name: 'Marketplace', href: '/app/marketplace', icon: ShoppingBag },
+  { name: 'Team', href: '/app/team', icon: Users },
+  { name: 'Workspace', href: '/app/workspace-settings', icon: Settings },
 ];
 
 export function AppLayout() {
@@ -51,8 +53,8 @@ export function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Auto-collapse sidebar on workflow builder/viewer routes
-  const isWorkflowCanvas = (location.pathname.startsWith('/workflows/') && location.pathname !== '/workflows') || 
-                           location.pathname === '/workflows/new';
+  const isWorkflowCanvas = (location.pathname.startsWith('/app/workflows/') && location.pathname !== '/app/workflows') || 
+                           location.pathname === '/app/workflows/new';
 
   const toggleTheme = () => {
     setTheme(actualTheme === 'dark' ? 'light' : 'dark');
@@ -235,7 +237,7 @@ export function AppLayout() {
                 </div>
                 
                 <Link
-                  to="/workspace-settings"
+                  to="/app/workspace-settings"
                   className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted transition-colors text-foreground"
                 >
                   <User className="h-4 w-4" />

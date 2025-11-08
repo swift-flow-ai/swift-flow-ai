@@ -11,7 +11,7 @@ export function WorkspaceSelector() {
 
   const handleSelectWorkspace = async (workspaceId: string) => {
     await selectWorkspace(workspaceId);
-    navigate('/dashboard');
+    navigate('/app/dashboard');
   };
 
   if (isLoading) {

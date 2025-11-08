@@ -320,6 +320,105 @@ export interface WorkflowTemplate {
   updatedAt: string;
 }
 
+// Audit Log types
+export interface AuditLog {
+  id: string;
+  workspaceId: string;
+  timestamp: string;
+  action: string;
+  category: 'workflow' | 'user' | 'integration' | 'settings' | 'security' | 'data';
+  actor: {
+    id: string;
+    name: string;
+    email: string;
+    ipAddress?: string;
+  };
+  resource: {
+    type: string;
+    id: string;
+    name: string;
+  };
+  changes?: {
+    field: string;
+    oldValue: any;
+    newValue: any;
+  }[];
+  metadata?: {
+    userAgent?: string;
+    location?: string;
+    duration?: number;
+    [key: string]: any;
+  };
+  severity: 'info' | 'warning' | 'critical';
+  status: 'success' | 'failed';
+}
+
+export interface AuditLogFilters {
+  category?: string;
+  action?: string;
+  actorId?: string;
+  resourceType?: string;
+  severity?: string;
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+}
+
+// Audit Log types
+export interface AuditLog {
+  id: string;
+  workspaceId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  action: AuditAction;
+  resourceType: 'workflow' | 'integration' | 'workspace' | 'user' | 'execution' | 'approval' | 'template' | 'settings';
+  resourceId: string;
+  resourceName: string;
+  details: {
+    before?: Record<string, unknown>;
+    after?: Record<string, unknown>;
+    changes?: Array<{
+      field: string;
+      oldValue: unknown;
+      newValue: unknown;
+    }>;
+    metadata?: Record<string, unknown>;
+  };
+  ipAddress?: string;
+  userAgent?: string;
+  timestamp: string;
+  severity: 'info' | 'warning' | 'critical';
+}
+
+export type AuditAction =
+  | 'created'
+  | 'updated'
+  | 'deleted'
+  | 'viewed'
+  | 'executed'
+  | 'approved'
+  | 'rejected'
+  | 'invited'
+  | 'removed'
+  | 'connected'
+  | 'disconnected'
+  | 'exported'
+  | 'imported'
+  | 'login'
+  | 'logout'
+  | 'settings_changed';
+
+export interface AuditLogFilters {
+  userId?: string;
+  action?: AuditAction;
+  resourceType?: string;
+  startDate?: string;
+  endDate?: string;
+  severity?: string;
+  search?: string;
+}
+
 // Analytics types
 export interface WorkspaceAnalytics {
   period: string;

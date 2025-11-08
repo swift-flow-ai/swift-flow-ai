@@ -118,7 +118,7 @@ export function TemplateDetail() {
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-semibold mb-2">Template not found</h3>
-        <Button onClick={() => navigate('/templates')}>Back to Templates</Button>
+        <Button onClick={() => navigate('/app/templates')}>Back to Templates</Button>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export function TemplateDetail() {
       {/* Header */}
       <div>
         <button
-          onClick={() => navigate('/templates')}
+          onClick={() => navigate('/app/templates')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />

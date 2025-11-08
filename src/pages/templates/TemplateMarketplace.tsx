@@ -163,7 +163,7 @@ export function TemplateMarketplace() {
               transition={{ delay: index * 0.05 }}
             >
               <Link
-                to={`/templates/${template.id}`}
+                to={`/app/templates/${template.id}`}
                 className="block bg-card border border-border rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-lg transition-all group"
               >
                 {/* Thumbnail */}

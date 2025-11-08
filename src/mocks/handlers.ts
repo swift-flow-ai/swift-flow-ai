@@ -7,6 +7,7 @@ import { executionHandlers } from './handlers/execution.handlers';
 import { analyticsHandlers } from './handlers/analytics.handlers';
 import { templateHandlers } from './handlers/template.handlers';
 import { integrationHandlers } from './handlers/integration.handlers';
+import { auditHandlers } from './handlers/audit.handlers';
 
 // Combine all handlers
 export const handlers = [
@@ -19,5 +20,6 @@ export const handlers = [
   ...analyticsHandlers,
   ...templateHandlers,
   ...integrationHandlers,
+  ...auditHandlers,
 ];
 

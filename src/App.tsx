@@ -27,6 +27,9 @@ import { TemplateDetail } from './pages/templates/TemplateDetail';
 import { IntegrationsList } from './pages/integrations/IntegrationsList';
 import { AddIntegration } from './pages/integrations/AddIntegration';
 import { IntegrationConfig } from './pages/integrations/IntegrationConfig';
+import { AuditLogs } from './pages/audit/AuditLogs';
+import { AuditLogDetail } from './pages/audit/AuditLogDetail';
+import { LandingPage } from './pages/LandingPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import './index.css';
 
@@ -38,6 +41,7 @@ function App() {
           <WorkspaceProvider>
             <Routes>
               {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
 
@@ -69,14 +73,14 @@ function App() {
 
               {/* App Routes (with layout) */}
               <Route
-                path="/"
+                path="/app"
                 element={
                   <ProtectedRoute>
                     <AppLayout />
                   </ProtectedRoute>
                 }
               >
-                <Route index element={<Navigate to="/dashboard" replace />} />
+                <Route index element={<Navigate to="/app/dashboard" replace />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="workflows" element={<WorkflowsList />} />
                 <Route path="workflows/new" element={<WorkflowBuilder />} />
@@ -93,6 +97,8 @@ function App() {
                 <Route path="integrations/add" element={<AddIntegration />} />
                 <Route path="integrations/configure/:appId" element={<IntegrationConfig />} />
                 <Route path="integrations/:integrationId" element={<IntegrationConfig />} />
+                <Route path="audit" element={<AuditLogs />} />
+                <Route path="audit/:logId" element={<AuditLogDetail />} />
                 <Route path="marketplace" element={<MarketplacePage />} />
                 <Route path="marketplace/:appId" element={<AppDetailPage />} />
                 <Route path="team" element={<TeamPage />} />

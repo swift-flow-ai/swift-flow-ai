@@ -70,7 +70,7 @@ export function ExecutionDetail() {
     setIsRetrying(true);
     try {
       const result = await executionService.retryExecution(currentWorkspace.id, executionId);
-      navigate(`/executions/${result.newExecutionId}`);
+      navigate(`/app/executions/${result.newExecutionId}`);
     } catch (error) {
       console.error('Failed to retry execution:', error);
     } finally {
@@ -161,7 +161,7 @@ export function ExecutionDetail() {
       <div className="text-center py-12">
         <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
         <h3 className="text-lg font-semibold mb-2">Execution not found</h3>
-        <Button onClick={() => navigate('/executions')}>Back to Executions</Button>
+        <Button onClick={() => navigate('/app/executions')}>Back to Executions</Button>
       </div>
     );
   }
@@ -171,7 +171,7 @@ export function ExecutionDetail() {
       {/* Header */}
       <div>
         <button
-          onClick={() => navigate('/executions')}
+          onClick={() => navigate('/app/executions')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />

@@ -78,7 +78,7 @@ export function InviteTeam() {
 
   const handleSendInvites = async () => {
     if (teamMembers.length === 0) {
-      navigate('/dashboard');
+      navigate('/app/dashboard');
       return;
     }
 
@@ -90,7 +90,7 @@ export function InviteTeam() {
       // TODO: Call API to send invites
       // await workspaceService.inviteMembers(workspaceId, teamMembers);
       
-      navigate('/dashboard');
+      navigate('/app/dashboard');
     } catch (error) {
       console.error('Failed to send invites:', error);
     } finally {
@@ -219,7 +219,7 @@ export function InviteTeam() {
               <div className="flex gap-3">
                 <Button
                   variant="outline"
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/app/dashboard')}
                   disabled={isInviting}
                 >
                   Skip for now

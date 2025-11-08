@@ -98,7 +98,7 @@ export function IntegrationConfig() {
         result.state
       );
 
-      navigate('/integrations');
+      navigate('/app/integrations');
     } catch (error) {
       console.error('Failed to start OAuth flow:', error);
     } finally {
@@ -112,7 +112,7 @@ export function IntegrationConfig() {
     setIsSaving(true);
     try {
       await integrationService.configureIntegration(currentWorkspace.id, app.id, formData);
-      navigate('/integrations');
+      navigate('/app/integrations');
     } catch (error) {
       console.error('Failed to configure integration:', error);
     } finally {
@@ -163,7 +163,7 @@ export function IntegrationConfig() {
 
     try {
       await integrationService.disconnectIntegration(currentWorkspace.id, integration.id);
-      navigate('/integrations');
+      navigate('/app/integrations');
     } catch (error) {
       console.error('Failed to disconnect:', error);
     }
@@ -202,7 +202,7 @@ export function IntegrationConfig() {
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-semibold mb-2">Integration not found</h3>
-        <Button onClick={() => navigate('/integrations')}>Back to Integrations</Button>
+        <Button onClick={() => navigate('/app/integrations')}>Back to Integrations</Button>
       </div>
     );
   }
@@ -214,7 +214,7 @@ export function IntegrationConfig() {
       {/* Header */}
       <div>
         <button
-          onClick={() => navigate('/integrations')}
+          onClick={() => navigate('/app/integrations')}
           className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />

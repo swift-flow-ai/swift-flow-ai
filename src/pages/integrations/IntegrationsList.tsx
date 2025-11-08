@@ -118,7 +118,7 @@ export function IntegrationsList() {
             Manage your connected apps and services
           </p>
         </div>
-        <Button variant="primary" onClick={() => navigate('/integrations/add')}>
+        <Button variant="primary" onClick={() => navigate('/app/integrations/add')}>
           <Plus className="h-4 w-4 mr-2" />
           Add Integration
         </Button>
@@ -132,7 +132,7 @@ export function IntegrationsList() {
           <p className="text-muted-foreground mb-6">
             Connect your favorite apps to automate workflows
           </p>
-          <Button variant="primary" onClick={() => navigate('/integrations/add')}>
+          <Button variant="primary" onClick={() => navigate('/app/integrations/add')}>
             <Plus className="h-4 w-4 mr-2" />
             Add Your First Integration
           </Button>
@@ -192,7 +192,7 @@ export function IntegrationsList() {
               <div className="flex gap-2">
                 <Button
                   variant="secondary"
-                  onClick={() => navigate(`/integrations/${integration.id}`)}
+                  onClick={() => navigate(`/app/integrations/${integration.id}`)}
                   className="flex-1"
                 >
                   <Settings className="h-4 w-4 mr-2" />

@@ -148,7 +148,7 @@ export function WorkflowBuilder() {
 
   const handlePreview = () => {
     if (workflowId) {
-      navigate(`/workflows/${workflowId}`);
+      navigate(`/app/workflows/${workflowId}`);
     }
   };
 

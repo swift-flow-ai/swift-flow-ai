@@ -104,7 +104,7 @@ export function WorkflowViewer() {
   };
 
   const handleEdit = () => {
-    navigate(`/workflows/${workflowId}/edit`);
+    navigate(`/app/workflows/${workflowId}/edit`);
   };
 
   const handleRun = () => {
@@ -125,7 +125,7 @@ export function WorkflowViewer() {
   const handleDelete = () => {
     if (confirm('Are you sure you want to delete this workflow?')) {
       console.log('Deleting workflow:', workflowId);
-      navigate('/workflows');
+      navigate('/app/workflows');
     }
   };
 
@@ -146,7 +146,7 @@ export function WorkflowViewer() {
         <div className="text-center">
           <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
           <p className="text-lg font-semibold mb-2">Workflow not found</p>
-          <Button onClick={() => navigate('/workflows')}>
+          <Button onClick={() => navigate('/app/workflows')}>
             Back to Workflows
           </Button>
         </div>
@@ -208,7 +208,7 @@ export function WorkflowViewer() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/workflows')}
+              onClick={() => navigate('/app/workflows')}
               className="p-2 hover:bg-muted rounded-lg transition-colors"
             >
               <ArrowLeft className="h-5 w-5" />
@@ -442,7 +442,7 @@ export function WorkflowViewer() {
                   {executions.map((execution) => (
                     <div
                       key={execution.id}
-                      onClick={() => navigate(`/executions/${execution.id}`)}
+                      onClick={() => navigate(`/app/executions/${execution.id}`)}
                       className="p-4 hover:bg-muted/50 cursor-pointer transition-colors"
                     >
                       <div className="flex items-start justify-between mb-2">
@@ -503,7 +503,7 @@ export function WorkflowViewer() {
               {executions.length > 0 && (
                 <div className="p-3 border-t border-border text-center">
                   <button
-                    onClick={() => navigate(`/executions?workflowId=${workflowId}`)}
+                    onClick={() => navigate(`/app/executions?workflowId=${workflowId}`)}
                     className="text-sm text-primary hover:underline"
                   >
                     View all executions →
