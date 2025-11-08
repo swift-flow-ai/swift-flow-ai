@@ -6,7 +6,7 @@ import type { User, LoginCredentials, SignupData } from '../../types';
 const users: User[] = [
   {
     id: '1',
-    email: 'demo@flowai.com',
+    email: 'demo@swiftflow.ai',
     name: 'Demo User',
     role: 'admin',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Demo',
@@ -15,7 +15,7 @@ const users: User[] = [
   },
   {
     id: '2',
-    email: 'admin@flowai.com',
+    email: 'admin@swiftflow.ai',
     name: 'Admin User',
     role: 'admin',
     createdAt: new Date('2024-01-01').toISOString(),
@@ -23,7 +23,7 @@ const users: User[] = [
   },
   {
     id: '3',
-    email: 'user@flowai.com',
+    email: 'user@swiftflow.ai',
     name: 'Test User',
     role: 'user',
     createdAt: new Date('2024-01-15').toISOString(),

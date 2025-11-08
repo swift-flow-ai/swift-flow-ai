@@ -1,12 +1,13 @@
-# FlowAI - Backend API Documentation
+# Swift Flow AI - Backend API Documentation
 
 ## 🎯 Overview
 
-Complete API specification for FlowAI backend services. All endpoints follow RESTful conventions with JSON payloads.
+Complete API specification for Swift Flow AI backend services. All endpoints follow RESTful conventions with JSON payloads.
 
-**Base URL:** `https://api.flowai.com/v1`
+**Base URL:** `https://api.swiftflow.ai/v1`
 
 **Authentication:** Bearer token in Authorization header
+
 ```
 Authorization: Bearer <access_token>
 ```
@@ -31,9 +32,11 @@ Authorization: Bearer <access_token>
 ## 🔐 Authentication
 
 ### POST /auth/signup
+
 Create a new user account.
 
 **Request:**
+
 ```json
 {
   "name": "John Smith",
@@ -44,6 +47,7 @@ Create a new user account.
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "user": {
@@ -60,9 +64,11 @@ Create a new user account.
 ```
 
 ### POST /auth/login
+
 Authenticate user and get access token.
 
 **Request:**
+
 ```json
 {
   "email": "john@example.com",
@@ -71,20 +77,21 @@ Authenticate user and get access token.
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "user": {
     "id": "usr_abc123",
     "name": "John Smith",
     "email": "john@example.com",
-    "avatar": "https://cdn.flowai.com/avatars/usr_abc123.jpg",
+    "avatar": "https://cdn.swiftflow.ai/avatars/usr_abc123.jpg",
     "workspaces": [
       {
         "id": "ws_xyz789",
         "name": "Acme Corp",
         "role": "admin",
         "slug": "acme-corp",
-        "logo": "https://cdn.flowai.com/logos/ws_xyz789.png"
+        "logo": "https://cdn.swiftflow.ai/logos/ws_xyz789.png"
       }
     ]
   },
@@ -95,9 +102,11 @@ Authenticate user and get access token.
 ```
 
 ### POST /auth/refresh
+
 Refresh access token using refresh token.
 
 **Request:**
+
 ```json
 {
   "refreshToken": "refresh_token_here"
@@ -105,6 +114,7 @@ Refresh access token using refresh token.
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "accessToken": "new_access_token",
@@ -113,22 +123,24 @@ Refresh access token using refresh token.
 ```
 
 ### GET /auth/me
+
 Get current authenticated user.
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "usr_abc123",
   "name": "John Smith",
   "email": "john@example.com",
-  "avatar": "https://cdn.flowai.com/avatars/usr_abc123.jpg",
+  "avatar": "https://cdn.swiftflow.ai/avatars/usr_abc123.jpg",
   "workspaces": [
     {
       "id": "ws_xyz789",
       "name": "Acme Corp",
       "role": "admin",
       "slug": "acme-corp",
-      "logo": "https://cdn.flowai.com/logos/ws_xyz789.png",
+      "logo": "https://cdn.swiftflow.ai/logos/ws_xyz789.png",
       "unreadNotifications": 5,
       "pendingApprovals": 3,
       "lastActiveAt": "2025-01-15T14:20:00Z"
@@ -146,6 +158,7 @@ Get current authenticated user.
 ```
 
 ### POST /auth/logout
+
 Invalidate current session.
 
 **Response:** `204 No Content`
@@ -155,9 +168,11 @@ Invalidate current session.
 ## 🏢 Workspaces
 
 ### GET /workspaces
+
 Get all workspaces for current user.
 
 **Response:** `200 OK`
+
 ```json
 {
   "workspaces": [
@@ -165,7 +180,7 @@ Get all workspaces for current user.
       "id": "ws_xyz789",
       "name": "Acme Corp",
       "slug": "acme-corp",
-      "logo": "https://cdn.flowai.com/logos/ws_xyz789.png",
+      "logo": "https://cdn.swiftflow.ai/logos/ws_xyz789.png",
       "role": "admin",
       "memberCount": 15,
       "activeWorkflows": 12,
@@ -179,9 +194,11 @@ Get all workspaces for current user.
 ```
 
 ### POST /workspaces
+
 Create a new workspace.
 
 **Request:**
+
 ```json
 {
   "name": "Acme Corp",
@@ -192,28 +209,57 @@ Create a new workspace.
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
-  "id": "ws_xyz789",
-  "name": "Acme Corp",
-  "slug": "acme-corp",
-  "logo": null,
-  "role": "admin",
-  "memberCount": 1,
-  "createdAt": "2025-01-15T10:30:00Z"
+  "success": true,
+  "data": {
+    "workspace": {
+      "id": "ws_xyz789",
+      "name": "Acme Corp",
+      "slug": "acme-corp",
+      "logo": null,
+      "role": "admin",
+      "memberCount": 1,
+      "activeWorkflows": 0,
+      "pendingApprovals": 0,
+      "unreadNotifications": 0,
+      "createdAt": "2025-01-15T10:30:00Z"
+    }
+  }
+}
+```
+
+**Error Response:** `409 Conflict` (if slug already exists)
+
+```json
+{
+  "success": false,
+  "message": "Workspace with this slug already exists"
+}
+```
+
+**Error Response:** `400 Bad Request` (validation error)
+
+```json
+{
+  "success": false,
+  "message": "Name and slug are required"
 }
 ```
 
 ### GET /workspaces/:workspaceId
+
 Get workspace details.
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "ws_xyz789",
   "name": "Acme Corp",
   "slug": "acme-corp",
-  "logo": "https://cdn.flowai.com/logos/ws_xyz789.png",
+  "logo": "https://cdn.swiftflow.ai/logos/ws_xyz789.png",
   "industry": "Technology",
   "description": "Main workspace",
   "memberCount": 15,
@@ -235,9 +281,11 @@ Get workspace details.
 ```
 
 ### PATCH /workspaces/:workspaceId
+
 Update workspace settings.
 
 **Request:**
+
 ```json
 {
   "name": "Acme Corporation",
@@ -252,9 +300,11 @@ Update workspace settings.
 **Response:** `200 OK` (returns updated workspace object)
 
 ### GET /workspaces/:workspaceId/dashboard
+
 Get dashboard stats and activity.
 
 **Response:** `200 OK`
+
 ```json
 {
   "stats": {
@@ -299,9 +349,11 @@ Get dashboard stats and activity.
 ## ⚡ Workflows
 
 ### GET /workspaces/:workspaceId/workflows
+
 Get all workflows in workspace.
 
 **Query Parameters:**
+
 - `status`: `active|draft|paused|archived`
 - `category`: `hr|sales|support|operations|custom`
 - `createdBy`: `userId`
@@ -310,6 +362,7 @@ Get all workflows in workspace.
 - `limit`: items per page (default: 20)
 
 **Response:** `200 OK`
+
 ```json
 {
   "workflows": [
@@ -345,9 +398,11 @@ Get all workflows in workspace.
 ```
 
 ### GET /workspaces/:workspaceId/workflows/:workflowId
+
 Get workflow details with full definition.
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "wf_abc123",
@@ -418,7 +473,7 @@ Get workflow details with full definition.
     "totalRuns": 127,
     "successRate": 92.1,
     "avgDuration": "8.5 days",
-    "costPerRun": 12.50
+    "costPerRun": 12.5
   },
   "createdBy": {
     "id": "usr_xyz",
@@ -430,9 +485,11 @@ Get workflow details with full definition.
 ```
 
 ### POST /workspaces/:workspaceId/workflows
+
 Create new workflow.
 
 **Request:**
+
 ```json
 {
   "name": "Employee Onboarding",
@@ -448,9 +505,11 @@ Create new workflow.
 **Response:** `201 Created` (returns workflow object)
 
 ### PATCH /workspaces/:workspaceId/workflows/:workflowId
+
 Update workflow definition or settings.
 
 **Request:**
+
 ```json
 {
   "name": "Updated name",
@@ -465,9 +524,11 @@ Update workflow definition or settings.
 **Response:** `200 OK` (returns updated workflow)
 
 ### POST /workspaces/:workspaceId/workflows/:workflowId/execute
+
 Manually trigger workflow execution.
 
 **Request:**
+
 ```json
 {
   "input": {
@@ -483,6 +544,7 @@ Manually trigger workflow execution.
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "executionId": "exec_xyz789",
@@ -493,6 +555,7 @@ Manually trigger workflow execution.
 ```
 
 ### DELETE /workspaces/:workspaceId/workflows/:workflowId
+
 Delete workflow (soft delete, can be archived).
 
 **Response:** `204 No Content`
@@ -502,9 +565,11 @@ Delete workflow (soft delete, can be archived).
 ## 🤖 AI Agents
 
 ### GET /workspaces/:workspaceId/agents
+
 Get all AI agents in workspace.
 
 **Response:** `200 OK`
+
 ```json
 {
   "agents": [
@@ -517,7 +582,7 @@ Get all AI agents in workspace.
       "usageStats": {
         "totalCalls": 127,
         "avgResponseTime": "2.3s",
-        "costToDate": 45.30,
+        "costToDate": 45.3,
         "successRate": 98.4
       },
       "createdAt": "2024-08-15T09:00:00Z"
@@ -527,9 +592,11 @@ Get all AI agents in workspace.
 ```
 
 ### POST /workspaces/:workspaceId/agents
+
 Create new AI agent.
 
 **Request:**
+
 ```json
 {
   "name": "Document Analyzer",
@@ -548,9 +615,11 @@ Create new AI agent.
 **Response:** `201 Created` (returns agent object)
 
 ### GET /workspaces/:workspaceId/agents/:agentId/analytics
+
 Get agent performance analytics.
 
 **Response:** `200 OK`
+
 ```json
 {
   "agentId": "agent_abc",
@@ -559,7 +628,7 @@ Get agent performance analytics.
     "totalCalls": 127,
     "avgResponseTime": 2.3,
     "successRate": 98.4,
-    "totalCost": 45.30,
+    "totalCost": 45.3,
     "avgConfidence": 94.2,
     "humanOverrideRate": 5.2
   },
@@ -568,7 +637,7 @@ Get agent performance analytics.
       "date": "2025-01-15",
       "calls": 8,
       "avgResponseTime": 2.1,
-      "cost": 2.40
+      "cost": 2.4
     }
   ]
 }
@@ -579,9 +648,11 @@ Get agent performance analytics.
 ## ✅ Approvals
 
 ### GET /workspaces/:workspaceId/approvals
+
 Get approval requests.
 
 **Query Parameters:**
+
 - `status`: `pending|approved|rejected|expired`
 - `priority`: `low|medium|high|critical`
 - `assignedTo`: `userId` (default: current user)
@@ -590,6 +661,7 @@ Get approval requests.
 - `limit`: items per page
 
 **Response:** `200 OK`
+
 ```json
 {
   "approvals": [
@@ -647,9 +719,11 @@ Get approval requests.
 ```
 
 ### GET /workspaces/:workspaceId/approvals/:approvalId
+
 Get approval details.
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "apr_123",
@@ -703,9 +777,11 @@ Get approval details.
 ```
 
 ### POST /workspaces/:workspaceId/approvals/:approvalId/decide
+
 Make approval decision.
 
 **Request:**
+
 ```json
 {
   "decision": "approve",
@@ -717,6 +793,7 @@ Make approval decision.
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "approvalId": "apr_123",
@@ -731,9 +808,11 @@ Make approval decision.
 ```
 
 ### POST /workspaces/:workspaceId/approvals/:approvalId/delegate
+
 Delegate approval to another user.
 
 **Request:**
+
 ```json
 {
   "delegateTo": "usr_def",
@@ -748,15 +827,18 @@ Delegate approval to another user.
 ## 🔌 Integrations
 
 ### GET /integrations/marketplace
+
 Browse available integrations.
 
 **Query Parameters:**
+
 - `category`: `crm|communication|payment|database|ai|mcp|utilities`
 - `search`: search term
 - `featured`: boolean
 - `page`, `limit`
 
 **Response:** `200 OK`
+
 ```json
 {
   "integrations": [
@@ -765,7 +847,7 @@ Browse available integrations.
       "name": "Slack",
       "description": "Send messages, create channels, manage users",
       "category": "communication",
-      "icon": "https://cdn.flowai.com/integrations/slack.png",
+      "icon": "https://cdn.swiftflow.ai/integrations/slack.png",
       "rating": 4.9,
       "installs": 12500,
       "featured": true,
@@ -784,9 +866,11 @@ Browse available integrations.
 ```
 
 ### GET /workspaces/:workspaceId/integrations
+
 Get installed integrations in workspace.
 
 **Response:** `200 OK`
+
 ```json
 {
   "integrations": [
@@ -814,9 +898,11 @@ Get installed integrations in workspace.
 ```
 
 ### POST /workspaces/:workspaceId/integrations/:integrationId/install
+
 Install integration in workspace.
 
 **Request:**
+
 ```json
 {
   "config": {
@@ -829,6 +915,7 @@ Install integration in workspace.
 **Response:** `201 Created`
 
 ### DELETE /workspaces/:workspaceId/integrations/:installationId
+
 Uninstall integration.
 
 **Response:** `204 No Content`
@@ -838,13 +925,16 @@ Uninstall integration.
 ## 📊 Analytics
 
 ### GET /workspaces/:workspaceId/analytics/overview
+
 Get workspace-level analytics overview.
 
 **Query Parameters:**
+
 - `period`: `7d|30d|90d|1y|custom`
 - `startDate`, `endDate`: for custom period
 
 **Response:** `200 OK`
+
 ```json
 {
   "period": "30d",
@@ -852,7 +942,7 @@ Get workspace-level analytics overview.
     "totalExecutions": 1524,
     "successRate": 92.1,
     "avgDuration": "4.5h",
-    "totalCost": 1587.50,
+    "totalCost": 1587.5,
     "timeSaved": "2,145 hours",
     "roi": 340
   },
@@ -873,9 +963,11 @@ Get workspace-level analytics overview.
 ```
 
 ### GET /workspaces/:workspaceId/analytics/workflows/:workflowId
+
 Get workflow-specific analytics.
 
 **Response:** `200 OK`
+
 ```json
 {
   "workflowId": "wf_abc",
@@ -884,7 +976,7 @@ Get workflow-specific analytics.
     "totalExecutions": 127,
     "avgDuration": "8.5 days",
     "successRate": 92.1,
-    "costPerRun": 12.50,
+    "costPerRun": 12.5,
     "timeSaved": "18h per run"
   },
   "timeline": [
@@ -930,9 +1022,11 @@ Get workflow-specific analytics.
 ## 👥 Team Management
 
 ### GET /workspaces/:workspaceId/members
+
 Get workspace members.
 
 **Response:** `200 OK`
+
 ```json
 {
   "members": [
@@ -955,10 +1049,60 @@ Get workspace members.
 }
 ```
 
-### POST /workspaces/:workspaceId/members/invite
-Invite user to workspace.
+### POST /workspaces/:workspaceId/invites
+
+Invite team members to workspace (batch invitations).
 
 **Request:**
+
+```json
+{
+  "invites": [
+    {
+      "email": "colleague1@example.com",
+      "role": "editor"
+    },
+    {
+      "email": "colleague2@example.com",
+      "role": "viewer"
+    },
+    {
+      "email": "manager@example.com",
+      "role": "admin"
+    }
+  ]
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "invitedEmails": [
+    "colleague1@example.com",
+    "colleague2@example.com",
+    "manager@example.com"
+  ],
+  "invitesSent": 3,
+  "message": "3 invitations sent successfully"
+}
+```
+
+**Error Response:** `400 Bad Request`
+
+```json
+{
+  "success": false,
+  "message": "No invites provided"
+}
+```
+
+### POST /workspaces/:workspaceId/members/invite
+
+Invite single user to workspace.
+
+**Request:**
+
 ```json
 {
   "email": "newuser@example.com",
@@ -968,20 +1112,23 @@ Invite user to workspace.
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "inviteId": "inv_xyz",
   "email": "newuser@example.com",
   "role": "editor",
-  "inviteLink": "https://app.flowai.com/invite/inv_xyz",
+  "inviteLink": "https://app.swiftflow.ai/invite/inv_xyz",
   "expiresAt": "2025-01-22T15:00:00Z"
 }
 ```
 
 ### PATCH /workspaces/:workspaceId/members/:userId
+
 Update member role or status.
 
 **Request:**
+
 ```json
 {
   "role": "admin"
@@ -991,6 +1138,7 @@ Update member role or status.
 **Response:** `200 OK`
 
 ### DELETE /workspaces/:workspaceId/members/:userId
+
 Remove member from workspace.
 
 **Response:** `204 No Content`
@@ -1000,15 +1148,18 @@ Remove member from workspace.
 ## 🔔 Notifications
 
 ### GET /notifications
+
 Get user notifications (cross-workspace).
 
 **Query Parameters:**
+
 - `workspaceId`: filter by workspace
 - `type`: `approval|mention|workflow_complete|error|system`
 - `unread`: boolean
 - `page`, `limit`
 
 **Response:** `200 OK`
+
 ```json
 {
   "notifications": [
@@ -1036,14 +1187,17 @@ Get user notifications (cross-workspace).
 ```
 
 ### PATCH /notifications/:notificationId/read
+
 Mark notification as read.
 
 **Response:** `200 OK`
 
 ### POST /notifications/mark-all-read
+
 Mark all notifications as read.
 
 **Query Parameters:**
+
 - `workspaceId`: optional, to mark only workspace notifications
 
 **Response:** `200 OK`
@@ -1053,15 +1207,18 @@ Mark all notifications as read.
 ## 🔄 Executions
 
 ### GET /workspaces/:workspaceId/executions
+
 Get workflow executions.
 
 **Query Parameters:**
+
 - `workflowId`: filter by workflow
 - `status`: `queued|running|waiting|completed|failed`
 - `startDate`, `endDate`
 - `page`, `limit`
 
 **Response:** `200 OK`
+
 ```json
 {
   "executions": [
@@ -1090,9 +1247,11 @@ Get workflow executions.
 ```
 
 ### GET /workspaces/:workspaceId/executions/:executionId
+
 Get execution details with full trace.
 
 **Response:** `200 OK`
+
 ```json
 {
   "id": "exec_xyz",
@@ -1151,9 +1310,11 @@ Get execution details with full trace.
 ```
 
 ### POST /workspaces/:workspaceId/executions/:executionId/cancel
+
 Cancel running execution.
 
 **Response:** `200 OK`
+
 ```json
 {
   "executionId": "exec_xyz",
@@ -1163,9 +1324,11 @@ Cancel running execution.
 ```
 
 ### POST /workspaces/:workspaceId/executions/:executionId/retry
+
 Retry failed execution.
 
 **Response:** `201 Created`
+
 ```json
 {
   "newExecutionId": "exec_new",
@@ -1178,15 +1341,18 @@ Retry failed execution.
 ## 📡 Webhooks (For Workflow Triggers)
 
 ### POST /workspaces/:workspaceId/webhooks/:workflowId
+
 Trigger workflow via webhook.
 
 **Headers:**
+
 ```
 X-FlowAI-Signature: hmac_signature_for_verification
 Content-Type: application/json
 ```
 
 **Request:** (Custom payload based on workflow configuration)
+
 ```json
 {
   "employee": {
@@ -1199,6 +1365,7 @@ Content-Type: application/json
 ```
 
 **Response:** `202 Accepted`
+
 ```json
 {
   "executionId": "exec_xyz",
@@ -1212,6 +1379,7 @@ Content-Type: application/json
 ## 🚨 Error Responses
 
 ### Standard Error Format
+
 ```json
 {
   "error": {
@@ -1230,6 +1398,7 @@ Content-Type: application/json
 ```
 
 ### Common Error Codes
+
 - `400` - Bad Request (VALIDATION_ERROR)
 - `401` - Unauthorized (AUTH_REQUIRED, INVALID_TOKEN)
 - `403` - Forbidden (INSUFFICIENT_PERMISSIONS)
@@ -1243,11 +1412,13 @@ Content-Type: application/json
 ## 🔐 Rate Limits
 
 **Default Limits:**
+
 - 100 requests per minute per user
 - 1000 requests per hour per workspace
 - 10 concurrent workflow executions per workspace
 
 **Headers:**
+
 ```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -1261,10 +1432,12 @@ X-RateLimit-Reset: 1642248000
 All list endpoints support pagination:
 
 **Query Parameters:**
+
 - `page`: Page number (1-indexed)
 - `limit`: Items per page (max: 100)
 
 **Response includes:**
+
 ```json
 {
   "data": [...],
@@ -1284,12 +1457,14 @@ All list endpoints support pagination:
 ## 🔍 Filtering & Sorting
 
 **Common query parameters:**
+
 - `sortBy`: Field to sort by
 - `sortOrder`: `asc|desc`
 - `search`: Full-text search
 - `filter[field]`: Filter by field value
 
 **Example:**
+
 ```
 GET /workspaces/ws_123/workflows?
   status=active&
@@ -1306,11 +1481,13 @@ GET /workspaces/ws_123/workflows?
 **Current Version:** v1
 
 **Versioning Strategy:**
+
 - Breaking changes require new version (v2, v3, etc.)
 - Non-breaking changes added to current version
 - Deprecated endpoints supported for 6 months
 
 **Version Header:**
+
 ```
 X-API-Version: v1
 ```
@@ -1318,4 +1495,3 @@ X-API-Version: v1
 ---
 
 This API documentation covers all endpoints needed for the MVP. Each endpoint returns consistent JSON responses with proper error handling and follows REST best practices.
-

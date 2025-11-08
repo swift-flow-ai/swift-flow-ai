@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks';
 import { Button, Input } from '../../components/common';
 import { isValidEmail } from '../../utils';
-import { Zap, Mail, Lock } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 import type { LoginCredentials } from '../../types';
 
 export default function LoginPage() {

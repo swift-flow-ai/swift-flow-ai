@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../hooks';
 import { Button, Input } from '../../components/common';
 import { isValidEmail, isStrongPassword } from '../../utils';
-import { Zap, Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock, User } from 'lucide-react';
 import type { SignupData } from '../../types';
 
 export default function SignupPage() {
@@ -60,7 +60,8 @@ export default function SignupPage() {
     setIsLoading(true);
     try {
       await signup(formData);
-      navigate('/dashboard');
+      // Redirect to workspace selector for new users to create/join workspace
+      navigate('/select-workspace');
     } catch (error) {
       const err = error as { message?: string };
       setApiError(err.message || 'Signup failed. Please try again.');

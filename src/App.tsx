@@ -5,6 +5,8 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import { WorkspaceSelector } from './pages/workspace/WorkspaceSelector';
+import { WorkspaceCreate } from './pages/workspace/WorkspaceCreate';
+import { InviteTeam } from './pages/workspace/InviteTeam';
 import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/dashboard/Dashboard';
 import { WorkflowsList } from './pages/workflows/WorkflowsList';
@@ -31,6 +33,22 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <WorkspaceSelector />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/workspace/create"
+                element={
+                  <ProtectedRoute>
+                    <WorkspaceCreate />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/workspace/invite"
+                element={
+                  <ProtectedRoute>
+                    <InviteTeam />
                   </ProtectedRoute>
                 }
               />
