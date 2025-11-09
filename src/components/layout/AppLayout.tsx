@@ -206,7 +206,7 @@ export function AppLayout() {
                     </div>
                     <div className="px-3 py-2 border-t border-border mt-2">
                       <Link 
-                        to="/notifications"
+                        to="/app/notifications"
                         className="text-sm text-primary hover:underline block"
                         onClick={() => setShowNotifications(false)}
                       >
