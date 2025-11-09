@@ -189,7 +189,7 @@ export function WorkflowAnalytics() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <button
