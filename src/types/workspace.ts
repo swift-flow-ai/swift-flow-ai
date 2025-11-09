@@ -539,5 +539,36 @@ export interface TeamMember {
   };
   joinedAt: string;
   lastActiveAt: string;
+  poolIds?: string[]; // Pools this member belongs to
+}
+
+// Team Pool types (groups for specific work)
+export interface TeamPool {
+  id: string;
+  name: string;
+  description: string;
+  type: 'functional' | 'approval' | 'project' | 'custom';
+  color?: string;
+  icon?: string;
+  memberIds: string[];
+  members?: TeamMember[];
+  settings: {
+    autoAssignment: boolean;
+    roundRobin: boolean;
+    loadBalancing: boolean;
+    notifyOnAssignment: boolean;
+  };
+  stats: {
+    activeMembers: number;
+    totalAssignments: number;
+    avgResponseTime: string;
+    currentLoad: number;
+  };
+  createdBy: {
+    id: string;
+    name: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 

@@ -5,7 +5,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_onboarding',
     name: 'Employee Onboarding',
-    description: 'Automated new hire onboarding with IT setup, HR documentation, and buddy assignment',
+    description: 'Replace scattered Notion docs and Jira tickets. One executable process from offer to day one. Track every step in real-time.',
     status: 'active',
     category: 'hr',
     version: 3,
@@ -87,7 +87,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_invoice',
     name: 'Invoice Approval',
-    description: 'Multi-level invoice approval workflow with smart routing based on amount',
+    description: 'No more hunting through email threads. See every invoice, who approved it, how long it took. Full visibility into company spend.',
     status: 'active',
     category: 'finance',
     version: 2,
@@ -179,7 +179,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_support',
     name: 'Support Ticket Routing',
-    description: 'AI-powered support ticket classification and routing to appropriate teams',
+    description: 'Customer issues never get lost. Automatic routing, SLA tracking, escalation paths. Everyone knows their role.',
     status: 'active',
     category: 'support',
     version: 5,
@@ -259,7 +259,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_lead',
     name: 'Lead Distribution',
-    description: 'Automatically score and distribute leads to sales team based on territory and performance',
+    description: 'Stop losing leads in Salesforce chaos. Every lead scored, routed, tracked. See exactly where every deal stands.',
     status: 'active',
     category: 'sales',
     version: 1,
@@ -280,7 +280,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_content',
     name: 'Content Approval',
-    description: 'Blog post and marketing content approval workflow with compliance checks',
+    description: 'No more version chaos in Google Docs. Track every review, every approval. See exactly where content is stuck.',
     status: 'active',
     category: 'operations',
     version: 2,
@@ -301,7 +301,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_procurement',
     name: 'Procurement Approval',
-    description: 'Purchase request approval with budget validation and vendor verification',
+    description: 'Replace email chains and spreadsheets. Every purchase request tracked from submission to payment. Budget compliance built-in.',
     status: 'draft',
     category: 'finance',
     version: 1,
@@ -321,7 +321,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_customer_onboarding',
     name: 'Customer Onboarding',
-    description: 'Automated customer onboarding with account setup and welcome sequence',
+    description: 'Turn chaos into clarity. Every new customer tracked from signup to activation. No more "did we send the welcome email?"',
     status: 'draft',
     category: 'sales',
     version: 1,
@@ -341,7 +341,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_expense_report',
     name: 'Expense Report Processing',
-    description: 'Automated expense report submission, approval, and reimbursement workflow',
+    description: 'End the receipt nightmare. Submit, approve, reimburse - all tracked. See exactly where expenses are stuck in approval.',
     status: 'draft',
     category: 'finance',
     version: 1,
@@ -361,7 +361,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_contract_review',
     name: 'Contract Review & Approval',
-    description: 'Legal contract review workflow with multi-stakeholder approval',
+    description: 'Stop losing contracts in email. Legal review, stakeholder signoff, final approval - all visible. Know the status instantly.',
     status: 'paused',
     category: 'operations',
     version: 4,
@@ -382,7 +382,7 @@ export const mockWorkflows: Workflow[] = [
   {
     id: 'wf_it_provisioning',
     name: 'IT Resource Provisioning',
-    description: 'Automated IT resource provisioning for new employees and projects',
+    description: 'No more IT ticket chaos. New laptop request to delivery tracked. Every step visible. No more "where\'s my equipment?"',
     status: 'paused',
     category: 'operations',
     version: 2,

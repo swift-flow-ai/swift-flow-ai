@@ -5,7 +5,7 @@ export const mockTemplates: WorkflowTemplate[] = [
   {
     id: 'tpl_employee_onboarding',
     name: 'Employee Onboarding',
-    description: 'Complete employee onboarding workflow with IT setup, HR documentation, manager approval, and buddy assignment. Automates the entire new hire process.',
+    description: 'Replace your scattered Notion docs and Jira tickets. One executable process from offer letter to day one. Never miss a step, never lose track of a new hire.',
     category: 'hr',
     icon: '👤',
     thumbnail: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop',
@@ -88,7 +88,7 @@ export const mockTemplates: WorkflowTemplate[] = [
   {
     id: 'tpl_invoice_approval',
     name: 'Invoice Approval Workflow',
-    description: 'Multi-level invoice approval with smart routing based on amount. Includes AI-powered data extraction and automatic payment processing.',
+    description: 'End the email chain nightmare. See every invoice, who needs to approve, where it\'s stuck. Full visibility into company spend from submission to payment.',
     category: 'finance',
     icon: '💰',
     thumbnail: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop',
@@ -172,7 +172,7 @@ export const mockTemplates: WorkflowTemplate[] = [
   {
     id: 'tpl_support_routing',
     name: 'AI Support Ticket Routing',
-    description: 'Automatically classify and route support tickets using AI. Assigns tickets to the right team based on content analysis and urgency.',
+    description: 'Customer issues never get lost. Automatic classification, smart routing, SLA tracking. Everyone knows what tickets they own and what\'s urgent.',
     category: 'support',
     icon: '🎫',
     thumbnail: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop',
@@ -247,7 +247,7 @@ export const mockTemplates: WorkflowTemplate[] = [
   {
     id: 'tpl_lead_distribution',
     name: 'Lead Distribution & Scoring',
-    description: 'Automatically score incoming leads and distribute them to sales reps based on territory, capacity, and performance metrics.',
+    description: 'Stop losing leads in Salesforce chaos. Every lead automatically scored, routed to the right rep, tracked from contact to close. No lead left behind.',
     category: 'sales',
     icon: '🎯',
     thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
@@ -308,7 +308,7 @@ export const mockTemplates: WorkflowTemplate[] = [
   {
     id: 'tpl_content_approval',
     name: 'Content Approval & Publishing',
-    description: 'Multi-stage content approval workflow with compliance checks, stakeholder reviews, and automated publishing to multiple channels.',
+    description: 'End the Google Docs version nightmare. Track every draft, every review, every approval. See exactly where content is stuck and who needs to act.',
     category: 'operations',
     icon: '📝',
     thumbnail: 'https://images.unsplash.com/photo-1542435503-956c469947f6?w=400&h=300&fit=crop',
@@ -383,7 +383,7 @@ export const mockTemplates: WorkflowTemplate[] = [
   {
     id: 'tpl_expense_report',
     name: 'Expense Report Processing',
-    description: 'Automated expense report submission, approval, and reimbursement workflow with receipt validation and policy compliance checks.',
+    description: 'End the receipt nightmare. Submit, approve, reimburse - all visible. No more "where\'s my expense report?" See exactly who needs to approve and why it\'s stuck.',
     category: 'finance',
     icon: '💳',
     thumbnail: 'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=400&h=300&fit=crop',
