@@ -11,7 +11,7 @@ import {
   Clock,
   Filter
 } from 'lucide-react';
-import { marketplaceApps } from '../../pages/marketplace/MarketplacePage';
+import { marketplaceApps } from '../../data/marketplaceApps';
 
 interface NodeData {
   label: string;

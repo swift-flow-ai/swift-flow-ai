@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '../../components/common';
-import { marketplaceApps } from './MarketplacePage';
+import { marketplaceApps } from '../../data/marketplaceApps';
 import {
   ArrowLeft,
   Star,

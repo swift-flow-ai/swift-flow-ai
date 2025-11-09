@@ -111,7 +111,7 @@ export function ApprovalsList() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Link
-                  to={`/approvals/${approval.id}`}
+                  to={`/app/approvals/${approval.id}`}
                   className="block group rounded-xl border bg-card p-6 hover:border-primary hover:shadow-lg transition-all"
                 >
                   <div className="flex items-start gap-4">

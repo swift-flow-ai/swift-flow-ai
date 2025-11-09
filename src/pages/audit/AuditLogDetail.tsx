@@ -116,7 +116,7 @@ export function AuditLogDetail() {
                 {log.action.replace('_', ' ').toUpperCase()}
               </span>
               <span className="px-3 py-1 rounded-lg text-sm font-medium bg-muted text-muted-foreground">
-                {log.resourceType}
+                {log.resource.type}
               </span>
               <span
                 className={cn(
@@ -132,7 +132,7 @@ export function AuditLogDetail() {
               </span>
             </div>
             <h1 className="text-2xl font-bold mb-2">
-              {log.userName} {log.action} {log.resourceName}
+              {log.actor.name} {log.action} {log.resource.name}
             </h1>
             <p className="text-muted-foreground">
               Audit Log ID: {log.id}
@@ -156,15 +156,15 @@ export function AuditLogDetail() {
           <div className="space-y-3">
             <div>
               <label className="text-sm text-muted-foreground">Name</label>
-              <p className="font-medium">{log.userName}</p>
+              <p className="font-medium">{log.actor.name}</p>
             </div>
             <div>
               <label className="text-sm text-muted-foreground">Email</label>
-              <p className="font-medium">{log.userEmail}</p>
+              <p className="font-medium">{log.actor.email}</p>
             </div>
             <div>
               <label className="text-sm text-muted-foreground">User ID</label>
-              <p className="font-medium font-mono text-sm">{log.userId}</p>
+              <p className="font-medium font-mono text-sm">{log.actor.id}</p>
             </div>
           </div>
         </motion.div>
@@ -185,16 +185,16 @@ export function AuditLogDetail() {
               <label className="text-sm text-muted-foreground">Timestamp</label>
               <p className="font-medium">{new Date(log.timestamp).toLocaleString()}</p>
             </div>
-            {log.ipAddress && (
+            {log.actor.ipAddress && (
               <div>
                 <label className="text-sm text-muted-foreground">IP Address</label>
-                <p className="font-medium font-mono text-sm">{log.ipAddress}</p>
+                <p className="font-medium font-mono text-sm">{log.actor.ipAddress}</p>
               </div>
             )}
-            {log.userAgent && (
+            {log.metadata?.userAgent && (
               <div>
                 <label className="text-sm text-muted-foreground">User Agent</label>
-                <p className="font-medium text-sm line-clamp-2">{log.userAgent}</p>
+                <p className="font-medium text-sm line-clamp-2">{log.metadata.userAgent as string}</p>
               </div>
             )}
           </div>
@@ -215,21 +215,21 @@ export function AuditLogDetail() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className="text-sm text-muted-foreground">Resource Type</label>
-            <p className="font-medium">{log.resourceType}</p>
+            <p className="font-medium">{log.resource.type}</p>
           </div>
           <div>
             <label className="text-sm text-muted-foreground">Resource Name</label>
-            <p className="font-medium">{log.resourceName}</p>
+            <p className="font-medium">{log.resource.name}</p>
           </div>
           <div>
             <label className="text-sm text-muted-foreground">Resource ID</label>
-            <p className="font-medium font-mono text-sm">{log.resourceId}</p>
+            <p className="font-medium font-mono text-sm">{log.resource.id}</p>
           </div>
         </div>
       </motion.div>
 
       {/* Changes */}
-      {log.details.changes && log.details.changes.length > 0 && (
+      {log.changes && log.changes.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -238,7 +238,7 @@ export function AuditLogDetail() {
         >
           <h2 className="text-lg font-semibold mb-4">Changes</h2>
           <div className="space-y-3">
-            {log.details.changes.map((change, index) => (
+            {log.changes.map((change, index) => (
               <div key={index} className="p-3 bg-muted rounded-lg">
                 <p className="font-medium mb-2">{change.field}</p>
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -262,7 +262,7 @@ export function AuditLogDetail() {
       )}
 
       {/* Metadata */}
-      {log.details.metadata && Object.keys(log.details.metadata).length > 0 && (
+      {log.metadata && Object.keys(log.metadata).length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -271,7 +271,7 @@ export function AuditLogDetail() {
         >
           <h2 className="text-lg font-semibold mb-4">Additional Metadata</h2>
           <pre className="text-sm bg-muted p-4 rounded-lg overflow-auto">
-            {JSON.stringify(log.details.metadata, null, 2)}
+            {JSON.stringify(log.metadata, null, 2)}
           </pre>
         </motion.div>
       )}
