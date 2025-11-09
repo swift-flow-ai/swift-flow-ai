@@ -214,9 +214,9 @@ export function NotificationsPage() {
     
     // Navigate based on notification type
     if (notif.type === 'approval' && notif.data?.approvalId) {
-      navigate(`/approvals/${notif.data.approvalId}`);
+      navigate(`/app/approvals/${notif.data.approvalId}`);
     } else if ((notif.type === 'workflow_complete' || notif.type === 'workflow_failed') && notif.data?.workflowId) {
-      navigate(`/workflows/${notif.data.workflowId}`);
+      navigate(`/app/workflows/${notif.data.workflowId}`);
     }
   };
 

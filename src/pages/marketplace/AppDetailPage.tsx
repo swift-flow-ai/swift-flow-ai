@@ -31,7 +31,7 @@ export function AppDetailPage() {
       <div className="flex flex-col items-center justify-center h-[60vh]">
         <h2 className="text-2xl font-bold mb-2">App not found</h2>
         <p className="text-muted-foreground mb-6">The app you're looking for doesn't exist.</p>
-        <Button onClick={() => navigate('/marketplace')}>
+        <Button onClick={() => navigate('/app/marketplace')}>
           Back to Marketplace
         </Button>
       </div>
@@ -60,7 +60,7 @@ export function AppDetailPage() {
     <div className="space-y-6 max-w-6xl">
       {/* Back Button */}
       <button
-        onClick={() => navigate('/marketplace')}
+        onClick={() => navigate('/app/marketplace')}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -331,7 +331,7 @@ export function AppDetailPage() {
             </p>
             <Button
               variant="primary"
-              onClick={() => navigate('/workflows')}
+              onClick={() => navigate('/app/workflows')}
               className="w-full"
               disabled={!isInstalled}
             >

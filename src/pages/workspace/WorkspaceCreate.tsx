@@ -46,7 +46,7 @@ export function WorkspaceCreate() {
       // const workspace = await workspaceService.createWorkspace(formData);
       
       // Navigate to invite team page with workspace name
-      navigate(`/workspace/invite?workspace=${encodeURIComponent(formData.name)}`);
+      navigate(`/workspace-invite?workspace=${encodeURIComponent(formData.name)}`);
     } catch (error) {
       console.error('Failed to create workspace:', error);
     } finally {

@@ -81,7 +81,7 @@ export function WorkflowsList() {
           </p>
         </div>
         <button 
-          onClick={() => navigate('/workflows/new')}
+          onClick={() => navigate('/app/workflows/new')}
           className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           <Plus className="h-4 w-4" />
@@ -191,7 +191,7 @@ export function WorkflowsList() {
                 transition={{ delay: index * 0.05 }}
               >
                 <Link
-                  to={`/workflows/${workflow.id}`}
+                  to={`/app/workflows/${workflow.id}`}
                   className="block group rounded-xl border bg-card p-6 hover:border-primary hover:shadow-lg transition-all"
                 >
                   <div className="flex items-start justify-between mb-4">

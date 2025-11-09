@@ -599,7 +599,7 @@ export function MarketplacePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              onClick={() => navigate(`/marketplace/${app.id}`)}
+              onClick={() => navigate(`/app/marketplace/${app.id}`)}
               className="bg-card border border-border rounded-xl p-6 hover:border-primary hover:shadow-lg transition-all cursor-pointer group"
             >
               {/* Header */}

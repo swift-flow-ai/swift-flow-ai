@@ -84,7 +84,7 @@ export function TemplateDetail() {
         name: workflowName,
         variables,
       });
-      navigate(`/workflows/${result.workflowId}/edit`);
+      navigate(`/app/workflows/${result.workflowId}/edit`);
     } catch (error) {
       console.error('Failed to create workflow from template:', error);
     } finally {

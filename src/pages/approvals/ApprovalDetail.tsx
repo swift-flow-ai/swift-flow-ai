@@ -45,7 +45,7 @@ export function ApprovalDetail() {
     try {
       setIsSubmitting(true);
       await approvalService.decide(currentWorkspace.id, approvalId, decision, comment);
-      navigate('/approvals');
+      navigate('/app/approvals');
     } catch (error) {
       console.error('Failed to submit decision:', error);
     } finally {
@@ -69,7 +69,7 @@ export function ApprovalDetail() {
       {/* Header */}
       <div>
         <button
-          onClick={() => navigate('/approvals')}
+          onClick={() => navigate('/app/approvals')}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
