@@ -27,7 +27,7 @@ export function TemplateMarketplace() {
   const loadTemplates = async () => {
     setIsLoading(true);
     try {
-      const params: any = {};
+      const params: Record<string, string | boolean> = {};
       if (categoryFilter !== 'all') {
         params.category = categoryFilter;
       }

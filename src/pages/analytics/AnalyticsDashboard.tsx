@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import {
   TrendingUp,
@@ -35,13 +35,7 @@ export function AnalyticsDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [period, setPeriod] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
 
-  useEffect(() => {
-    if (currentWorkspace) {
-      loadAnalytics();
-    }
-  }, [currentWorkspace, period]);
-
-  const loadAnalytics = async () => {
+  const loadAnalytics = useCallback(async () => {
     if (!currentWorkspace) return;
 
     setIsLoading(true);
@@ -53,7 +47,13 @@ export function AnalyticsDashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentWorkspace, period]);
+
+  useEffect(() => {
+    if (currentWorkspace) {
+      loadAnalytics();
+    }
+  }, [currentWorkspace, loadAnalytics]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {

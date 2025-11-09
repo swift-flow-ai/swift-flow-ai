@@ -81,7 +81,6 @@ export function TeamPage() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreatePoolModal, setShowCreatePoolModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
   const isAdmin = currentWorkspace?.role === 'admin';
 
@@ -93,7 +92,6 @@ export function TeamPage() {
 
   const fetchTeamData = async () => {
     try {
-      setLoading(true);
       const [membersRes, poolsRes] = await Promise.all([
         axios.get(`${config.apiBaseUrl}/workspaces/${currentWorkspace?.id}/members`),
         axios.get(`${config.apiBaseUrl}/workspaces/${currentWorkspace?.id}/pools`)
@@ -102,8 +100,6 @@ export function TeamPage() {
       setPools(poolsRes.data.pools || []);
     } catch (error) {
       console.error('Error fetching team data:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -408,7 +404,7 @@ export function TeamPage() {
               <Filter className="h-4 w-4 text-muted-foreground" />
               <select
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value as any)}
+                onChange={(e) => setRoleFilter(e.target.value as 'all' | 'admin' | 'editor' | 'viewer')}
                 className="px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="all">All Roles</option>
@@ -438,7 +434,6 @@ export function TeamPage() {
       ) : (
         <PoolsGrid 
           pools={filteredPools}
-          members={members}
           isAdmin={isAdmin}
           getPoolTypeIcon={getPoolTypeIcon}
         />
@@ -498,7 +493,20 @@ export function TeamPage() {
 }
 
 // Members Table Component
-function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handleChangeRole, handleRemoveMember, getRoleIcon, getRoleBadgeClass, getStatusBadgeClass }: any) {
+interface MembersTableProps {
+  members: TeamMember[];
+  user: { id: string; name: string; email: string } | null;
+  isAdmin: boolean;
+  openMenuId: string | null;
+  setOpenMenuId: (id: string | null) => void;
+  handleChangeRole: (memberId: string, role: string) => void;
+  handleRemoveMember: (memberId: string) => void;
+  getRoleIcon: (role: string) => JSX.Element;
+  getRoleBadgeClass: (role: string) => string;
+  getStatusBadgeClass: (status: string) => string;
+}
+
+function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handleChangeRole, handleRemoveMember, getRoleIcon, getRoleBadgeClass, getStatusBadgeClass }: MembersTableProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -665,7 +673,13 @@ function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handl
 }
 
 // Pools Grid Component
-function PoolsGrid({ pools, members, isAdmin, getPoolTypeIcon }: any) {
+interface PoolsGridProps {
+  pools: TeamPool[];
+  isAdmin: boolean;
+  getPoolTypeIcon: (type: string) => string;
+}
+
+function PoolsGrid({ pools, isAdmin, getPoolTypeIcon }: PoolsGridProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

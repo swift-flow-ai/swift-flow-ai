@@ -338,7 +338,7 @@ export function NotificationsPage() {
 
             <select
               value={filterType}
-              onChange={(e) => setFilterType(e.target.value as any)}
+              onChange={(e) => setFilterType(e.target.value as 'all' | 'approval' | 'workflow_complete' | 'workflow_failed' | 'mention' | 'member_joined' | 'system')}
               className="px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
             >
               <option value="all">All Types</option>
@@ -352,7 +352,7 @@ export function NotificationsPage() {
 
             <select
               value={filterRead}
-              onChange={(e) => setFilterRead(e.target.value as any)}
+              onChange={(e) => setFilterRead(e.target.value as 'all' | 'read' | 'unread')}
               className="px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
             >
               <option value="all">All Notifications</option>

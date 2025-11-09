@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -24,13 +24,7 @@ export function AuditLogDetail() {
   const [log, setLog] = useState<AuditLog | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    if (logId && currentWorkspace) {
-      loadAuditLog();
-    }
-  }, [logId, currentWorkspace]);
-
-  const loadAuditLog = async () => {
+  const loadAuditLog = useCallback(async () => {
     if (!logId || !currentWorkspace) return;
 
     setIsLoading(true);
@@ -42,7 +36,13 @@ export function AuditLogDetail() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [logId, currentWorkspace]);
+
+  useEffect(() => {
+    if (logId && currentWorkspace) {
+      loadAuditLog();
+    }
+  }, [logId, currentWorkspace, loadAuditLog]);
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {

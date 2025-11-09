@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { getAuditLogs, getAuditLogById, mockAuditLogs } from '../data/auditLogs';
+import { getAuditLogs, getAuditLogById } from '../data/auditLogs';
 import { config } from '../../config';
 
 const BASE_URL = config.apiBaseUrl;

@@ -113,11 +113,11 @@ export function WorkflowBuilder() {
     [setEdges]
   );
 
-  const onNodeClick = useCallback((_: any, node: Node) => {
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
   }, []);
 
-  const addNode = useCallback((type: string, nodeData: any) => {
+  const addNode = useCallback((type: string, nodeData: Record<string, unknown>) => {
     const newNode: Node = {
       id: `${Date.now()}`,
       type,

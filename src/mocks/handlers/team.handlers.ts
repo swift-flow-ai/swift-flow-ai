@@ -5,6 +5,47 @@ import { config } from '../../config';
 
 const apiUrl = config.apiBaseUrl;
 
+interface CreatePoolBody {
+  name: string;
+  description: string;
+  type?: string;
+  color?: string;
+  icon?: string;
+  memberIds?: string[];
+  settings?: {
+    autoAssignment?: boolean;
+    roundRobin?: boolean;
+    loadBalancing?: boolean;
+    notifyOnAssignment?: boolean;
+  };
+}
+
+interface UpdatePoolBody {
+  name?: string;
+  description?: string;
+  settings?: {
+    autoAssignment?: boolean;
+    roundRobin?: boolean;
+    loadBalancing?: boolean;
+    notifyOnAssignment?: boolean;
+  };
+}
+
+interface AddMemberToPoolBody {
+  userId: string;
+}
+
+interface InviteMemberBody {
+  email: string;
+  role: string;
+  name?: string;
+}
+
+interface UpdateMemberBody {
+  role?: string;
+  status?: string;
+}
+
 export const teamHandlers = [
   // Get team members
   http.get(`${apiUrl}/workspaces/:workspaceId/members`, ({ params }) => {
@@ -53,8 +94,8 @@ export const teamHandlers = [
   }),
 
   // Create pool
-  http.post(`${apiUrl}/workspaces/:workspaceId/pools`, async ({ request, params }) => {
-    const body = await request.json() as any;
+  http.post(`${apiUrl}/workspaces/:workspaceId/pools`, async ({ request }) => {
+    const body = await request.json() as CreatePoolBody;
     console.log('🔷 MSW: POST /workspaces/:workspaceId/pools', { body });
     
     const newPool = {
@@ -95,7 +136,7 @@ export const teamHandlers = [
   // Update pool
   http.patch(`${apiUrl}/workspaces/:workspaceId/pools/:poolId`, async ({ request, params }) => {
     const { poolId } = params;
-    const body = await request.json() as any;
+    const body = await request.json() as UpdatePoolBody;
     console.log('🔷 MSW: PATCH /workspaces/:workspaceId/pools/:poolId', { poolId, body });
     
     const poolIndex = mockTeamPools.findIndex(p => p.id === poolId);
@@ -142,7 +183,7 @@ export const teamHandlers = [
   // Add members to pool
   http.post(`${apiUrl}/workspaces/:workspaceId/pools/:poolId/members`, async ({ request, params }) => {
     const { poolId } = params;
-    const body = await request.json() as any;
+    const body = await request.json() as AddMemberToPoolBody;
     console.log('🔷 MSW: POST /workspaces/:workspaceId/pools/:poolId/members', { poolId, body });
     
     const pool = mockTeamPools.find(p => p.id === poolId);
@@ -204,8 +245,8 @@ export const teamHandlers = [
   }),
 
   // Invite member
-  http.post(`${apiUrl}/workspaces/:workspaceId/members/invite`, async ({ request, params }) => {
-    const body = await request.json() as any;
+  http.post(`${apiUrl}/workspaces/:workspaceId/members/invite`, async ({ request }) => {
+    const body = await request.json() as InviteMemberBody;
     console.log('🔷 MSW: POST /workspaces/:workspaceId/members/invite', { body });
     
     const newMember = {
@@ -236,7 +277,7 @@ export const teamHandlers = [
   // Update member
   http.patch(`${apiUrl}/workspaces/:workspaceId/members/:memberId`, async ({ request, params }) => {
     const { memberId } = params;
-    const body = await request.json() as any;
+    const body = await request.json() as UpdateMemberBody;
     console.log('🔷 MSW: PATCH /workspaces/:workspaceId/members/:memberId', { memberId, body });
     
     const memberIndex = mockTeamMembers.findIndex(m => m.id === memberId);

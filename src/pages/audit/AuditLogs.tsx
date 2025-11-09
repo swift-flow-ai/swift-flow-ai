@@ -45,7 +45,7 @@ export function AuditLogs() {
 
     setIsLoading(true);
     try {
-      const filters: any = {};
+      const filters: Record<string, string> = {};
       if (actionFilter !== 'all') filters.action = actionFilter;
       if (resourceTypeFilter !== 'all') filters.resourceType = resourceTypeFilter;
       if (severityFilter !== 'all') filters.severity = severityFilter;
@@ -71,7 +71,7 @@ export function AuditLogs() {
 
     setIsExporting(true);
     try {
-      const filters: any = {};
+      const filters: Record<string, string> = {};
       if (actionFilter !== 'all') filters.action = actionFilter;
       if (resourceTypeFilter !== 'all') filters.resourceType = resourceTypeFilter;
       if (severityFilter !== 'all') filters.severity = severityFilter;

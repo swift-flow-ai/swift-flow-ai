@@ -4,7 +4,6 @@ import {
   getIntegrationById,
   getIntegrationApps,
   getIntegrationAppById,
-  mockIntegrations,
 } from '../data/integrations';
 import { config } from '../../config';
 
@@ -84,10 +83,10 @@ export const integrationHandlers = [
   // POST /workspaces/:workspaceId/integrations/oauth/start
   http.post(`${BASE_URL}/workspaces/:workspaceId/integrations/oauth/start`, async ({ request, params }) => {
     const { workspaceId } = params;
-    const body = await request.json();
+    const body = await request.json() as { appId: string };
     console.log('🔷 MSW: POST /workspaces/:workspaceId/integrations/oauth/start', { workspaceId, body });
 
-    const { appId } = body as any;
+    const { appId } = body;
     const app = getIntegrationAppById(appId);
 
     if (!app || app.authType !== 'oauth2') {

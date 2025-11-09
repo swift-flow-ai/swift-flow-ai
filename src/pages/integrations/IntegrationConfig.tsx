@@ -5,7 +5,6 @@ import {
   ArrowLeft,
   CheckCircle,
   XCircle,
-  Loader2,
   ExternalLink,
   TestTube,
   Save,
@@ -92,7 +91,7 @@ export function IntegrationConfig() {
       alert(`OAuth flow initiated!\n\nIn a real app, you would be redirected to:\n${result.authUrl}\n\nFor this demo, we'll simulate a successful connection.`);
 
       // Simulate OAuth callback
-      const callback = await integrationService.completeOAuthFlow(
+      await integrationService.completeOAuthFlow(
         currentWorkspace.id,
         'mock_code_123',
         result.state

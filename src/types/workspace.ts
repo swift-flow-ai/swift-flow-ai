@@ -364,61 +364,6 @@ export interface AuditLogFilters {
   search?: string;
 }
 
-// Audit Log types
-export interface AuditLog {
-  id: string;
-  workspaceId: string;
-  userId: string;
-  userName: string;
-  userEmail: string;
-  action: AuditAction;
-  resourceType: 'workflow' | 'integration' | 'workspace' | 'user' | 'execution' | 'approval' | 'template' | 'settings';
-  resourceId: string;
-  resourceName: string;
-  details: {
-    before?: Record<string, unknown>;
-    after?: Record<string, unknown>;
-    changes?: Array<{
-      field: string;
-      oldValue: unknown;
-      newValue: unknown;
-    }>;
-    metadata?: Record<string, unknown>;
-  };
-  ipAddress?: string;
-  userAgent?: string;
-  timestamp: string;
-  severity: 'info' | 'warning' | 'critical';
-}
-
-export type AuditAction =
-  | 'created'
-  | 'updated'
-  | 'deleted'
-  | 'viewed'
-  | 'executed'
-  | 'approved'
-  | 'rejected'
-  | 'invited'
-  | 'removed'
-  | 'connected'
-  | 'disconnected'
-  | 'exported'
-  | 'imported'
-  | 'login'
-  | 'logout'
-  | 'settings_changed';
-
-export interface AuditLogFilters {
-  userId?: string;
-  action?: AuditAction;
-  resourceType?: string;
-  startDate?: string;
-  endDate?: string;
-  severity?: string;
-  search?: string;
-}
-
 // Analytics types
 export interface WorkspaceAnalytics {
   period: string;

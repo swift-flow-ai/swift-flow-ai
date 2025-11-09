@@ -34,7 +34,7 @@ export const integrationService = {
   async startOAuthFlow(
     workspaceId: string,
     appId: string,
-    config: any
+    config: Record<string, unknown>
   ): Promise<{ authUrl: string; state: string }> {
     const response = await api.post<{ authUrl: string; state: string }>(
       `/workspaces/${workspaceId}/integrations/oauth/start`,
@@ -60,7 +60,7 @@ export const integrationService = {
   async configureIntegration(
     workspaceId: string,
     appId: string,
-    config: any
+    config: Record<string, unknown>
   ): Promise<{ integrationId: string }> {
     const response = await api.post<{ integrationId: string }>(
       `/workspaces/${workspaceId}/integrations`,
