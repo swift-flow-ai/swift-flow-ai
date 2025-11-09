@@ -21,70 +21,70 @@ export function LandingPage() {
 
   const features = [
     {
-      icon: Brain,
-      title: 'AI-Powered Automation',
-      description: 'Let AI handle complex workflows with intelligent decision-making and natural language processing.',
+      icon: Workflow,
+      title: 'Executable Processes',
+      description: 'Turn your documented processes into executable workflows. No more outdated wikis or forgotten SOPs.',
       gradient: 'from-purple-500 to-pink-500',
     },
     {
-      icon: Zap,
-      title: 'Lightning Fast',
-      description: 'Execute workflows in milliseconds with our optimized AI engine and smart caching.',
-      gradient: 'from-yellow-500 to-orange-500',
-    },
-    {
-      icon: Bot,
-      title: 'Smart Assistants',
-      description: 'AI assistants that learn from your patterns and suggest optimizations automatically.',
+      icon: TrendingUp,
+      title: 'Real-Time Visibility',
+      description: 'Know exactly what\'s happening across your organization. Track every process, every step, in real-time.',
       gradient: 'from-blue-500 to-cyan-500',
     },
     {
+      icon: Brain,
+      title: 'AI-Powered Intelligence',
+      description: 'AI analyzes your processes, suggests improvements, and automates decision-making.',
+      gradient: 'from-yellow-500 to-orange-500',
+    },
+    {
       icon: Network,
-      title: 'Intelligent Routing',
-      description: 'AI analyzes content and routes tasks to the right team members automatically.',
+      title: 'Replace Documentation Tools',
+      description: 'Stop maintaining Jira, Notion, and Confluence. Your process IS your documentation.',
       gradient: 'from-green-500 to-emerald-500',
     },
     {
       icon: Cpu,
-      title: 'ML-Powered Insights',
-      description: 'Machine learning models predict bottlenecks and recommend improvements.',
+      title: 'Process Analytics',
+      description: 'Understand bottlenecks, measure performance, and optimize continuously.',
       gradient: 'from-red-500 to-rose-500',
     },
     {
       icon: Shield,
-      title: 'AI Security',
-      description: 'Advanced AI monitors for anomalies and protects your workflows 24/7.',
+      title: 'Audit & Compliance',
+      description: 'Full audit trail of every process execution. Perfect for compliance and reporting.',
       gradient: 'from-indigo-500 to-purple-500',
     },
   ];
 
   const stats = [
-    { value: '10M+', label: 'Workflows Executed', icon: Workflow },
-    { value: '99.9%', label: 'AI Accuracy', icon: Brain },
-    { value: '5x', label: 'Faster Processing', icon: Zap },
-    { value: '24/7', label: 'AI Monitoring', icon: Shield },
+    { value: '100%', label: 'Process Visibility', icon: Workflow },
+    { value: 'Real-time', label: 'Status Tracking', icon: TrendingUp },
+    { value: '10x', label: 'Faster Execution', icon: Zap },
+    { value: 'Zero', label: 'Lost Context', icon: Shield },
   ];
 
   const useCases = [
     {
-      title: 'AI Document Processing',
-      description: 'Extract, classify, and route documents with 99% accuracy using GPT-4 and custom ML models.',
-      icon: '📄',
+      title: 'Employee Onboarding',
+      description: 'From offer letter to first day. Track every step, automate approvals, never miss a task. Replace scattered docs with one executable process.',
+      icon: '👥',
     },
     {
-      title: 'Smart Customer Support',
-      description: 'AI analyzes tickets, suggests responses, and routes to the right team automatically.',
+      title: 'Sales Operations',
+      description: 'Lead to close in one view. No more hunting through Salesforce notes. See where every deal stands, what\'s blocking, who needs to act.',
+      icon: '💰',
+    },
+    {
+      title: 'Support Escalations',
+      description: 'Customer issues don\'t get lost. Automatic routing, SLA tracking, escalation paths. Everyone knows their role, nothing falls through cracks.',
       icon: '🎫',
     },
     {
-      title: 'Intelligent Approvals',
-      description: 'ML models review requests, flag risks, and auto-approve based on learned patterns.',
-      icon: '✅',
-    },
-    {
-      title: 'Predictive Analytics',
-      description: 'AI forecasts trends, identifies bottlenecks, and optimizes resource allocation.',
-      icon: '📊',
+      title: 'Procurement & Approvals',
+      description: 'Purchase requests to invoice payment. Multi-level approvals, budget checks, compliance gates. Full visibility into company spend.',
+      icon: '📋',
     },
   ];
 
@@ -141,16 +141,16 @@ export function LandingPage() {
             </motion.div>
 
             <h1 className="text-6xl md:text-7xl font-bold mb-6 leading-tight">
-              Automate Everything
+              Stop Documenting.
               <br />
               <span className="bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                With AI Intelligence
+                Start Executing.
               </span>
             </h1>
 
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
-              Build powerful workflows with AI that thinks, learns, and adapts. 
-              From document processing to customer support, let AI handle the complexity.
+              Transform your business processes from static documentation into living, executable workflows. 
+              Know exactly what's happening in your business, in real-time.
             </p>
 
             <div className="flex items-center justify-center gap-4">
@@ -172,17 +172,17 @@ export function LandingPage() {
               </Button>
             </div>
 
-            {/* Floating AI Badges */}
+            {/* Floating Process Badges */}
             <div className="flex items-center justify-center gap-6 mt-12">
-              {['GPT-4', 'Claude', 'Gemini', 'Custom ML'].map((ai, index) => (
+              {['Replace Jira', 'Replace Notion', 'Replace Confluence', 'Live Tracking'].map((tool, index) => (
                 <motion.div
-                  key={ai}
+                  key={tool}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.8 + index * 0.1 }}
                   className="px-4 py-2 bg-card border border-border rounded-lg shadow-lg"
                 >
-                  <span className="text-sm font-medium">{ai}</span>
+                  <span className="text-sm font-medium">{tool}</span>
                 </motion.div>
               ))}
             </div>
@@ -212,6 +212,101 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* Problem Section - Documentation vs Execution */}
+      <section className="py-20 px-6 bg-muted/30">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-5xl font-bold mb-6">
+              Documentation vs. Execution
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              The traditional approach doesn't work anymore
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Old Way */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-destructive/10 border-2 border-destructive/30 rounded-2xl p-8"
+            >
+              <div className="text-destructive text-4xl mb-4">❌</div>
+              <h3 className="text-2xl font-bold mb-4 text-destructive">The Documentation Problem</h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>Processes documented in Jira, Notion, Confluence</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>Outdated the moment you write them</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>No visibility into what's actually happening</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>Things fall through the cracks</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>Manual tracking in spreadsheets</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-destructive mt-1">•</span>
+                  <span>Lost context across tools</span>
+                </li>
+              </ul>
+            </motion.div>
+
+            {/* New Way */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-primary/10 border-2 border-primary rounded-2xl p-8"
+            >
+              <div className="text-primary text-4xl mb-4">✅</div>
+              <h3 className="text-2xl font-bold mb-4 text-primary">The Swift Flow Way</h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Processes are executable workflows</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Always up-to-date, self-documenting</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1">•</span>
+                  <span>100% visibility in real-time</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1">•</span>
+                  <span>AI ensures nothing gets missed</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Automatic tracking and analytics</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-primary mt-1">•</span>
+                  <span>Single source of truth for everything</span>
+                </li>
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="py-20 px-6 bg-gradient-to-b from-transparent to-primary/5">
         <div className="max-w-7xl mx-auto">
@@ -222,10 +317,11 @@ export function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-5xl font-bold mb-4">
-              AI-Powered Features
+              The Problem with Documentation
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Cutting-edge AI capabilities that transform how you work
+              Your processes live in Jira tickets, Notion pages, and Confluence wikis. 
+              By the time you read them, they're already outdated. <strong>Make them executable instead.</strong>
             </p>
           </motion.div>
 
@@ -261,10 +357,10 @@ export function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-5xl font-bold mb-4">
-              Real-World AI Applications
+              Real Processes, Real Results
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              See how AI transforms business processes
+              See how teams are replacing documentation with execution
             </p>
           </motion.div>
 
@@ -305,10 +401,10 @@ export function LandingPage() {
             <div className="relative z-10">
               <Sparkles className="h-16 w-16 mx-auto mb-6" />
               <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                Ready to Supercharge Your Workflows?
+                Ready to Make Your Processes Executable?
               </h2>
               <p className="text-xl mb-8 opacity-90">
-                Join thousands of teams using AI to automate their business
+                Stop documenting. Start executing. See what's really happening in your business.
               </p>
               <div className="flex items-center justify-center gap-4">
                 <Button
@@ -356,7 +452,7 @@ export function LandingPage() {
             <span className="font-semibold text-foreground">Swift Flow AI</span>
           </div>
           <p>© 2024 Swift Flow AI. All rights reserved.</p>
-          <p className="mt-2">Powered by GPT-4, Claude, and Custom ML Models</p>
+          <p className="mt-2">Turn your processes into executable workflows. Stop documenting, start executing.</p>
         </div>
       </footer>
     </div>
