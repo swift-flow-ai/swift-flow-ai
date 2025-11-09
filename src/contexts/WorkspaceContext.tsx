@@ -45,10 +45,20 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       // Auto-select first workspace or last active
       if (data.length > 0) {
         const lastWorkspaceId = localStorage.getItem('lastWorkspaceId');
-        const workspace = lastWorkspaceId 
-          ? data.find(w => w.id === lastWorkspaceId) || data[0]
-          : data[0];
-        setCurrentWorkspace(workspace);
+        const workspaceId = lastWorkspaceId && data.find(w => w.id === lastWorkspaceId)
+          ? lastWorkspaceId
+          : data[0].id;
+        
+        // Fetch full workspace details including members for RBAC
+        try {
+          const fullWorkspace = await workspaceService.getWorkspace(workspaceId);
+          setCurrentWorkspace(fullWorkspace);
+        } catch (err) {
+          console.error('Failed to load full workspace details:', err);
+          // Fallback to workspace from list
+          const workspace = data.find(w => w.id === workspaceId) || data[0];
+          setCurrentWorkspace(workspace);
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load workspaces');
@@ -67,10 +77,19 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   };
 
   const selectWorkspace = async (workspaceId: string) => {
-    const workspace = workspaces.find(w => w.id === workspaceId);
-    if (workspace) {
+    try {
+      // Fetch full workspace details including members for RBAC
+      const workspace = await workspaceService.getWorkspace(workspaceId);
       setCurrentWorkspace(workspace);
       localStorage.setItem('lastWorkspaceId', workspaceId);
+    } catch (err) {
+      console.error('Failed to load workspace:', err);
+      // Fallback to workspace from list (without members)
+      const workspace = workspaces.find(w => w.id === workspaceId);
+      if (workspace) {
+        setCurrentWorkspace(workspace);
+        localStorage.setItem('lastWorkspaceId', workspaceId);
+      }
     }
   };
 

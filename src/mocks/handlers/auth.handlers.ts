@@ -1,35 +1,18 @@
 import { http, HttpResponse, delay } from 'msw';
 import { config } from '../../config';
 import type { User, LoginCredentials, SignupData } from '../../types';
+import { mockTeamMembers } from '../data/team';
 
-// Mock user database (in-memory storage)
-const users: User[] = [
-  {
-    id: '1',
-    email: 'demo@swiftflow.ai',
-    name: 'Demo User',
-    role: 'admin',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Demo',
-    createdAt: new Date('2024-01-01').toISOString(),
-    updatedAt: new Date('2024-01-01').toISOString(),
-  },
-  {
-    id: '2',
-    email: 'admin@swiftflow.ai',
-    name: 'Admin User',
-    role: 'admin',
-    createdAt: new Date('2024-01-01').toISOString(),
-    updatedAt: new Date('2024-01-01').toISOString(),
-  },
-  {
-    id: '3',
-    email: 'user@swiftflow.ai',
-    name: 'Test User',
-    role: 'user',
-    createdAt: new Date('2024-01-15').toISOString(),
-    updatedAt: new Date('2024-01-15').toISOString(),
-  },
-];
+// Mock user database - use team members as users
+const users: User[] = mockTeamMembers.map(member => ({
+  id: member.id,
+  email: member.email,
+  name: member.name,
+  role: member.role as 'admin' | 'user', // Map RBAC roles to User type
+  avatar: member.avatar,
+  createdAt: member.joinedAt,
+  updatedAt: member.lastActiveAt,
+}));
 
 // Mock sessions (token to user mapping)
 const sessions = new Map<string, User>();

@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../hooks/useWorkspace';
-import { usePermissions } from '../../hooks/usePermissions';
 import { workflowService } from '../../services/workflow.service';
 import { Workflow } from '../../types/workspace';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
@@ -10,12 +9,11 @@ import { Badge } from '../../components/common/Badge';
 import { Avatar } from '../../components/common/Avatar';
 import { EmptyState } from '../../components/common/EmptyState';
 import { PermissionGate } from '../../components/common/PermissionGate';
-import { Zap, Plus, Search, Play, Pause, Archive, Lock } from 'lucide-react';
+import { Zap, Plus, Search, Play, Pause, Archive } from 'lucide-react';
 
 export function WorkflowsList() {
   const navigate = useNavigate();
   const { currentWorkspace } = useWorkspace();
-  const { can } = usePermissions();
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');

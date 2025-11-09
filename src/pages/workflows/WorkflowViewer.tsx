@@ -37,7 +37,6 @@ import { ApprovalNode } from '../../components/workflow/nodes/ApprovalNode';
 import { workflowService } from '../../services/workflow.service';
 import { executionService } from '../../services/execution.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
-import { usePermissions } from '../../hooks/usePermissions';
 import { PermissionGate } from '../../components/common/PermissionGate';
 import { Workflow, WorkflowExecution } from '../../types';
 

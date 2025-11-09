@@ -4,7 +4,7 @@ export interface Workspace {
   name: string;
   slug: string;
   logo?: string;
-  role: 'admin' | 'editor' | 'approver' | 'viewer';
+  role: 'owner' | 'admin' | 'member' | 'viewer' | 'guest';
   memberCount: number;
   activeWorkflows: number;
   pendingApprovals: number;
@@ -476,7 +476,7 @@ export interface TeamMember {
   name: string;
   email: string;
   avatar?: string;
-  role: 'admin' | 'editor' | 'approver' | 'viewer';
+  role: 'owner' | 'admin' | 'member' | 'viewer' | 'guest';
   status: 'active' | 'invited' | 'inactive';
   stats: {
     workflowsCreated: number;
