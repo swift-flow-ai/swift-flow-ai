@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "mock": "VITE_ENABLE_MSW=true vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"

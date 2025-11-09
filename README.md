@@ -119,6 +119,7 @@ Comprehensive analytics for each workflow:
 
 ```bash
 npm run dev      # Start dev server (port 5173)
+npm run mock     # Start dev server with MSW enabled (mock APIs)
 npm run build    # Build for production
 npm run preview  # Preview production build
 npm run lint     # Check code quality
@@ -142,13 +143,22 @@ VITE_ENABLE_MSW=true
 Toggle between mock and real backend:
 
 ```bash
-# Use mock APIs (no backend needed)
-VITE_ENABLE_MSW=true
+# Option 1: Use npm script (always mock)
+npm run mock
+
+# Option 2: Set environment variable
+VITE_ENABLE_MSW=true npm run dev
+
+# Option 3: Use .env file
+# In .env: VITE_ENABLE_MSW=true
+npm run dev
 
 # Use real backend
 VITE_ENABLE_MSW=false
 VITE_API_BASE_URL=https://api.swiftflow.ai
 ```
+
+**Recommended for development:** `npm run mock` - Guaranteed mock mode, no backend needed!
 
 ---
 
