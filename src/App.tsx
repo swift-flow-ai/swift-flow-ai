@@ -30,6 +30,7 @@ import { AddIntegration } from './pages/integrations/AddIntegration';
 import { IntegrationConfig } from './pages/integrations/IntegrationConfig';
 import { AuditLogs } from './pages/audit/AuditLogs';
 import { AuditLogDetail } from './pages/audit/AuditLogDetail';
+import { ProfilePage } from './pages/profile/ProfilePage';
 import { LandingPage } from './pages/LandingPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import './index.css';
@@ -106,6 +107,7 @@ function App() {
                 <Route path="team" element={<TeamPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="workspace-settings" element={<WorkspaceSettings />} />
+                <Route path="profile" element={<ProfilePage />} />
               </Route>
 
               {/* Fallback */}

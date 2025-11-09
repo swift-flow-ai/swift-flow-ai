@@ -237,11 +237,11 @@ export function AppLayout() {
                 </div>
                 
                 <Link
-                  to="/app/workspace-settings"
+                  to="/app/profile"
                   className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted transition-colors text-foreground"
                 >
                   <User className="h-4 w-4" />
-                  <span className="text-sm">Workspace Settings</span>
+                  <span className="text-sm">Profile</span>
                 </Link>
 
                 <button
