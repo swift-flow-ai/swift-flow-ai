@@ -400,6 +400,370 @@ export const mockWorkflows: Workflow[] = [
     createdAt: '2024-08-05T13:15:00Z',
     updatedAt: '2024-12-22T10:30:00Z',
   },
+  {
+    id: 'wf_recruitment',
+    name: 'Interview Coordination',
+    description: 'Automate interview scheduling with pool-based interviewer assignment. Coordinate calendars, send meeting invites, and track interview progress in real-time.',
+    status: 'active',
+    category: 'hr',
+    version: 2,
+    createdBy: {
+      id: 'usr_sarah',
+      name: 'Sarah Lee',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    },
+    stats: {
+      totalRuns: 89,
+      successRate: 96.6,
+      avgDuration: '2.3 hours',
+      lastRun: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+    },
+    definition: {
+      nodes: [
+        {
+          id: '1',
+          type: 'trigger',
+          position: { x: 250, y: 50 },
+          data: { 
+            label: 'Manual Start',
+            description: 'HR Recruiter initiates interview coordination',
+            triggerType: 'manual',
+            config: { 
+              allowedUsers: ['hr-recruiters@company.com'],
+              requireApproval: false 
+            }
+          },
+        },
+        {
+          id: '2',
+          type: 'form',
+          position: { x: 250, y: 180 },
+          data: { 
+            label: 'Candidate Details Form',
+            description: 'HR fills candidate information',
+            app: 'form-builder',
+            config: {
+              fields: [
+                { name: 'candidateName', type: 'text', label: 'Candidate Name', required: true },
+                { name: 'candidateEmail', type: 'email', label: 'Email', required: true },
+                { name: 'candidatePhone', type: 'phone', label: 'Phone', required: true },
+                { name: 'position', type: 'select', label: 'Position', options: ['Software Engineer', 'Product Manager', 'Designer', 'Data Scientist'], required: true },
+                { name: 'interviewType', type: 'select', label: 'Interview Type', options: ['Technical', 'Behavioral', 'System Design', 'Cultural Fit'], required: true },
+                { name: 'resumeUrl', type: 'file', label: 'Resume', accept: '.pdf,.doc,.docx' }
+              ],
+              submitLabel: 'Start Interview Coordination'
+            }
+          },
+        },
+        {
+          id: '3',
+          type: 'action',
+          position: { x: 250, y: 330 },
+          data: { 
+            label: 'Send Availability Link to Candidate',
+            description: 'Email candidate with self-scheduling link',
+            app: 'email',
+            config: {
+              template: 'candidate-availability-request',
+              subject: 'Interview Invitation - Please Select Your Availability',
+              includeLink: true,
+              linkType: 'availability-form',
+              linkExpiry: '7 days'
+            }
+          },
+        },
+        {
+          id: '4',
+          type: 'human_task',
+          position: { x: 250, y: 480 },
+          data: { 
+            label: 'Wait for Candidate Availability',
+            description: 'Candidate selects preferred time slots via link',
+            app: 'form-response',
+            config: {
+              formType: 'availability-selector',
+              timeout: '7 days',
+              reminderAfter: '3 days',
+              allowedSlots: 'next_14_days',
+              minSlots: 3
+            }
+          },
+        },
+        {
+          id: '5',
+          type: 'action',
+          position: { x: 250, y: 630 },
+          data: { 
+            label: 'Fetch Interviewer Pool Availability',
+            description: 'Get available interviewers with matching time slots',
+            app: 'pool-query',
+            config: {
+              poolName: 'HR Recruiters',
+              filterBy: 'availability',
+              matchWith: 'candidateSlots',
+              includeSkills: true,
+              includeCapacity: true
+            }
+          },
+        },
+        {
+          id: '6',
+          type: 'action',
+          position: { x: 250, y: 780 },
+          data: { 
+            label: 'Select Best Match Interviewer',
+            description: 'AI-powered interviewer selection based on availability, skills, and load',
+            app: 'pool-assignment',
+            config: {
+              poolName: 'HR Recruiters',
+              strategy: 'smart-match',
+              criteria: ['availability', 'expertise', 'current-load', 'past-ratings'],
+              fallbackPool: 'HR Ops',
+              maxLoadPerInterviewer: 5
+            }
+          },
+        },
+        {
+          id: '7',
+          type: 'action',
+          position: { x: 250, y: 930 },
+          data: { 
+            label: 'Send Interview Request to Interviewer',
+            description: 'Request interviewer to accept/reject the interview',
+            app: 'email',
+            config: {
+              template: 'interviewer-request',
+              subject: 'Interview Request - {{candidateName}} for {{position}}',
+              attachments: ['candidate-resume.pdf', 'candidate-profile.pdf'],
+              includeActions: ['Accept', 'Reject', 'Suggest Alternative Time']
+            }
+          },
+        },
+        {
+          id: '8',
+          type: 'human_task',
+          position: { x: 250, y: 1080 },
+          data: { 
+            label: 'Wait for Interviewer Response',
+            description: 'Interviewer accepts or rejects the request',
+            app: 'approval',
+            config: {
+              timeout: '24 hours',
+              reminderAfter: '12 hours',
+              allowDelegation: false,
+              actions: ['accept', 'reject', 'suggest_time']
+            }
+          },
+        },
+        {
+          id: '9',
+          type: 'condition',
+          position: { x: 250, y: 1230 },
+          data: { 
+            label: 'Interviewer Accepted?',
+            description: 'Check if interviewer accepted the request',
+            condition: 'response.action === "accept"'
+          },
+        },
+        {
+          id: '10',
+          type: 'action',
+          position: { x: 100, y: 1380 },
+          data: { 
+            label: 'Select Next Interviewer',
+            description: 'Auto-pick another interviewer from pool',
+            app: 'pool-assignment',
+            config: {
+              poolName: 'HR Recruiters',
+              strategy: 'next-available',
+              excludeInterviewers: ['{{previousInterviewerId}}'],
+              maxRetries: 3
+            }
+          },
+        },
+        {
+          id: '11',
+          type: 'action',
+          position: { x: 400, y: 1380 },
+          data: { 
+            label: 'AI - Generate Interview Agenda',
+            description: 'Create personalized interview plan and questions',
+            app: 'openai',
+            config: {
+              model: 'gpt-4',
+              prompt: 'Generate detailed interview agenda for {{position}} - {{interviewType}} round. Include: 1) Introduction (5 min), 2) Technical/Behavioral questions (40 min), 3) Candidate Q&A (10 min), 4) Next steps (5 min)',
+              temperature: 0.7,
+              includeQuestions: true
+            }
+          },
+        },
+        {
+          id: '12',
+          type: 'action',
+          position: { x: 400, y: 1530 },
+          data: { 
+            label: 'Create Calendar Event',
+            description: 'Schedule interview with Google Meet link',
+            app: 'google-calendar',
+            config: {
+              createMeetLink: true,
+              sendNotifications: true,
+              attendees: ['interviewer', 'candidate'],
+              duration: '60 minutes',
+              addBuffer: '15 minutes before'
+            }
+          },
+        },
+        {
+          id: '13',
+          type: 'action',
+          position: { x: 400, y: 1680 },
+          data: { 
+            label: 'Send Confirmations',
+            description: 'Email both candidate and interviewer with details',
+            app: 'email-batch',
+            config: {
+              templates: [
+                {
+                  to: 'candidate',
+                  template: 'interview-confirmation-candidate',
+                  attachments: ['interview-prep-guide.pdf', 'company-overview.pdf']
+                },
+                {
+                  to: 'interviewer',
+                  template: 'interview-confirmation-interviewer',
+                  attachments: ['candidate-resume.pdf', 'interview-agenda.pdf', 'evaluation-form.pdf']
+                }
+              ]
+            }
+          },
+        },
+        {
+          id: '14',
+          type: 'action',
+          position: { x: 400, y: 1830 },
+          data: { 
+            label: 'Schedule Reminders',
+            description: 'Set up automated reminders',
+            app: 'scheduler',
+            config: {
+              reminders: [
+                { delay: 'event_time - 24h', channels: ['email'], message: 'Interview tomorrow reminder' },
+                { delay: 'event_time - 1h', channels: ['email', 'slack'], message: 'Interview starting in 1 hour' },
+                { delay: 'event_time - 5m', channels: ['slack'], message: 'Interview starting in 5 minutes' }
+              ]
+            }
+          },
+        },
+        {
+          id: '15',
+          type: 'action',
+          position: { x: 400, y: 1980 },
+          data: { 
+            label: 'Send Feedback Form at Interview Start',
+            description: 'Auto-send evaluation form when meeting starts',
+            app: 'form-trigger',
+            config: {
+              triggerAt: 'event_start_time',
+              formType: 'interview-feedback',
+              sendTo: 'interviewer',
+              fields: [
+                { name: 'technicalSkills', type: 'rating', label: 'Technical Skills (1-5)', required: true },
+                { name: 'communication', type: 'rating', label: 'Communication (1-5)', required: true },
+                { name: 'problemSolving', type: 'rating', label: 'Problem Solving (1-5)', required: true },
+                { name: 'culturalFit', type: 'rating', label: 'Cultural Fit (1-5)', required: true },
+                { name: 'overallRecommendation', type: 'select', label: 'Recommendation', options: ['Strong Hire', 'Hire', 'Maybe', 'No Hire'], required: true },
+                { name: 'detailedFeedback', type: 'textarea', label: 'Detailed Feedback', required: true },
+                { name: 'strengths', type: 'textarea', label: 'Key Strengths' },
+                { name: 'concerns', type: 'textarea', label: 'Areas of Concern' }
+              ],
+              submitDeadline: 'event_end_time + 2h'
+            }
+          },
+        },
+        {
+          id: '16',
+          type: 'human_task',
+          position: { x: 400, y: 2150 },
+          data: { 
+            label: 'Wait for Feedback Submission',
+            description: 'Interviewer completes evaluation form',
+            app: 'form-response',
+            config: {
+              formType: 'interview-feedback',
+              timeout: '2 hours',
+              reminderAfter: '1 hour',
+              escalateAfter: '3 hours'
+            }
+          },
+        },
+        {
+          id: '17',
+          type: 'action',
+          position: { x: 400, y: 2300 },
+          data: { 
+            label: 'Update ATS with Feedback',
+            description: 'Log interview and feedback in Greenhouse',
+            app: 'greenhouse',
+            config: {
+              action: 'complete-interview',
+              includeScorecard: true,
+              updateCandidateStatus: true,
+              syncFeedback: true
+            }
+          },
+        },
+        {
+          id: '18',
+          type: 'action',
+          position: { x: 400, y: 2450 },
+          data: { 
+            label: 'Notify HR Team',
+            description: 'Send interview completion notification',
+            app: 'slack',
+            config: {
+              channel: '#hr-interviews',
+              message: 'Interview completed: {{candidateName}} with {{interviewerName}}. Recommendation: {{overallRecommendation}}',
+              includeLink: 'View Full Feedback'
+            }
+          },
+        },
+        {
+          id: '19',
+          type: 'action',
+          position: { x: 400, y: 2600 },
+          data: { 
+            label: 'Complete',
+            description: 'Interview coordination and feedback collection completed',
+            app: 'complete'
+          },
+        },
+      ] as Node[],
+      edges: [
+        { id: 'e1-2', source: '1', target: '2' },
+        { id: 'e2-3', source: '2', target: '3' },
+        { id: 'e3-4', source: '3', target: '4' },
+        { id: 'e4-5', source: '4', target: '5' },
+        { id: 'e5-6', source: '5', target: '6' },
+        { id: 'e6-7', source: '6', target: '7' },
+        { id: 'e7-8', source: '7', target: '8' },
+        { id: 'e8-9', source: '8', target: '9' },
+        { id: 'e9-10', source: '9', target: '10', label: 'Rejected' },
+        { id: 'e9-11', source: '9', target: '11', label: 'Accepted' },
+        { id: 'e10-7', source: '10', target: '7', label: 'Retry' },
+        { id: 'e11-12', source: '11', target: '12' },
+        { id: 'e12-13', source: '12', target: '13' },
+        { id: 'e13-14', source: '13', target: '14' },
+        { id: 'e14-15', source: '14', target: '15' },
+        { id: 'e15-16', source: '15', target: '16' },
+        { id: 'e16-17', source: '16', target: '17' },
+        { id: 'e17-18', source: '17', target: '18' },
+        { id: 'e18-19', source: '18', target: '19' },
+      ] as Edge[],
+    },
+    createdAt: '2024-09-20T11:00:00Z',
+    updatedAt: '2025-01-08T16:45:00Z',
+  },
 ];
 
 export function getWorkflowsByWorkspace(): Workflow[] {
