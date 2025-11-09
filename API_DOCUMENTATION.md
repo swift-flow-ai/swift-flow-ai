@@ -19,13 +19,15 @@ Authorization: Bearer <access_token>
 1. [Authentication](#authentication)
 2. [Workspaces](#workspaces)
 3. [Workflows](#workflows)
-4. [AI Agents](#ai-agents)
-5. [Approvals](#approvals)
-6. [Integrations](#integrations)
-7. [Analytics](#analytics)
-8. [Team Management](#team-management)
-9. [Notifications](#notifications)
-10. [Executions](#executions)
+4. [Workflow Templates](#workflow-templates)
+5. [AI Agents](#ai-agents)
+6. [Approvals](#approvals)
+7. [Integrations](#integrations)
+8. [Analytics](#analytics)
+9. [Team Management](#team-management)
+10. [Notifications](#notifications)
+11. [Executions](#executions)
+12. [Audit Logs](#audit-logs)
 
 ---
 
@@ -562,6 +564,295 @@ Delete workflow (soft delete, can be archived).
 
 ---
 
+## 📋 Workflow Templates
+
+### GET /workspaces/:workspaceId/templates
+
+Get workflow templates available in workspace (includes marketplace templates).
+
+**Query Parameters:**
+
+- `category`: `hr|sales|support|operations|finance|marketing|custom`
+- `search`: search term
+- `featured`: boolean
+- `createdBy`: `userId` (for custom templates)
+- `page`, `limit`
+
+**Response:** `200 OK`
+
+```json
+{
+  "templates": [
+    {
+      "id": "tmpl_abc123",
+      "name": "Employee Onboarding",
+      "description": "Complete employee onboarding workflow with AI-powered plan generation",
+      "category": "hr",
+      "thumbnail": "https://cdn.swiftflow.ai/templates/onboarding.png",
+      "featured": true,
+      "rating": 4.8,
+      "usageCount": 1250,
+      "estimatedTime": "8-10 days",
+      "complexity": "intermediate",
+      "tags": ["hr", "onboarding", "ai", "approval"],
+      "variables": [
+        {
+          "key": "department",
+          "label": "Department",
+          "type": "select",
+          "required": true,
+          "options": ["Engineering", "Sales", "Marketing"]
+        },
+        {
+          "key": "managerEmail",
+          "label": "Manager Email",
+          "type": "email",
+          "required": true
+        }
+      ],
+      "createdBy": {
+        "id": "system",
+        "name": "Swift Flow AI",
+        "type": "official"
+      },
+      "createdAt": "2024-06-01T10:00:00Z",
+      "updatedAt": "2025-01-10T14:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 45,
+    "totalPages": 3
+  }
+}
+```
+
+### GET /workspaces/:workspaceId/templates/:templateId
+
+Get template details with full workflow definition.
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "tmpl_abc123",
+  "name": "Employee Onboarding",
+  "description": "Complete employee onboarding workflow",
+  "category": "hr",
+  "thumbnail": "https://cdn.swiftflow.ai/templates/onboarding.png",
+  "featured": true,
+  "rating": 4.8,
+  "usageCount": 1250,
+  "estimatedTime": "8-10 days",
+  "complexity": "intermediate",
+  "tags": ["hr", "onboarding", "ai", "approval"],
+  "definition": {
+    "nodes": [
+      {
+        "id": "node_1",
+        "type": "trigger",
+        "subtype": "webhook",
+        "position": { "x": 100, "y": 100 },
+        "config": {
+          "name": "New Hire Data",
+          "path": "/webhooks/new-hire"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_1",
+        "source": "node_1",
+        "target": "node_2"
+      }
+    ]
+  },
+  "variables": [
+    {
+      "key": "department",
+      "label": "Department",
+      "type": "select",
+      "required": true,
+      "options": ["Engineering", "Sales", "Marketing"],
+      "defaultValue": "Engineering"
+    }
+  ],
+  "requiredIntegrations": [
+    {
+      "id": "int_slack",
+      "name": "Slack",
+      "required": true
+    },
+    {
+      "id": "int_gsuite",
+      "name": "Google Workspace",
+      "required": false
+    }
+  ],
+  "instructions": "This template automates the complete employee onboarding process...",
+  "createdBy": {
+    "id": "system",
+    "name": "Swift Flow AI",
+    "type": "official"
+  },
+  "reviews": [
+    {
+      "id": "rev_1",
+      "user": {
+        "id": "usr_xyz",
+        "name": "John Smith",
+        "avatar": "https://..."
+      },
+      "rating": 5,
+      "comment": "Saved us hours of manual work!",
+      "createdAt": "2025-01-10T10:00:00Z"
+    }
+  ],
+  "createdAt": "2024-06-01T10:00:00Z",
+  "updatedAt": "2025-01-10T14:00:00Z"
+}
+```
+
+### POST /workspaces/:workspaceId/templates/:templateId/use
+
+Create a workflow from template.
+
+**Request:**
+
+```json
+{
+  "name": "Engineering Onboarding",
+  "variables": {
+    "department": "Engineering",
+    "managerEmail": "manager@company.com"
+  },
+  "customizations": {
+    "description": "Custom description for this workflow"
+  }
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "workflow": {
+    "id": "wf_new123",
+    "name": "Engineering Onboarding",
+    "description": "Custom description for this workflow",
+    "status": "draft",
+    "templateId": "tmpl_abc123",
+    "definition": {
+      "nodes": [...],
+      "edges": [...]
+    },
+    "createdAt": "2025-01-15T15:00:00Z"
+  }
+}
+```
+
+### POST /workspaces/:workspaceId/templates
+
+Create custom template from existing workflow.
+
+**Request:**
+
+```json
+{
+  "workflowId": "wf_abc123",
+  "name": "Custom Onboarding Template",
+  "description": "Our customized onboarding process",
+  "category": "hr",
+  "tags": ["onboarding", "custom"],
+  "visibility": "workspace",
+  "variables": [
+    {
+      "key": "department",
+      "label": "Department",
+      "type": "select",
+      "required": true,
+      "options": ["Engineering", "Sales"]
+    }
+  ]
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "template": {
+    "id": "tmpl_custom123",
+    "name": "Custom Onboarding Template",
+    "description": "Our customized onboarding process",
+    "category": "hr",
+    "visibility": "workspace",
+    "createdBy": {
+      "id": "usr_abc",
+      "name": "John Smith",
+      "type": "user"
+    },
+    "createdAt": "2025-01-15T15:00:00Z"
+  }
+}
+```
+
+### PATCH /workspaces/:workspaceId/templates/:templateId
+
+Update custom template (only for templates created by user/workspace).
+
+**Request:**
+
+```json
+{
+  "name": "Updated Template Name",
+  "description": "Updated description",
+  "tags": ["updated", "tags"]
+}
+```
+
+**Response:** `200 OK` (returns updated template)
+
+### DELETE /workspaces/:workspaceId/templates/:templateId
+
+Delete custom template.
+
+**Response:** `204 No Content`
+
+### POST /workspaces/:workspaceId/templates/:templateId/review
+
+Add review/rating to template.
+
+**Request:**
+
+```json
+{
+  "rating": 5,
+  "comment": "Excellent template, saved us hours!"
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "review": {
+    "id": "rev_123",
+    "templateId": "tmpl_abc123",
+    "rating": 5,
+    "comment": "Excellent template, saved us hours!",
+    "user": {
+      "id": "usr_abc",
+      "name": "John Smith"
+    },
+    "createdAt": "2025-01-15T15:00:00Z"
+  }
+}
+```
+
+---
+
 ## 🤖 AI Agents
 
 ### GET /workspaces/:workspaceId/agents
@@ -876,37 +1167,129 @@ Get installed integrations in workspace.
   "integrations": [
     {
       "id": "inst_abc",
-      "integrationId": "int_slack",
-      "name": "Slack",
+      "name": "Slack - Engineering",
+      "appId": "int_slack",
+      "appName": "Slack",
+      "workspaceId": "ws_xyz",
       "status": "connected",
+      "authType": "oauth2",
       "config": {
         "workspace": "acme-corp.slack.com",
-        "defaultChannel": "#general"
+        "defaultChannel": "#engineering",
+        "clientId": "slack_client_id",
+        "scopes": ["chat:write", "channels:read"]
+      },
+      "credentials": {
+        "accessToken": "xoxb-...",
+        "refreshToken": "xoxr-...",
+        "expiresAt": "2025-01-16T15:00:00Z"
+      },
+      "metadata": {
+        "connectedBy": "usr_abc",
+        "connectedAt": "2024-08-01T10:00:00Z",
+        "lastTestedAt": "2025-01-15T14:00:00Z",
+        "lastTestStatus": "success"
+      },
+      "settings": {
+        "enabled": true,
+        "autoRefresh": true,
+        "notifications": true
       },
       "usage": {
         "callsThisMonth": 1250,
         "lastUsed": "2025-01-15T14:30:00Z"
+      }
+    },
+    {
+      "id": "inst_def",
+      "name": "Slack - Sales Team",
+      "appId": "int_slack",
+      "appName": "Slack",
+      "workspaceId": "ws_xyz",
+      "status": "connected",
+      "authType": "oauth2",
+      "config": {
+        "workspace": "acme-sales.slack.com",
+        "defaultChannel": "#sales"
       },
-      "installedAt": "2024-08-01T10:00:00Z",
-      "installedBy": {
-        "id": "usr_abc",
-        "name": "John Smith"
+      "metadata": {
+        "connectedBy": "usr_xyz",
+        "connectedAt": "2024-09-15T10:00:00Z"
+      },
+      "settings": {
+        "enabled": true,
+        "autoRefresh": true,
+        "notifications": false
       }
     }
   ]
 }
 ```
 
-### POST /workspaces/:workspaceId/integrations/:integrationId/install
+### GET /workspaces/:workspaceId/integrations/:integrationId
 
-Install integration in workspace.
+Get specific integration details.
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "inst_abc",
+  "name": "Slack - Engineering",
+  "appId": "int_slack",
+  "appName": "Slack",
+  "workspaceId": "ws_xyz",
+  "status": "connected",
+  "authType": "oauth2",
+  "config": {
+    "workspace": "acme-corp.slack.com",
+    "defaultChannel": "#engineering",
+    "clientId": "slack_client_id",
+    "scopes": ["chat:write", "channels:read"],
+    "redirectUri": "https://app.swiftflow.ai/integrations/callback"
+  },
+  "credentials": {
+    "accessToken": "xoxb-...",
+    "refreshToken": "xoxr-...",
+    "expiresAt": "2025-01-16T15:00:00Z"
+  },
+  "metadata": {
+    "connectedBy": "usr_abc",
+    "connectedAt": "2024-08-01T10:00:00Z",
+    "lastTestedAt": "2025-01-15T14:00:00Z",
+    "lastTestStatus": "success",
+    "lastError": null
+  },
+  "settings": {
+    "enabled": true,
+    "autoRefresh": true,
+    "notifications": true
+  },
+  "usage": {
+    "callsThisMonth": 1250,
+    "callsTotal": 15000,
+    "lastUsed": "2025-01-15T14:30:00Z",
+    "avgResponseTime": "250ms"
+  }
+}
+```
+
+### POST /workspaces/:workspaceId/integrations
+
+Create new integration (supports multiple instances of same app).
 
 **Request:**
 
 ```json
 {
+  "appId": "int_slack",
+  "name": "Slack - Engineering",
+  "authType": "oauth2",
   "config": {
-    "workspace": "acme-corp.slack.com"
+    "workspace": "acme-corp.slack.com",
+    "defaultChannel": "#engineering",
+    "clientId": "slack_client_id",
+    "scopes": ["chat:write", "channels:read"]
   },
   "authCode": "oauth_authorization_code"
 }
@@ -914,9 +1297,87 @@ Install integration in workspace.
 
 **Response:** `201 Created`
 
-### DELETE /workspaces/:workspaceId/integrations/:installationId
+```json
+{
+  "integration": {
+    "id": "inst_new123",
+    "name": "Slack - Engineering",
+    "appId": "int_slack",
+    "appName": "Slack",
+    "status": "connected",
+    "connectedAt": "2025-01-15T15:00:00Z"
+  }
+}
+```
 
-Uninstall integration.
+### PATCH /workspaces/:workspaceId/integrations/:integrationId
+
+Update integration settings or configuration.
+
+**Request:**
+
+```json
+{
+  "name": "Slack - Engineering Team",
+  "config": {
+    "defaultChannel": "#eng-general"
+  },
+  "settings": {
+    "enabled": true,
+    "notifications": false
+  }
+}
+```
+
+**Response:** `200 OK` (returns updated integration)
+
+### POST /workspaces/:workspaceId/integrations/:integrationId/test
+
+Test integration connection.
+
+**Response:** `200 OK`
+
+```json
+{
+  "status": "success",
+  "message": "Connection successful",
+  "testedAt": "2025-01-15T15:00:00Z",
+  "details": {
+    "workspace": "acme-corp.slack.com",
+    "channels": 42,
+    "users": 127
+  }
+}
+```
+
+**Error Response:** `400 Bad Request`
+
+```json
+{
+  "status": "failed",
+  "message": "Authentication failed",
+  "error": "Invalid access token",
+  "testedAt": "2025-01-15T15:00:00Z"
+}
+```
+
+### POST /workspaces/:workspaceId/integrations/:integrationId/refresh
+
+Refresh OAuth tokens.
+
+**Response:** `200 OK`
+
+```json
+{
+  "status": "success",
+  "message": "Tokens refreshed successfully",
+  "expiresAt": "2025-01-16T15:00:00Z"
+}
+```
+
+### DELETE /workspaces/:workspaceId/integrations/:integrationId
+
+Disconnect/delete integration.
 
 **Response:** `204 No Content`
 
@@ -1333,6 +1794,333 @@ Retry failed execution.
 {
   "newExecutionId": "exec_new",
   "status": "queued"
+}
+```
+
+---
+
+## 📝 Audit Logs
+
+### GET /workspaces/:workspaceId/audit-logs
+
+Get audit logs for workspace.
+
+**Query Parameters:**
+
+- `action`: `workflow.created|workflow.updated|workflow.deleted|workflow.executed|integration.connected|integration.disconnected|member.invited|member.removed|approval.approved|approval.rejected|settings.updated`
+- `userId`: filter by user who performed action
+- `resourceType`: `workflow|integration|member|approval|settings`
+- `resourceId`: specific resource ID
+- `severity`: `info|warning|error|critical`
+- `startDate`, `endDate`: date range
+- `search`: search term
+- `page`, `limit`
+
+**Response:** `200 OK`
+
+```json
+{
+  "logs": [
+    {
+      "id": "log_abc123",
+      "action": "workflow.executed",
+      "resourceType": "workflow",
+      "resourceId": "wf_abc",
+      "resourceName": "Employee Onboarding",
+      "description": "Workflow executed successfully",
+      "severity": "info",
+      "user": {
+        "id": "usr_abc",
+        "name": "John Smith",
+        "email": "john@acme.com",
+        "avatar": "https://..."
+      },
+      "metadata": {
+        "executionId": "exec_xyz",
+        "duration": "8.5 days",
+        "status": "completed",
+        "triggeredBy": "webhook"
+      },
+      "ipAddress": "192.168.1.100",
+      "userAgent": "Mozilla/5.0...",
+      "timestamp": "2025-01-15T14:30:00Z"
+    },
+    {
+      "id": "log_def456",
+      "action": "integration.connected",
+      "resourceType": "integration",
+      "resourceId": "inst_slack",
+      "resourceName": "Slack - Engineering",
+      "description": "Integration connected successfully",
+      "severity": "info",
+      "user": {
+        "id": "usr_abc",
+        "name": "John Smith",
+        "email": "john@acme.com"
+      },
+      "metadata": {
+        "appId": "int_slack",
+        "appName": "Slack",
+        "authType": "oauth2"
+      },
+      "ipAddress": "192.168.1.100",
+      "timestamp": "2025-01-15T10:00:00Z"
+    },
+    {
+      "id": "log_ghi789",
+      "action": "approval.approved",
+      "resourceType": "approval",
+      "resourceId": "apr_123",
+      "resourceName": "Equipment Purchase Approval",
+      "description": "Approval request approved",
+      "severity": "info",
+      "user": {
+        "id": "usr_xyz",
+        "name": "Manager Name",
+        "email": "manager@acme.com"
+      },
+      "metadata": {
+        "workflowId": "wf_abc",
+        "executionId": "exec_xyz",
+        "decision": "approved",
+        "comment": "Approved - standard equipment"
+      },
+      "timestamp": "2025-01-15T12:30:00Z"
+    },
+    {
+      "id": "log_jkl012",
+      "action": "workflow.deleted",
+      "resourceType": "workflow",
+      "resourceId": "wf_old",
+      "resourceName": "Old Workflow",
+      "description": "Workflow deleted",
+      "severity": "warning",
+      "user": {
+        "id": "usr_abc",
+        "name": "John Smith",
+        "email": "john@acme.com"
+      },
+      "metadata": {
+        "reason": "No longer needed",
+        "hadActiveExecutions": false
+      },
+      "timestamp": "2025-01-14T16:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": 1247,
+    "totalPages": 25
+  },
+  "summary": {
+    "totalLogs": 1247,
+    "bySeverity": {
+      "info": 1100,
+      "warning": 120,
+      "error": 25,
+      "critical": 2
+    },
+    "byAction": {
+      "workflow.executed": 850,
+      "workflow.created": 45,
+      "workflow.updated": 120,
+      "integration.connected": 15,
+      "approval.approved": 180
+    }
+  }
+}
+```
+
+### GET /workspaces/:workspaceId/audit-logs/:logId
+
+Get detailed audit log entry.
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "log_abc123",
+  "action": "workflow.executed",
+  "resourceType": "workflow",
+  "resourceId": "wf_abc",
+  "resourceName": "Employee Onboarding",
+  "description": "Workflow executed successfully",
+  "severity": "info",
+  "user": {
+    "id": "usr_abc",
+    "name": "John Smith",
+    "email": "john@acme.com",
+    "avatar": "https://...",
+    "role": "admin"
+  },
+  "metadata": {
+    "executionId": "exec_xyz",
+    "duration": "8.5 days",
+    "status": "completed",
+    "triggeredBy": "webhook",
+    "input": {
+      "employee": {
+        "name": "Sarah Johnson"
+      }
+    },
+    "output": {
+      "success": true
+    }
+  },
+  "context": {
+    "ipAddress": "192.168.1.100",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)...",
+    "location": {
+      "country": "US",
+      "city": "San Francisco"
+    },
+    "device": "desktop"
+  },
+  "changes": [
+    {
+      "field": "status",
+      "oldValue": "running",
+      "newValue": "completed"
+    }
+  ],
+  "relatedLogs": [
+    {
+      "id": "log_related1",
+      "action": "workflow.started",
+      "timestamp": "2025-01-07T10:00:00Z"
+    }
+  ],
+  "timestamp": "2025-01-15T14:30:00Z"
+}
+```
+
+### POST /workspaces/:workspaceId/audit-logs/export
+
+Export audit logs.
+
+**Request:**
+
+```json
+{
+  "format": "csv",
+  "filters": {
+    "action": "workflow.executed",
+    "startDate": "2025-01-01T00:00:00Z",
+    "endDate": "2025-01-31T23:59:59Z"
+  },
+  "fields": ["timestamp", "action", "user", "resourceName", "severity"]
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "exportId": "exp_abc123",
+  "status": "processing",
+  "format": "csv",
+  "estimatedSize": "2.5 MB",
+  "estimatedTime": "30 seconds",
+  "downloadUrl": null,
+  "expiresAt": null,
+  "createdAt": "2025-01-15T15:00:00Z"
+}
+```
+
+### GET /workspaces/:workspaceId/audit-logs/exports/:exportId
+
+Check export status and get download link.
+
+**Response:** `200 OK`
+
+```json
+{
+  "exportId": "exp_abc123",
+  "status": "completed",
+  "format": "csv",
+  "size": "2.3 MB",
+  "recordCount": 1247,
+  "downloadUrl": "https://cdn.swiftflow.ai/exports/exp_abc123.csv",
+  "expiresAt": "2025-01-16T15:00:00Z",
+  "createdAt": "2025-01-15T15:00:00Z",
+  "completedAt": "2025-01-15T15:00:25Z"
+}
+```
+
+### GET /workspaces/:workspaceId/audit-logs/stats
+
+Get audit log statistics.
+
+**Query Parameters:**
+
+- `period`: `7d|30d|90d|1y|custom`
+- `startDate`, `endDate`: for custom period
+
+**Response:** `200 OK`
+
+```json
+{
+  "period": "30d",
+  "totalLogs": 1247,
+  "bySeverity": {
+    "info": 1100,
+    "warning": 120,
+    "error": 25,
+    "critical": 2
+  },
+  "byAction": {
+    "workflow.executed": 850,
+    "workflow.created": 45,
+    "workflow.updated": 120,
+    "workflow.deleted": 5,
+    "integration.connected": 15,
+    "integration.disconnected": 3,
+    "approval.approved": 180,
+    "approval.rejected": 12,
+    "member.invited": 8,
+    "member.removed": 2,
+    "settings.updated": 7
+  },
+  "byUser": [
+    {
+      "userId": "usr_abc",
+      "userName": "John Smith",
+      "actionCount": 450
+    },
+    {
+      "userId": "usr_xyz",
+      "userName": "Sarah Lee",
+      "actionCount": 320
+    }
+  ],
+  "topResources": [
+    {
+      "resourceType": "workflow",
+      "resourceId": "wf_abc",
+      "resourceName": "Employee Onboarding",
+      "actionCount": 127
+    }
+  ],
+  "timeline": [
+    {
+      "date": "2025-01-15",
+      "total": 42,
+      "info": 38,
+      "warning": 3,
+      "error": 1,
+      "critical": 0
+    }
+  ],
+  "anomalies": [
+    {
+      "type": "unusual_activity",
+      "description": "High number of failed executions detected",
+      "severity": "warning",
+      "count": 15,
+      "date": "2025-01-14"
+    }
+  ]
 }
 ```
 
