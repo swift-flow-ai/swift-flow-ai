@@ -13,8 +13,15 @@ import {
 } from 'lucide-react';
 import { marketplaceApps } from '../../pages/marketplace/MarketplacePage';
 
+interface NodeData {
+  label: string;
+  description: string;
+  app?: string;
+  triggerType?: string;
+}
+
 interface NodePaletteProps {
-  onAddNode: (type: string, data: any) => void;
+  onAddNode: (type: string, data: NodeData) => void;
 }
 
 export function NodePalette({ onAddNode }: NodePaletteProps) {
@@ -184,8 +191,8 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
                   onClick={() => onAddNode(node.type, {
                     label: node.label,
                     description: node.description,
-                    app: (node as any).app || undefined,
-                    triggerType: (node as any).triggerType,
+                    app: 'app' in node ? (node as { app: string }).app : undefined,
+                    triggerType: 'triggerType' in node ? (node as { triggerType: string }).triggerType : undefined,
                   })}
                   className={`w-full p-3 rounded-lg border-2 transition-all cursor-grab active:cursor-grabbing text-left ${getColorClasses(node.color)}`}
                 >
@@ -198,10 +205,10 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
                       <div className="text-xs text-muted-foreground mt-0.5">
                         {node.description}
                       </div>
-                      {(node as any).app && (
+                      {'app' in node && (
                         <div className="mt-1">
                           <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                            {(node as any).app}
+                            {(node as { app: string }).app}
                           </span>
                         </div>
                       )}

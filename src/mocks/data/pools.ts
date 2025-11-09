@@ -1,4 +1,4 @@
-import { TeamPool, TeamMember } from '../../types/workspace';
+import { TeamPool } from '../../types/workspace';
 
 export const mockTeamPools: TeamPool[] = [
   {

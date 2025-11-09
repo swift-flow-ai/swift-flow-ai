@@ -2,7 +2,15 @@ import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import { Play } from 'lucide-react';
 
-export const ActionNode = memo(({ data }: any) => {
+interface ActionNodeProps {
+  data: {
+    label: string;
+    description?: string;
+    app?: string;
+  };
+}
+
+export const ActionNode = memo(({ data }: ActionNodeProps) => {
   return (
     <div className="px-4 py-3 shadow-lg rounded-lg bg-card border-2 border-purple-500 min-w-[200px]">
       <Handle

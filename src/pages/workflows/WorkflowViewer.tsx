@@ -28,6 +28,7 @@ import {
   ChevronUp,
   Loader2,
   AlertCircle,
+  BarChart3,
 } from 'lucide-react';
 import { TriggerNode } from '../../components/workflow/nodes/TriggerNode';
 import { ActionNode } from '../../components/workflow/nodes/ActionNode';
@@ -249,6 +250,10 @@ export function WorkflowViewer() {
             <Button variant="secondary" onClick={handleEdit}>
               <Edit className="h-4 w-4 mr-2" />
               Edit
+            </Button>
+            <Button variant="secondary" onClick={() => navigate(`/app/workflows/${workflowId}/analytics`)}>
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Analytics
             </Button>
             
             {/* More Actions Menu */}

@@ -77,8 +77,8 @@ export interface Workflow {
 }
 
 export interface WorkflowDefinition {
-  nodes: any[]; // ReactFlow Node[]
-  edges: any[]; // ReactFlow Edge[]
+  nodes: Record<string, unknown>[]; // ReactFlow Node[]
+  edges: Record<string, unknown>[]; // ReactFlow Edge[]
 }
 
 export interface WorkflowNode {
@@ -231,13 +231,13 @@ export interface Integration {
     redirectUri?: string;
     apiKey?: string;
     apiUrl?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   credentials?: {
     accessToken?: string;
     refreshToken?: string;
     expiresAt?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   metadata: {
     connectedBy: string;
@@ -250,7 +250,7 @@ export interface Integration {
     enabled: boolean;
     autoRefresh: boolean;
     notifications: boolean;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -284,7 +284,7 @@ export interface ConnectionTestResult {
   details?: {
     latency?: number;
     apiVersion?: string;
-    accountInfo?: any;
+    accountInfo?: Record<string, unknown>;
   };
   error?: string;
 }
@@ -340,14 +340,14 @@ export interface AuditLog {
   };
   changes?: {
     field: string;
-    oldValue: any;
-    newValue: any;
+    oldValue: unknown;
+    newValue: unknown;
   }[];
   metadata?: {
     userAgent?: string;
     location?: string;
     duration?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   severity: 'info' | 'warning' | 'critical';
   status: 'success' | 'failed';

@@ -2,7 +2,14 @@ import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import { CheckSquare } from 'lucide-react';
 
-export const ApprovalNode = memo(({ data }: any) => {
+interface ApprovalNodeProps {
+  data: {
+    label: string;
+    description?: string;
+  };
+}
+
+export const ApprovalNode = memo(({ data }: ApprovalNodeProps) => {
   return (
     <div className="px-4 py-3 shadow-lg rounded-lg bg-card border-2 border-green-500 min-w-[200px]">
       <Handle

@@ -2,7 +2,14 @@ import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import { Zap } from 'lucide-react';
 
-export const TriggerNode = memo(({ data }: any) => {
+interface TriggerNodeProps {
+  data: {
+    label: string;
+    description?: string;
+  };
+}
+
+export const TriggerNode = memo(({ data }: TriggerNodeProps) => {
   return (
     <div className="px-4 py-3 shadow-lg rounded-lg bg-card border-2 border-blue-500 min-w-[200px]">
       <div className="flex items-center gap-2 mb-2">

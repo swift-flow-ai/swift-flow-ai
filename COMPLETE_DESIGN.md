@@ -1,25 +1,80 @@
-# FlowAI - Complete Design Documentation
+# Swift Flow AI - Complete Documentation
 
-## 🎯 Platform Overview
-
-**FlowAI** is an AI-native business process automation SaaS platform where users can:
-
-- **Visually design workflows** using drag-and-drop interface
-- **Add AI agents as workflow nodes** (GPT-4, Claude, custom agents)
-- **Integrate apps & MCP servers** from marketplace as nodes
-- **Set human approval/review points** as nodes in the workflow
-- **Collaborate in workspaces** (like Slack - users can be in multiple workspaces)
-- **Monitor, analyze, and optimize** workflows with AI-powered insights
+> **Stop Documenting. Start Executing.**  
+> Transform your business processes from static documentation into executable, trackable workflows.
 
 ---
 
-## 📐 Core Concept: Visual Workflow Designer
+## 📋 Table of Contents
 
-Users build workflows by **dragging nodes onto a canvas and connecting them**:
+1. [Quick Start](#quick-start)
+2. [Platform Overview](#platform-overview)
+3. [Core Features](#core-features)
+4. [Architecture](#architecture)
+5. [API Documentation](#api-documentation-reference)
+6. [Workflow Triggers](#workflow-triggers)
+7. [Development Guide](#development-guide)
+8. [MSW Integration](#msw-integration)
+9. [Contributing](#contributing)
+
+---
+
+## 🚀 Quick Start
+
+### Start Development
+```bash
+cd /Users/nabajit.das/Documents/dev/experiments/dots
+npm run dev
+```
+**Open:** http://localhost:5173
+
+### Demo Credentials
+- **Email:** `demo@flowai.com` or `admin@acme.com`
+- **Password:** `demo123` or any password (MSW enabled)
+
+### Key Commands
+```bash
+npm run dev      # Start dev server (port 5173)
+npm run build    # Build for production
+npm run preview  # Preview production build
+npm run lint     # Check code quality
+```
+
+---
+
+## 🎯 Platform Overview
+
+**Swift Flow AI** is an AI-native business process automation platform that helps organizations:
+
+- **Execute processes** instead of just documenting them
+- **Track workflow progress** in real-time
+- **Optimize operations** with AI-powered insights
+- **Replace tools like** Jira, Notion, Confluence for process management
+
+### Core Value Proposition
+
+Traditional tools (Jira, Notion, etc.) help you **document** processes.  
+Swift Flow AI helps you **execute and track** them.
+
+**Example Use Cases:**
+- HR Interview Coordination
+- Employee Onboarding
+- Invoice Processing
+- Customer Support Workflows
+- Approval Chains
+- Data Processing Pipelines
+
+---
+
+## 🎨 Core Features
+
+### 1. Visual Workflow Builder
+
+Drag-and-drop interface for creating executable workflows:
 
 ```
-Available Node Types (Drag & Drop):
-├── 🔵 Triggers (Webhook, Schedule, Manual, Email)
+Available Node Types:
+├── 🔵 Triggers (Manual, Webhook, Schedule, Workflow Complete, Email)
 ├── 🤖 AI Agents (GPT-4, Claude, Custom AI)
 ├── ✅ Human Tasks (Approval, Review, Form Fill)
 ├── 🔀 Logic (If/Then, Loop, Switch, Wait)
@@ -30,1378 +85,678 @@ Available Node Types (Drag & Drop):
 └── 📤 Actions (Send Email, Save DB, Notify, API Call)
 ```
 
-**Example: User creating an approval workflow:**
+### 2. Multi-Workspace Support
 
-1. Drag "Webhook Trigger" node → Canvas
-2. Drag "AI Agent (GPT-4)" node → Connect to trigger
-3. Drag "Human Approval" node → Connect to AI agent
-4. Drag "If/Then" node → Connect to approval (branch on approve/reject)
-5. Drag "Slack Notification" → Connect to approved branch
-6. Configure each node, test, deploy!
+- Users can belong to multiple workspaces
+- Each workspace has its own workflows, team, and settings
+- Easy workspace switching from top bar
 
----
+### 3. Team Pools
 
-## 🎨 Visual Workflow Builder Interface
+Assign tasks to pools of people instead of individuals:
+- **HR Recruiters Pool** - Round-robin assignment
+- **Approval Pool** - Load-balanced approvals
+- **Support Tier 1** - Smart routing based on expertise
+- **Custom Pools** - Define your own
 
-### **Main Builder Screen:**
+### 4. Workflow Analytics
 
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│ FlowAI - Employee Onboarding Workflow              [Save] [Test] [Deploy]  │
-├────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│ LEFT PANEL: NODE LIBRARY (Drag from here)                                  │
-│ ┌─────────────────────────────┐                                           │
-│ │ 🔍 Search nodes...          │                                           │
-│ ├─────────────────────────────┤                                           │
-│ │ 🔵 TRIGGERS                 │                                           │
-│ │   📡 Webhook                │  ← Drag these                            │
-│ │   ⏰ Schedule (Cron)        │     onto                                 │
-│ │   👆 Manual Trigger         │     canvas →                             │
-│ │   📧 Email Received         │                                           │
-│ │                             │                                           │
-│ │ 🤖 AI AGENTS                │                                           │
-│ │   🧠 GPT-4 Agent            │                                           │
-│ │   🤖 Claude Agent           │                                           │
-│ │   ⚡ Custom AI Agent        │                                           │
-│ │   📄 Document Analyzer      │                                           │
-│ │   🔍 Data Extractor         │                                           │
-│ │                             │                                           │
-│ │ ✅ HUMAN TASKS              │                                           │
-│ │   👤 Approval Request       │                                           │
-│ │   📝 Form Fill              │                                           │
-│ │   👁️ Review Task            │                                           │
-│ │   ✍️ Manual Task            │                                           │
-│ │                             │                                           │
-│ │ 🔀 LOGIC & CONTROL          │                                           │
-│ │   🔀 If/Then/Else           │                                           │
-│ │   🔄 Loop                   │                                           │
-│ │   ⏸️ Wait/Delay             │                                           │
-│ │   🔗 Parallel Split         │                                           │
-│ │   🔗 Merge Paths            │                                           │
-│ │                             │                                           │
-│ │ 🧠 SMART ROUTING            │                                           │
-│ │   🎯 AI Router              │                                           │
-│ │   👥 Load Balancer          │                                           │
-│ │   📊 Priority Router        │                                           │
-│ │   🎰 Round Robin            │                                           │
-│ │   ⚖️ Weighted Distribution  │                                           │
-│ │                             │                                           │
-│ │ 🔌 INTEGRATIONS             │                                           │
-│ │   💬 Slack                  │                                           │
-│ │   📧 Gmail/Outlook          │                                           │
-│ │   📊 Google Sheets          │                                           │
-│ │   💳 Stripe                 │                                           │
-│ │   🗄️ PostgreSQL            │                                           │
-│ │   📦 Airtable               │                                           │
-│ │   [Browse 500+ more...]     │                                           │
-│ │                             │                                           │
-│ │ 🔧 MCP SERVERS              │                                           │
-│ │   🛠️ Custom Tool Server     │                                           │
-│ │   🔍 Web Search MCP         │                                           │
-│ │   📁 File System MCP        │                                           │
-│ │   [Browse marketplace...]   │                                           │
-│ │                             │                                           │
-│ │ 📊 DATA OPERATIONS          │                                           │
-│ │   🔄 Transform Data         │                                           │
-│ │   🎯 Filter                 │                                           │
-│ │   📊 Aggregate              │                                           │
-│ │                             │                                           │
-│ │ 📤 ACTIONS                  │                                           │
-│ │   📧 Send Email             │                                           │
-│ │   💬 Post to Slack          │                                           │
-│ │   💾 Save to Database       │                                           │
-│ │   🔔 Send Notification      │                                           │
-│ │   🌐 API Request            │                                           │
-│ └─────────────────────────────┘                                           │
-│                                                                             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│ CENTER: CANVAS (Drop nodes here & connect them)                            │
-│                                                                             │
-│   [User builds workflow by dragging nodes from left panel]                 │
-│                                                                             │
-│   Example workflow built by user:                                          │
-│                                                                             │
-│   ┌──────────────────────────┐                                            │
-│   │ 📡 Webhook Trigger       │                                            │
-│   │ When: New hire data      │                                            │
-│   └────────┬─────────────────┘                                            │
-│            │                                                               │
-│            ↓                                                               │
-│   ┌──────────────────────────┐                                            │
-│   │ 🧠 AI Agent: GPT-4       │                                            │
-│   │ Task: Generate plan      │                                            │
-│   │ Confidence: 95%          │                                            │
-│   └────────┬─────────────────┘                                            │
-│            │                                                               │
-│            ↓                                                               │
-│   ┌──────────────────────────┐                                            │
-│   │ 👤 Human Approval        │                                            │
-│   │ Approver: Manager        │                                            │
-│   │ SLA: 4 hours             │                                            │
-│   └────────┬─────────────────┘                                            │
-│            │                                                               │
-│            ↓                                                               │
-│   ┌──────────────────────────┐                                            │
-│   │ 🔀 If: Approved?         │                                            │
-│   └────┬──────────────┬──────┘                                            │
-│        │ Yes          │ No                                                │
-│        ↓              ↓                                                    │
-│   ┌────────────┐  ┌────────────┐                                          │
-│   │ 🔗 Parallel│  │ 📧 Notify  │                                          │
-│   │ Split      │  │ HR Team    │                                          │
-│   └──┬──┬──┬───┘  └────────────┘                                          │
-│      │  │  │                                                               │
-│      ↓  ↓  ↓                                                               │
-│   [IT][HR][Security]  ← More nodes added by user                          │
-│      │  │  │                                                               │
-│      └──┴──┘                                                               │
-│         ↓                                                                  │
-│   ┌──────────────────────────┐                                            │
-│   │ 🔗 Wait All Complete     │                                            │
-│   └────────┬─────────────────┘                                            │
-│            ↓                                                               │
-│   ┌──────────────────────────┐                                            │
-│   │ 💬 Send Slack Message    │                                            │
-│   │ Channel: #announcements  │                                            │
-│   └──────────────────────────┘                                            │
-│                                                                             │
-│   [Users can zoom in/out, pan canvas, select/delete nodes]                │
-│                                                                             │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│ RIGHT PANEL: NODE CONFIGURATION (When node selected)                       │
-│                                                                             │
-│ ┌─────────────────────────────────────────────┐                          │
-│ │ 🧠 AI Agent: GPT-4 - Plan Generator         │                          │
-│ ├─────────────────────────────────────────────┤                          │
-│ │                                             │                          │
-│ │ Display Name:                               │                          │
-│ │ ┌─────────────────────────────────────────┐ │                          │
-│ │ │ Onboarding Plan Generator               │ │                          │
-│ │ └─────────────────────────────────────────┘ │                          │
-│ │                                             │                          │
-│ │ AI Model:                                   │                          │
-│ │ ◉ GPT-4o  ○ Claude 3.5  ○ Gemini Pro       │                          │
-│ │                                             │                          │
-│ │ System Prompt:                              │                          │
-│ │ ┌─────────────────────────────────────────┐ │                          │
-│ │ │ You are an expert HR onboarding        │ │                          │
-│ │ │ coordinator. Based on the employee     │ │                          │
-│ │ │ details provided, generate a           │ │                          │
-│ │ │ comprehensive onboarding plan.         │ │                          │
-│ │ │                                         │ │                          │
-│ │ │ Input variables:                        │ │                          │
-│ │ │ - {{employee.name}}                     │ │                          │
-│ │ │ - {{employee.role}}                     │ │                          │
-│ │ │ - {{employee.department}}               │ │                          │
-│ │ │ - {{employee.startDate}}                │ │                          │
-│ │ │                                         │ │                          │
-│ │ │ Generate JSON with:                     │ │                          │
-│ │ │ - Timeline (pre-boarding to day 90)    │ │                          │
-│ │ │ - Tasks for each stakeholder           │ │                          │
-│ │ │ - Suggested equipment                   │ │                          │
-│ │ │ - Training modules                      │ │                          │
-│ │ └─────────────────────────────────────────┘ │                          │
-│ │                                             │                          │
-│ │ Input Data (from previous node):            │                          │
-│ │ ☑ webhook.body.employee                    │                          │
-│ │                                             │                          │
-│ │ Output Variable Name:                       │                          │
-│ │ ┌─────────────────────────────────────────┐ │                          │
-│ │ │ onboardingPlan                          │ │                          │
-│ │ └─────────────────────────────────────────┘ │                          │
-│ │                                             │                          │
-│ │ Advanced Settings:                          │                          │
-│ │ Temperature: [====|-----] 0.7               │                          │
-│ │ Max Tokens: 2000                            │                          │
-│ │ Confidence Threshold: 80%                   │                          │
-│ │                                             │                          │
-│ │ Error Handling:                             │                          │
-│ │ On Failure: [Retry 3x then notify admin ▼] │                          │
-│ │                                             │                          │
-│ │ [Test Node] [Save] [Delete Node]            │                          │
-│ └─────────────────────────────────────────────┘                          │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+Comprehensive analytics for each workflow:
+- **Execution metrics** - Success rate, duration, cost
+- **Bottleneck detection** - AI-powered recommendations
+- **Node performance** - Identify slow steps
+- **Peak times** - Optimize scheduling
+- **Trend analysis** - Track improvements over time
 
-Bottom Toolbar:
-├── 🔍 Zoom [50% 75% 100% 150% 200%]
-├── ↩️ Undo  ↪️ Redo
-├── 💾 Auto-save: Last saved 30s ago
-├── 🤖 AI Assistant [Chat to get help]
-└── 📊 View Analytics
-```
+### 5. Real-time Execution Tracking
 
----
+- Live progress updates
+- Detailed execution logs
+- Error tracking and retry
+- Cancel/pause running workflows
 
-## 🧠 Smart Routing - AI-Powered Intelligent Routing
+### 6. Marketplace & Integrations
 
-### **What is Smart Routing?**
-
-Smart Routing nodes intelligently route workflow execution to different paths based on AI analysis, load balancing, priority, or custom rules. Instead of simple if/then logic, Smart Routing uses ML to make intelligent decisions.
-
-### **Smart Routing Node Types:**
-
-#### **1. 🎯 AI Router**
-
-Routes based on AI analysis of content/context.
-
-**Use Cases:**
-
-- Route support tickets to right department based on content
-- Assign tasks to best-suited team member based on skills
-- Route approvals to appropriate manager based on amount/type
-- Direct documents to right processor based on document type
-
-**Example Configuration:**
-
-```
-┌─────────────────────────────────────────────┐
-│ 🎯 AI Router Configuration                  │
-├─────────────────────────────────────────────┤
-│ Route Based On: [Content Analysis ▼]       │
-│                                             │
-│ AI Model: GPT-4 (for routing decisions)    │
-│                                             │
-│ Routing Logic:                              │
-│ ┌─────────────────────────────────────────┐ │
-│ │ Analyze the incoming support ticket    │ │
-│ │ and route to:                           │ │
-│ │                                         │ │
-│ │ - Technical Support: If technical issue│ │
-│ │ - Billing: If payment/invoice related  │ │
-│ │ - Sales: If upgrade/new feature request│ │
-│ │ - General: If unclear or multi-topic   │ │
-│ │                                         │ │
-│ │ Consider:                               │ │
-│ │ - Ticket urgency                        │ │
-│ │ - Customer tier (Free/Pro/Enterprise)  │ │
-│ │ - Historical routing for similar cases │ │
-│ └─────────────────────────────────────────┘ │
-│                                             │
-│ Output Paths (4):                           │
-│ ├─ Technical Support                        │
-│ ├─ Billing                                  │
-│ ├─ Sales                                    │
-│ └─ General                                  │
-│                                             │
-│ Confidence Threshold: 80%                   │
-│ If below threshold: Route to General        │
-│                                             │
-│ [Test Routing] [Save]                       │
-└─────────────────────────────────────────────┘
-
-Workflow Visualization:
-[Support Ticket Received]
-         │
-         ↓
-[🎯 AI Router: Analyze & Route]
-         │
-    ┌────┼────┬────────┐
-    │    │    │        │
-    ↓    ↓    ↓        ↓
-[Tech] [Billing] [Sales] [General]
-```
-
-#### **2. 👥 Load Balancer**
-
-Distributes work evenly across team members or systems.
-
-**Use Cases:**
-
-- Distribute approvals among available approvers
-- Balance work across AI agents to avoid rate limits
-- Assign tasks to least busy team member
-- Route requests to available API endpoints
-
-**Example Configuration:**
-
-```
-┌─────────────────────────────────────────────┐
-│ 👥 Load Balancer Configuration              │
-├─────────────────────────────────────────────┤
-│ Balance Across:                             │
-│ ☑ Team Members                              │
-│                                             │
-│ Team: Approval Managers                     │
-│ ├─ John Smith (Available)                   │
-│ ├─ Sarah Lee (Available)                    │
-│ ├─ Mike Brown (Busy - 5 pending)            │
-│ └─ Lisa Chen (On PTO)                       │
-│                                             │
-│ Strategy: [Least Busy ▼]                    │
-│   Options:                                  │
-│   • Least Busy (fewest pending tasks)       │
-│   • Round Robin (rotate evenly)             │
-│   • Weighted (by skill/experience)          │
-│   • Fastest Response (historical avg)       │
-│                                             │
-│ Consider:                                   │
-│ ☑ Current workload                          │
-│ ☑ Availability status                       │
-│ ☑ Historical performance                    │
-│ ☑ Skills match (if applicable)              │
-│                                             │
-│ Fallback: If no one available               │
-│ [Queue for next available ▼]                │
-│                                             │
-│ [Test Balance] [Save]                       │
-└─────────────────────────────────────────────┘
-
-Workflow Visualization:
-[Approval Request]
-         │
-         ↓
-[👥 Load Balancer: Find Best Approver]
-         │
-    ┌────┼────┬────────┐
-    │    │    │        │
-    ↓    ↓    ↓        ↓
-[John] [Sarah] [Mike] [Queue]
-(0)    (1)     (5)
-```
-
-#### **3. 📊 Priority Router**
-
-Routes based on priority/urgency with SLA tracking.
-
-**Use Cases:**
-
-- Escalate urgent requests to senior staff
-- Route high-value deals to experienced sales reps
-- Fast-track VIP customer requests
-- Prioritize critical system alerts
-
-**Example Configuration:**
-
-```
-┌─────────────────────────────────────────────┐
-│ 📊 Priority Router Configuration            │
-├─────────────────────────────────────────────┤
-│ Priority Determination:                     │
-│ ◉ AI-Based (analyze and assign priority)   │
-│ ○ Rule-Based (use explicit rules)           │
-│ ○ Input Field (priority in data)            │
-│                                             │
-│ AI Priority Analysis:                       │
-│ ┌─────────────────────────────────────────┐ │
-│ │ Analyze request and assign priority:   │ │
-│ │                                         │ │
-│ │ 🔴 Critical (P0):                       │ │
-│ │ - System down                           │ │
-│ │ - Security breach                       │ │
-│ │ - Revenue-blocking issue                │ │
-│ │ → Route to: On-call team (immediate)   │ │
-│ │                                         │ │
-│ │ 🟠 High (P1):                           │ │
-│ │ - Enterprise customer issue             │ │
-│ │ - Major feature broken                  │ │
-│ │ → Route to: Senior team (SLA: 1 hour)  │ │
-│ │                                         │ │
-│ │ 🟡 Medium (P2):                         │ │
-│ │ - Standard customer request             │ │
-│ │ - Non-critical bug                      │ │
-│ │ → Route to: Regular team (SLA: 4 hours)│ │
-│ │                                         │ │
-│ │ 🟢 Low (P3):                            │ │
-│ │ - Feature request                       │ │
-│ │ - General inquiry                       │ │
-│ │ → Route to: Junior team (SLA: 24 hours)│ │
-│ └─────────────────────────────────────────┘ │
-│                                             │
-│ SLA Tracking:                               │
-│ ☑ Enable SLA monitoring                    │
-│ ☑ Auto-escalate on SLA breach               │
-│ ☑ Notify manager if approaching deadline    │
-│                                             │
-│ Escalation Path:                            │
-│ Junior → Regular → Senior → Manager         │
-│                                             │
-│ [Test Priority] [Save]                      │
-└─────────────────────────────────────────────┘
-
-Workflow Visualization:
-[Incoming Request]
-         │
-         ↓
-[📊 Priority Router: Analyze & Prioritize]
-         │
-    ┌────┼────┬────────┬────────┐
-    │    │    │        │        │
-    ↓    ↓    ↓        ↓        ↓
-[P0:  [P1:   [P2:     [P3:     [Unknown]
- On-   Senior Regular Junior   Default
- Call] Team]  Team]   Team]    Path]
- ⏱️1h  ⏱️4h   ⏱️24h
-```
-
-#### **4. 🎰 Round Robin Router**
-
-Rotates assignments evenly across team/resources.
-
-**Use Cases:**
-
-- Fairly distribute incoming leads to sales team
-- Rotate code reviews among developers
-- Evenly assign support tickets
-- Distribute training opportunities
-
-**Example Configuration:**
-
-```
-┌─────────────────────────────────────────────┐
-│ 🎰 Round Robin Configuration                │
-├─────────────────────────────────────────────┤
-│ Rotate Among:                               │
-│ ☑ Sales Team                                │
-│   ├─ Alex Johnson                           │
-│   ├─ Maria Garcia                           │
-│   ├─ Tom Wilson                             │
-│   └─ Emma Davis                             │
-│                                             │
-│ Current Position: Maria Garcia (next)       │
-│                                             │
-│ Options:                                    │
-│ ☑ Skip if unavailable (on PTO/busy)        │
-│ ☑ Reset rotation: [Monthly ▼]              │
-│ ☐ Weight by capacity (handle more/less)    │
-│                                             │
-│ History (Last 10):                          │
-│ Alex → Maria → Tom → Emma → Alex → ...     │
-│                                             │
-│ [Reset Rotation] [Save]                     │
-└─────────────────────────────────────────────┘
-```
-
-#### **5. ⚖️ Weighted Distribution Router**
-
-Distributes based on custom weights/percentages.
-
-**Use Cases:**
-
-- A/B testing (70% route A, 30% route B)
-- Gradual rollout of new process
-- Skill-based distribution (experts get complex cases)
-- Region-based routing
-
-**Example Configuration:**
-
-```
-┌─────────────────────────────────────────────┐
-│ ⚖️ Weighted Distribution Configuration      │
-├─────────────────────────────────────────────┤
-│ Distribute By: [Custom Weights ▼]          │
-│                                             │
-│ Paths & Weights:                            │
-│ ┌─────────────────────────────────────────┐ │
-│ │ Path A: New Onboarding Process          │ │
-│ │ Weight: [========|--] 80%               │ │
-│ │ Description: Automated AI-first flow    │ │
-│ ├─────────────────────────────────────────┤ │
-│ │ Path B: Legacy Onboarding               │ │
-│ │ Weight: [==|--------] 20%               │ │
-│ │ Description: Manual HR-led process      │ │
-│ └─────────────────────────────────────────┘ │
-│                                             │
-│ Total: 100% ✓                               │
-│                                             │
-│ Use Case: [Gradual Migration ▼]            │
-│                                             │
-│ Options:                                    │
-│ ☑ Track conversion metrics per path        │
-│ ☑ Adjust weights based on performance      │
-│ ☐ Time-based weights (different per day)   │
-│                                             │
-│ Current Distribution (Last 100):            │
-│ Path A: 82 (82%)  ✓ Within target          │
-│ Path B: 18 (18%)  ✓ Within target          │
-│                                             │
-│ [Auto-optimize] [Save]                      │
-└─────────────────────────────────────────────┘
-
-Workflow Visualization:
-[New Employee Onboarding]
-         │
-         ↓
-[⚖️ Weighted Router: 80/20 Split]
-         │
-    ┌────┴────┐
-    │ 80%     │ 20%
-    ↓         ↓
-[New AI    [Legacy
- Process]   Process]
-```
-
----
-
-### **🎯 Smart Routing Use Cases**
-
-#### **Use Case 1: Intelligent Support Ticket Routing**
-
-```
-[Email: Support Ticket]
-         │
-         ↓
-[🧠 AI Agent: Extract Details]
-├── Subject, body, attachments
-├── Customer info, tier
-└── Sentiment analysis
-         │
-         ↓
-[🎯 AI Router: Determine Department]
-├── Analyzes content
-├── Checks customer history
-└── Considers urgency
-         │
-    ┌────┼────┬────────┬────────┐
-    │    │    │        │        │
-    ↓    ↓    ↓        ↓        ↓
-[Tech] [Billing] [Sales] [Product]
-    │
-    ↓
-[📊 Priority Router: Assign Urgency]
-    │
-  ┌─┴─┬──────┐
-  │   │      │
-  ↓   ↓      ↓
-[P0] [P1]  [P2]
-  │
-  ↓
-[👥 Load Balancer: Assign Agent]
-  │
-  └──> Least busy available agent
-```
-
-#### **Use Case 2: Approval Routing with Escalation**
-
-```
-[Purchase Request: $15,000]
-         │
-         ↓
-[📊 Priority Router: Determine Level]
-├── Amount-based routing:
-│   ├── < $1,000: Team Lead
-│   ├── $1K-$10K: Manager
-│   ├── $10K-$50K: Director
-│   └── > $50K: VP + CFO
-│
-├── This case: $15,000 → Director
-└── SLA: 4 hours
-         │
-         ↓
-[👥 Load Balancer: Select Director]
-├── Check availability
-├── Current workload
-└── Assign to: Sarah Lee
-         │
-         ↓
-[👤 Human Approval: Sarah Lee]
-         │
-    ┌────┴────┐
-    │ Approve │ Takes > 4 hours (SLA breach)
-    │         │
-    │         ↓
-    │    [🔔 Auto-Escalate]
-    │         │
-    │         ↓
-    │    [👤 Approval: VP Fallback]
-    ↓
-[✅ Approved] → Continue workflow
-```
-
-#### **Use Case 3: Lead Distribution**
-
-```
-[New Lead: Inbound Form]
-         │
-         ↓
-[🧠 AI Agent: Lead Scoring]
-├── Company size
-├── Industry
-├── Budget indication
-├── Urgency signals
-└── Score: 85/100 (High value)
-         │
-         ↓
-[🎯 AI Router: Territory & Expertise]
-├── Geographic: West Coast
-├── Industry: SaaS
-├── Deal size: Enterprise
-└── Route to: Enterprise Sales Team
-         │
-         ↓
-[⚖️ Weighted Distribution: By Performance]
-├── Sarah (Top performer): 40%
-├── John (High performer): 30%
-├── Lisa (Medium): 20%
-├── Mike (Training): 10%
-         │
-         └──> Assigned to: Sarah
-              │
-              ↓
-         [🔔 Notify Sarah]
-         [📧 Auto-send Introduction Email]
-         [📅 Schedule Follow-up Task]
-```
-
-#### **Use Case 4: Content Approval Workflow**
-
-```
-[Blog Post Submitted]
-         │
-         ↓
-[🧠 AI Agent: Content Analysis]
-├── Topic category
-├── Sensitivity check
-├── Compliance scan
-├── Quality score
-└── Target audience
-         │
-         ↓
-[🎯 AI Router: Approval Path]
-├── Standard content → Editor only
-├── Technical content → Editor + Tech Lead
-├── Marketing content → Editor + Marketing Manager
-├── Sensitive/Legal → Editor + Legal + Manager
-└── High-value/Strategic → All + VP
-         │
-         └──> This post: Marketing content
-              │
-              ↓
-         [🔗 Parallel Split]
-              │
-         ┌────┴────┐
-         │         │
-         ↓         ↓
-    [Editor]  [Marketing Mgr]
-         │         │
-         └────┬────┘
-              │
-              ↓
-         [🔗 Merge: All Approved?]
-              │
-         ┌────┴────┐
-         │ Yes     │ No
-         ↓         ↓
-    [Publish]  [Revisions Needed]
-```
-
----
-
-### **📊 Smart Routing Analytics**
-
-**Routing Performance Dashboard:**
-
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│ Smart Routing Analytics - Support Ticket Router                            │
-│ Last 30 Days                                                               │
-└────────────────────────────────────────────────────────────────────────────┘
-
-ROUTING ACCURACY:
-┌──────────────────────────────────────────────────────────────────────────┐
-│ AI Router Accuracy: 94.3%                                                │
-│ ├── Correctly routed (no reassignment): 1,087 / 1,153                   │
-│ ├── Reassigned after initial route: 66 (5.7%)                           │
-│ └── AI Confidence > 90% → 98.5% accuracy                                 │
-│                                                                           │
-│ Top Routing Paths:                                                        │
-│ 1. Technical Support: 524 tickets (45.4%)                                │
-│ 2. Billing: 312 tickets (27.0%)                                          │
-│ 3. Sales: 198 tickets (17.2%)                                            │
-│ 4. General: 119 tickets (10.3%)                                          │
-└──────────────────────────────────────────────────────────────────────────┘
-
-LOAD BALANCING EFFECTIVENESS:
-┌──────────────────────────────────────────────────────────────────────────┐
-│ Distribution Across Team Members:                                         │
-│                                                                           │
-│ Sarah Lee:     215 tickets [████████████████░░] 41% (Target: 40%)       │
-│ John Smith:    198 tickets [██████████████░░░░] 38% (Target: 40%)       │
-│ Mike Brown:     89 tickets [████████░░░░░░░░░░] 17% (Target: 20%)       │
-│ Lisa Chen:      21 tickets [███░░░░░░░░░░░░░░░]  4% (On PTO)            │
-│                                                                           │
-│ Balance Score: 92/100 (Excellent)                                        │
-│ Avg Response Time: 2.3 hours (Target: 4 hours) ✓                        │
-└──────────────────────────────────────────────────────────────────────────┘
-
-PRIORITY ROUTING IMPACT:
-┌──────────────────────────────────────────────────────────────────────────┐
-│ SLA Compliance by Priority:                                              │
-│                                                                           │
-│ 🔴 P0 (Critical):  28 tickets → 27 met SLA (96.4%) ⏱️ Avg: 15 mins     │
-│ 🟠 P1 (High):     156 tickets → 142 met SLA (91.0%) ⏱️ Avg: 45 mins    │
-│ 🟡 P2 (Medium):   687 tickets → 623 met SLA (90.7%) ⏱️ Avg: 3.2 hours  │
-│ 🟢 P3 (Low):      282 tickets → 271 met SLA (96.1%) ⏱️ Avg: 18 hours   │
-│                                                                           │
-│ Overall SLA Compliance: 91.8% ✓ (Target: 90%)                           │
-│                                                                           │
-│ Escalations: 23 (2.0%)                                                   │
-│ └── Avg time before escalation: 4.8 hours                               │
-└──────────────────────────────────────────────────────────────────────────┘
-
-AI RECOMMENDATIONS:
-┌──────────────────────────────────────────────────────────────────────────┐
-│ 💡 Routing Optimization Suggestions:                                     │
-│                                                                           │
-│ 1. ⚡ Improve Billing Router Accuracy (89% → 95%)                        │
-│    Current issue: Billing + Technical overlap                           │
-│    Suggestion: Add "contains payment keywords" pre-filter               │
-│    Impact: Reduce reassignments by ~15/month                            │
-│                                                                           │
-│ 2. 👥 Rebalance Load for Mike Brown                                     │
-│    Current: 17% (Target: 20%)                                           │
-│    Suggestion: Increase weight or reduce others                         │
-│    Impact: Better utilization of team capacity                          │
-│                                                                           │
-│ 3. 📊 Add Intermediate Priority P1.5                                     │
-│    Observation: Large gap between P1 (1h) and P2 (4h)                  │
-│    Suggestion: Create P1.5 with 2h SLA for borderline cases            │
-│    Impact: Better SLA alignment with urgency                            │
-└──────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📋 Real Example: Employee Onboarding Workflow
-
-### **How a User Would Design This Workflow:**
-
-#### **Step 1: Define Trigger**
-
-User drags **Webhook Trigger** node to canvas
-
-- Configure: Endpoint `/api/webhooks/new-hire`
-- Expected data: employee info (name, role, department, start date)
-
-#### **Step 2: Add AI Agent for Planning**
-
-User drags **AI Agent (GPT-4)** node
-
-- Configure prompt: "Generate onboarding plan based on employee data"
-- Input: `{{webhook.employee}}`
-- Output variable: `onboardingPlan`
-
-#### **Step 3: Manager Approval**
-
-User drags **Human Approval** node
-
-- Approver: Hiring Manager (from employee data)
-- Display: AI-generated plan
-- SLA: 4 hours
-- Actions: Approve/Reject/Request Changes
-
-#### **Step 4: Branch on Decision**
-
-User drags **If/Then** node
-
-- Condition: `approval.decision == "approved"`
-- Creates two paths: Yes/No
-
-#### **Step 5a: If Rejected → Notify HR**
-
-User drags **Send Email** node to "No" branch
-
-- To: HR Team
-- Subject: "Onboarding plan rejected"
-- Body: Include rejection reason
-
-#### **Step 5b: If Approved → Parallel Execution**
-
-User drags **Parallel Split** node to "Yes" branch
-
-- This creates 4 parallel branches
-
-#### **Step 6a: IT Branch (Parallel Track 1)**
-
-User builds IT workflow:
-
-```
-[Parallel Branch 1: IT Setup]
-│
-├─> Drag: AI Agent "IT Equipment Suggester"
-│   ├─ Prompt: "Suggest equipment based on role"
-│   ├─ Input: employee.role, employee.department
-│   └─ Output: equipmentList
-│
-├─> Drag: Human Approval "IT Manager Approval"
-│   ├─ Show: Equipment list + cost
-│   ├─ Approver: IT Manager
-│   └─ SLA: 4 hours
-│
-├─> Drag: Integration "Procurement System API"
-│   ├─ Action: Create purchase order
-│   ├─ Input: approved equipment list
-│   └─ Returns: order ID + tracking
-│
-├─> Drag: Wait node "Wait for Delivery"
-│   ├─ Trigger: Webhook from vendor
-│   └─ Timeout: 7 days
-│
-├─> Drag: AI Agent "Account Creator"
-│   ├─ Task: Create email, Slack, GitHub accounts
-│   ├─ Integration: Google Workspace API, Slack API, GitHub API
-│   └─ Output: credentials
-│
-├─> Drag: Human Task "IT Setup & Configuration"
-│   ├─ Assigned to: IT Team
-│   ├─ Task: Configure laptop, install software
-│   └─ Mark complete when done
-│
-└─> Drag: Integration "Shipping API"
-    ├─ Action: Create shipping label
-    └─ Send tracking to employee
-```
-
-#### **Step 6b: HR Branch (Parallel Track 2)**
-
-User builds HR workflow:
-
-```
-[Parallel Branch 2: HR Documentation]
-│
-├─> Drag: AI Agent "HR Document Generator"
-│   ├─ Prompt: "Generate employment documents"
-│   ├─ Input: employee data, position details
-│   └─ Output: documents (contract, tax forms, etc.)
-│
-├─> Drag: Human Review "HR Specialist Review"
-│   ├─ Reviewer: HR Team
-│   ├─ Show: Generated documents
-│   └─ Can edit before sending
-│
-├─> Drag: Integration "DocuSign"
-│   ├─ Action: Send for e-signature
-│   ├─ Signer: New employee
-│   └─ Webhook: On completion
-│
-├─> Drag: Wait "Wait for Signature"
-│   ├─ Timeout: 48 hours
-│   └─ If timeout: Send reminder
-│
-└─> Drag: Integration "Payroll System (Gusto)"
-    ├─ Action: Add employee to payroll
-    └─ Setup benefits enrollment
-```
-
-#### **Step 6c: Buddy Assignment Branch (Parallel Track 3)**
-
-User builds buddy workflow:
-
-```
-[Parallel Branch 3: Buddy Assignment]
-│
-├─> Drag: AI Agent "Buddy Matcher"
-│   ├─ Prompt: "Match new hire with best buddy"
-│   ├─ Input: New hire profile, team members, past success rates
-│   └─ Output: Top 3 recommendations with scores
-│
-├─> Drag: Human Decision "Manager Selects Buddy"
-│   ├─ Show: AI recommendations
-│   ├─ Decision maker: Hiring Manager
-│   └─ Output: selected buddy
-│
-├─> Drag: Human Task "Buddy Acceptance"
-│   ├─ Assigned to: Selected buddy
-│   ├─ Show: New hire info, time commitment
-│   ├─ Decision: Accept/Decline
-│   └─ If decline: Loop back to AI suggestions
-│
-├─> Drag: Integration "Google Calendar"
-│   ├─ Action: Schedule meetings (Day 1, Week 1, etc.)
-│   └─ Attendees: New hire + buddy
-│
-└─> Drag: AI Agent "Buddy Guide Generator"
-    ├─ Task: Create personalized guide for buddy
-    └─ Send via email
-```
-
-#### **Step 6d: Security Branch (Parallel Track 4)**
-
-User builds security workflow:
-
-```
-[Parallel Branch 4: Security & Compliance]
-│
-├─> Drag: AI Agent "Security Access Analyzer"
-│   ├─ Input: Role, department, data classification
-│   └─ Output: Required access levels + training
-│
-├─> Drag: Human Approval "Security Team Approval"
-│   ├─ Show: Access request + risk score
-│   └─ Approver: Security Team
-│
-├─> Drag: Integration "Security System API"
-│   ├─ Actions: Setup VPN, 2FA, SSH keys
-│   └─ Grant repository access
-│
-└─> Drag: Human Task "Complete Security Training"
-    ├─ Assigned to: New employee
-    ├─ Training modules assigned
-    └─ Deadline: Before Day 1
-```
-
-#### **Step 7: Merge Parallel Branches**
-
-User drags **Merge/Wait All Complete** node
-
-- Waits for all 4 branches to finish
-- Then proceeds to next step
-
-#### **Step 8: Day 1 Orchestration**
-
-User drags nodes for Day 1:
-
-```
-├─> Drag: Wait "Wait Until Start Date"
-│   └─ Trigger: employee.startDate at 9:00 AM
-│
-├─> Drag: AI Agent "Day 1 Coordinator"
-│   ├─ Task: Send welcome email with schedule
-│   └─ Auto-join Slack channels
-│
-├─> Drag: Integration "Calendar"
-│   ├─ Create Day 1 events
-│   └─ Send invites
-│
-└─> Drag: Slack Integration "Post Announcement"
-    ├─ Channel: #team-announcements
-    └─ Message: "Welcome {{employee.name}}!"
-```
-
-#### **Step 9: Ongoing Monitoring**
-
-User adds monitoring nodes:
-
-```
-├─> Drag: AI Agent "Progress Monitor"
-│   ├─ Runs daily for 90 days
-│   ├─ Tracks: Task completion, engagement
-│   └─ Alerts manager if issues detected
-│
-├─> Drag: AI Agent "Pulse Survey Bot"
-│   ├─ Schedule: Day 3, 7, 14, 30
-│   └─ Send survey + collect feedback
-│
-└─> Drag: AI Agent "Performance Analyzer"
-    ├─ Runs at Day 30, 60, 90
-    ├─ Generate performance report
-    └─> Human Review "Manager Check-in"
-```
-
-### **Complete Workflow Visualization (As Built by User):**
-
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│ Employee Onboarding Workflow - Built by User                               │
-└────────────────────────────────────────────────────────────────────────────┘
-
-[📡 Webhook: New Hire]
-         │
-         ↓
-[🧠 AI: Generate Plan] ──────→ Input: Employee data
-         │                      Output: Onboarding plan
-         ↓
-[👤 Approval: Manager] ────────→ Show AI plan + recommendations
-         │
-         ↓
-[🔀 If: Approved?]
-         │
-    ┌────┴────┐
-    │ Yes     │ No
-    ↓         ↓
-[🔗 Split]  [📧 Notify HR] ──→ [End]
-    │
- ┌──┼──┬──┬──┐
- │  │  │  │  │
- ↓  ↓  ↓  ↓  ↓
-[IT Branch]  [HR Branch]  [Buddy Branch]  [Security Branch]
- │            │             │               │
- │  [🧠 AI: Equipment]      [🧠 AI: Docs]  [🧠 AI: Match]  [🧠 AI: Access]
- │  [👤 IT Approval]        [👁️ HR Review] [👤 Manager]    [👤 Security]
- │  [🔌 Procurement]        [🔌 DocuSign]  [👤 Buddy]      [🔌 VPN/2FA]
- │  [⏸️ Wait Delivery]      [⏸️ Wait Sign] [📅 Calendar]   [👤 Training]
- │  [🧠 AI: Accounts]       [🔌 Payroll]   [📧 Guide]      │
- │  [👤 IT Config]          │              │               │
- │  [🔌 Shipping]           │              │               │
- │            │             │               │               │
- └────────────┴─────────────┴───────────────┴───────────────┘
-              │
-              ↓
-         [🔗 Merge: Wait All]
-              │
-              ↓
-         [⏸️ Wait: Start Date]
-              │
-              ↓
-         [🧠 AI: Day 1 Coordinator]
-              │
-              ↓
-         [📅 Create Calendar Events]
-              │
-              ↓
-         [💬 Slack: Welcome Message]
-              │
-              ↓
-         [🔄 Loop: Week 1-4]
-              │
-              ├──→ [🧠 AI: Progress Monitor] (Daily)
-              ├──→ [📋 AI: Pulse Surveys] (Day 3, 7, 14, 30)
-              └──→ [🧠 AI: Performance Report] (Day 30, 60, 90)
-                        │
-                        ↓
-                   [👤 Manager: Check-in Meeting]
-                        │
-                        ↓
-                   [🔀 On Track?]
-                        │
-                   ┌────┴────┐
-                   │ Yes     │ No
-                   ↓         ↓
-              [🎉 Complete]  [🧠 AI: Suggest Support] ──→ [Loop Back]
-```
-
----
-
-## 🏢 Multi-Workspace Architecture
-
-### **Users Can Be Part of Multiple Workspaces:**
-
-```
-user@example.com (Single Login)
-│
-├── Workspace A: Acme Corp (Admin)
-├── Workspace B: Client Project (Editor)
-├── Workspace C: Freelance (Admin)
-└── Workspace D: Startup (Approver)
-```
-
-### **After Login: Workspace Selector**
-
-```
-┌──────────────────────────────────────────────┐
-│ Select Workspace                             │
-├──────────────────────────────────────────────┤
-│                                              │
-│ 🏢 Acme Corp                    [Admin]     │
-│    Last active: 5 mins ago                   │
-│    3 pending approvals                       │
-│    ────────────────────────────              │
-│                                              │
-│ 🏢 Client Project               [Editor]    │
-│    Last active: 2 hours ago                  │
-│    1 workflow running                        │
-│    ────────────────────────────              │
-│                                              │
-│ 🏢 Freelance                    [Admin]     │
-│    Last active: Yesterday                    │
-│    All quiet                                 │
-│    ────────────────────────────              │
-│                                              │
-│ [+ Create New Workspace]                     │
-│ [+ Join Existing Workspace]                  │
-│                                              │
-└──────────────────────────────────────────────┘
-```
-
-### **Top Bar - Workspace Switcher (Always Visible):**
-
-```
-┌────────────────────────────────────────────────────────────────────┐
-│ 🏢 [Acme Corp ▼]    🔍 Search...    🔔 (8)    👤 John Smith      │
-└────────────────────────────────────────────────────────────────────┘
-      │
-      └──> Click to switch:
-           ┌──────────────────────────────┐
-           │ ✓ Acme Corp (Admin)          │
-           │   Client Project (Editor)    │
-           │   Freelance (Admin)          │
-           │ ──────────────────────────── │
-           │ 🏢 Create New Workspace      │
-           │ ➕ Join Workspace            │
-           │ ⚙️ Manage My Workspaces      │
-           └──────────────────────────────┘
-```
-
----
-
-## 🎯 Complete User Flow
-
-### **Phase 1: Onboarding**
-
-```
-New User:
-Sign Up → Email Verification → Create/Join Workspace → Workspace Selector → Dashboard
-
-Existing User:
-Login → Workspace Selector → Select Workspace → Dashboard
-```
-
-### **Phase 2: Creating a Workflow**
-
-```
-Dashboard → Click "Create Workflow"
-    ↓
-Choose Template or Blank Canvas
-    ↓
-Visual Builder Opens
-    ↓
-Drag Nodes from Left Panel → Drop on Canvas
-    ↓
-Connect Nodes (Draw arrows)
-    ↓
-Configure Each Node (Click to open right panel)
-    ↓
-Test Workflow (Run with sample data)
-    ↓
-Deploy & Activate
-```
-
-### **Phase 3: Execution & Monitoring**
-
-```
-Workflow Triggered (Webhook/Schedule/Manual)
-    ↓
-Real-time Execution View
-    ↓
-Nodes light up as they execute
-    ↓
-Human approval nodes → Send notification to approver
-    ↓
-Approver gets notification (Email/Slack/In-app)
-    ↓
-Approver reviews (sees AI recommendations)
-    ↓
-Approver decides → Workflow continues
-    ↓
-Completion → Logs + Analytics updated
-```
-
----
-
-## 📊 Advanced Analytics & AI Insights
-
-### **Workflow Analytics Dashboard:**
-
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│ Workflow Analytics - Employee Onboarding                                   │
-│ Last 30 Days                                                 [Export PDF]  │
-└────────────────────────────────────────────────────────────────────────────┘
-
-OVERVIEW:
-┌──────────────────────────────────────────────────────────────────────────┐
-│ Total Runs: 127    Avg Duration: 8.5 days    Success Rate: 92.1%        │
-│ Cost/Run: $12.50   Time Saved: 18h/run       ROI: 340%                  │
-└──────────────────────────────────────────────────────────────────────────┘
-
-EXECUTION TIMELINE:
-┌──────────────────────────────────────────────────────────────────────────┐
-│   15 ┤                              ●        ●   ●                       │
-│   12 ┤            ●           ●     ●   ●   ●   ●                        │
-│    9 ┤      ●  ●  ●     ●  ●  ●  ●  ●  ●   ●   ●   ●                    │
-│    6 ┤   ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●  ●   ●   ●  ●                 │
-│      └────────────────────────────────────────────────────────           │
-│      Nov 1    5    10   15   20   25   30                               │
-│                                                                           │
-│  ✅ Success: 117    ❌ Failed: 8    ⏸️ In Progress: 2                    │
-└──────────────────────────────────────────────────────────────────────────┘
-
-🚨 BOTTLENECK ANALYSIS (AI-Powered):
-┌──────────────────────────────────────────────────────────────────────────┐
-│ 1. ⚠️ IT Manager Approval (Node #4)                                     │
-│    ├─ Avg Delay: 6.2 hours (SLA: 4 hours)                              │
-│    ├─ Breach Rate: 45% of cases                                         │
-│    └─ 💡 AI Suggests:                                                   │
-│        • Add backup approver                                            │
-│        • Auto-escalate after 3 hours                                    │
-│        • Pre-approve standard configs                                   │
-│    [Implement] [Details]                                                │
-│                                                                           │
-│ 2. 🔴 Document Signature (Node #8)                                      │
-│    ├─ Avg Delay: 18 hours (Expected: 4 hours)                          │
-│    ├─ Issue: New hires forget to sign                                  │
-│    └─ 💡 AI Suggests:                                                   │
-│        • Add SMS reminder after 6 hours                                 │
-│        • Gamify with progress bar                                       │
-│    [Implement] [Details]                                                │
-└──────────────────────────────────────────────────────────────────────────┘
-
-NODE PERFORMANCE:
-┌──────────────────────────────────────────────────────────────────────────┐
-│ Node Name                  Avg Time    Success    Status                │
-│ ─────────────────────────────────────────────────────────────────────── │
-│ Webhook Trigger            < 1s        100%       ✅                    │
-│ AI Plan Generator          15s         98.4%      ✅                    │
-│ Manager Approval           2.1h        95.3%      ✅                    │
-│ IT Manager Approval        6.2h        89.5%      🚨 BOTTLENECK         │
-│ Equipment Order            2.5d        96.8%      ⚠️ Slow              │
-│ AI Doc Generator           8s          99.1%      ✅                    │
-│ HR Review                  45m         97.2%      ✅                    │
-│ Document Signature         18h         75.3%      🚨 BOTTLENECK         │
-│ AI Buddy Matcher           5s          100%       ✅                    │
-│ Buddy Acceptance           4h          88.0%      🟡 Monitor            │
-│ Security Approval          3h          94.5%      ✅                    │
-└──────────────────────────────────────────────────────────────────────────┘
-
-💡 AI RECOMMENDATIONS:
-┌──────────────────────────────────────────────────────────────────────────┐
-│ 💰 COST OPTIMIZATION (Save $634/month)                                  │
-│ ├─ Cache AI responses for similar roles → $406/month                   │
-│ ├─ Batch equipment orders weekly → $150/month                           │
-│ └─ Use GPT-3.5 for simple tasks → $78/month                             │
-│                                                                           │
-│ ⚡ SPEED IMPROVEMENTS (Save 3.5 hours/run)                              │
-│ ├─ Parallelize IT & Security setup → 2.5 hours                         │
-│ └─ Pre-create email accounts at offer stage → 1 hour                   │
-│                                                                           │
-│ 🎯 QUALITY ENHANCEMENTS                                                 │
-│ ├─ Add 48-hour check-in survey → Better early feedback                 │
-│ ├─ Personalize welcome by role → +15% engagement                        │
-│ └─ ML-based buddy matching → Lower decline rate                         │
-│                                                                           │
-│ 📊 PREDICTIONS                                                           │
-│ ├─ Next run success probability: 94.3%                                  │
-│ ├─ Expected duration: 8.2 days                                          │
-│ └─ Likely bottleneck: IT approval (62% probability)                     │
-└──────────────────────────────────────────────────────────────────────────┘
-
-INDUSTRY BENCHMARK:
-┌──────────────────────────────────────────────────────────────────────────┐
-│ Metric            Your Performance    Industry Avg    Top 10%           │
-│ ───────────────────────────────────────────────────────────────────────  │
-│ Duration          8.5 days ✅         12.3 days        6.2 days          │
-│ Success Rate      92.1% ✅            87.4%            95.8%             │
-│ Cost/Hire         $12.50 ✅           $18.30           $9.20             │
-│ Automation        70% ✅              52%              82%               │
-│                                                                           │
-│ 🏆 Your Rank: Top 15% of onboarding workflows                           │
-│ 💡 To reach Top 10%: Reduce approval times, increase automation         │
-└──────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🏪 Marketplace & Integrations
-
-### **Users Browse & Install Integrations:**
-
-```
-┌────────────────────────────────────────────────────────────────────────────┐
-│ Marketplace                                          🔍 Search integrations│
-├────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│ CATEGORIES:                                                                 │
-│ ├── 💼 CRM (Salesforce, HubSpot, Pipedrive)                                │
-│ ├── 💬 Communication (Slack, Teams, Discord)                               │
-│ ├── 💳 Payment (Stripe, PayPal, Square)                                    │
-│ ├── 🗄️ Database (PostgreSQL, MongoDB, Airtable)                           │
-│ ├── 🤖 AI/LLM (OpenAI, Anthropic, Gemini)                                  │
-│ ├── 🔧 MCP Servers (Custom tools)                                          │
-│ └── 🌐 Utilities (Webhooks, HTTP, Email)                                   │
-│                                                                             │
-│ FEATURED:                                                                   │
-│ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐                 │
-│ │ 💬 Slack       │ │ 🤖 GPT-4      │ │ 📧 Gmail       │                 │
-│ │ ⭐ 4.9         │ │ ⭐ 4.8        │ │ ⭐ 4.7         │                 │
-│ │ 12.5k installs │ │ 8.3k installs │ │ 15k installs   │                 │
-│ │ [Install]      │ │ [Install]     │ │ [Install]      │                 │
-│ └────────────────┘ └────────────────┘ └────────────────┘                 │
-│                                                                             │
-│ MCP SERVERS:                                                                │
-│ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐                 │
-│ │ 🔍 Web Search  │ │ 📁 File Sys   │ │ 🗄️ SQL DB     │                 │
-│ │ MCP Server     │ │ MCP Server    │ │ MCP Server     │                 │
-│ │ [Install]      │ │ [Install]     │ │ [Install]      │                 │
-│ └────────────────┘ └────────────────┘ └────────────────┘                 │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-After installing, these appear in the Node Library as draggable nodes!
-```
-
----
-
-## 🎨 Navigation Structure
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│ TOP BAR (Always Visible):                                             │
-├────────────────────────────────────────────────────────────────────────┤
-│ 🏢 [Workspace Switcher ▼]  🔍 Search  🔔 (8)  👤 [User Menu ▼]       │
-└────────────────────────────────────────────────────────────────────────┘
-
-┌────────────────────────────────────────────────────────────────────────┐
-│ SIDEBAR (Workspace-Specific):                                          │
-├────────────────────────────────────────────────────────────────────────┤
-│ 🏠 Dashboard                                                           │
-│ ⚡ Workflows (Create, view all)                                        │
-│ 🤖 AI Agents (Manage agents)                                           │
-│ ✅ Approvals (Pending inbox)                                           │
-│ 🏪 Marketplace (Browse integrations)                                   │
-│ 📊 Analytics (Performance insights)                                    │
-│ 👥 Team (Members & roles)                                              │
-│ ⚙️ Settings (Workspace settings)                                       │
-└────────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 🚀 Key Differentiators
-
-### **1. Everything is a Node**
-
-- AI agents → Drag & drop nodes
-- Human approvals → Drag & drop nodes
-- Integrations → Drag & drop nodes
-- MCP servers → Drag & drop nodes
-- Logic/control → Drag & drop nodes
-
-### **2. AI Throughout**
-
-- **AI in Builder:** Suggestions, validation, optimization
-- **AI as Nodes:** GPT-4, Claude agents in workflows
-- **AI in Analytics:** Bottleneck detection, recommendations, predictions
-
-### **3. Human-in-the-Loop Native**
-
-- Human approval nodes with rich context
-- AI provides recommendations to approvers
-- SLA tracking, escalation rules
-- Audit trails for compliance
-
-### **4. Multi-Workspace**
-
-- Users can be in multiple workspaces
-- Different roles per workspace
-- Cross-workspace notifications
-- Instant switching
-
-### **5. Enterprise-Grade**
-
-- Visual workflow builder (no code)
-- Real-time monitoring
-- Advanced analytics
-- Marketplace with 500+ integrations
+- 500+ pre-built integrations
 - MCP server support
+- Custom API connections
+- OAuth flows
+
+### 7. Audit Logs
+
+Complete audit trail of all actions:
+- Who did what, when
+- Workflow executions
+- Configuration changes
+- Team modifications
 
 ---
 
-## ✅ Summary
+## 🏗️ Architecture
 
-This platform allows users to:
+### Technology Stack
 
-1. **Visually design workflows** by dragging and dropping nodes
-2. **Add AI agents** as nodes (GPT-4, Claude, custom)
-3. **Integrate apps & MCP servers** from marketplace as nodes
-4. **Set human approval/review points** as nodes
-5. **Monitor & optimize** with AI-powered analytics
-6. **Work across multiple workspaces** with different roles
+**Frontend:**
+- React 19 + TypeScript
+- Vite (dev server & build)
+- React Router v7 (routing)
+- Tailwind CSS (styling)
+- Framer Motion (animations)
+- React Flow (workflow canvas)
+- Recharts (analytics)
+- MSW (API mocking)
 
-The **Employee Onboarding example** shows how a user would **build this workflow** by dragging the various nodes (AI agents, human approvals, integrations) and connecting them visually!
+**State Management:**
+- React Context (Auth, Workspace, Theme)
+- Custom hooks (useAuth, useWorkspace, useTheme)
+
+**API Layer:**
+- Axios (HTTP client)
+- Service pattern (per-domain services)
+- MSW handlers (mock backend)
+
+### Project Structure
+
+```
+src/
+├── components/
+│   ├── common/          # Button, Input, Card, Badge, Avatar, etc.
+│   ├── layout/          # AppLayout, Sidebar, TopBar
+│   └── workflow/        # NodePalette, WorkflowCanvas, Node components
+├── pages/
+│   ├── auth/            # Login, Signup
+│   ├── workspace/       # WorkspaceSelector, WorkspaceCreate
+│   ├── dashboard/       # Dashboard
+│   ├── workflows/       # WorkflowsList, WorkflowBuilder, WorkflowViewer, WorkflowAnalytics
+│   ├── executions/      # ExecutionsList, ExecutionDetail
+│   ├── approvals/       # ApprovalsList, ApprovalDetail
+│   ├── templates/       # TemplateMarketplace, TemplateDetail
+│   ├── marketplace/     # MarketplacePage, AppDetailPage
+│   ├── integrations/    # IntegrationsList, AddIntegration, IntegrationConfig
+│   ├── analytics/       # AnalyticsDashboard
+│   ├── team/            # TeamPage (Members & Pools)
+│   ├── audit/           # AuditLogs, AuditLogDetail
+│   └── notifications/   # NotificationsPage
+├── contexts/
+│   ├── AuthContext.tsx       # Authentication state
+│   ├── WorkspaceContext.tsx  # Workspace state
+│   └── ThemeContext.tsx      # Theme (light/dark/system)
+├── hooks/
+│   ├── useAuth.ts
+│   ├── useWorkspace.ts
+│   └── useTheme.ts
+├── services/
+│   ├── api.ts                # Axios instance
+│   ├── auth.service.ts
+│   ├── workspace.service.ts
+│   ├── workflow.service.ts
+│   ├── execution.service.ts
+│   ├── approval.service.ts
+│   ├── template.service.ts
+│   ├── integration.service.ts
+│   ├── analytics.service.ts
+│   └── audit.service.ts
+├── mocks/
+│   ├── browser.ts           # MSW setup
+│   ├── handlers.ts          # Handler exports
+│   ├── handlers/            # MSW request handlers
+│   │   ├── auth.handlers.ts
+│   │   ├── workspace.handlers.ts
+│   │   ├── workflow.handlers.ts
+│   │   ├── execution.handlers.ts
+│   │   ├── approval.handlers.ts
+│   │   ├── template.handlers.ts
+│   │   ├── integration.handlers.ts
+│   │   ├── analytics.handlers.ts
+│   │   ├── team.handlers.ts
+│   │   └── audit.handlers.ts
+│   └── data/                # Mock data
+│       ├── workspaces.ts
+│       ├── workflows.ts
+│       ├── executions.ts
+│       ├── approvals.ts
+│       ├── templates.ts
+│       ├── integrations.ts
+│       ├── team.ts
+│       ├── pools.ts
+│       └── auditLogs.ts
+├── types/
+│   ├── auth.ts
+│   ├── api.ts
+│   └── workspace.ts         # All domain types
+└── utils/
+    └── helpers.ts
+```
 
 ---
 
-**Ready to proceed with detailed screen designs?** 🎨
+## 📡 API Documentation Reference
+
+**Full API documentation:** See `API_DOCUMENTATION.md`
+
+**Base URL:** `https://api.swiftflow.ai/v1`  
+**Authentication:** Bearer token in Authorization header
+
+### Key Endpoints
+
+#### Authentication
+- `POST /auth/login` - User login
+- `POST /auth/signup` - User registration
+- `GET /auth/me` - Get current user
+- `POST /auth/logout` - Logout
+
+#### Workspaces
+- `GET /workspaces` - List workspaces
+- `POST /workspaces` - Create workspace
+- `GET /workspaces/:id` - Get workspace details
+- `GET /workspaces/:id/dashboard` - Dashboard data
+
+#### Workflows
+- `GET /workspaces/:id/workflows` - List workflows
+- `POST /workspaces/:id/workflows` - Create workflow
+- `GET /workspaces/:id/workflows/:workflowId` - Get workflow
+- `PATCH /workspaces/:id/workflows/:workflowId` - Update workflow
+- `POST /workspaces/:id/workflows/:workflowId/execute` - Execute workflow
+- `GET /workspaces/:id/workflows/:workflowId/analytics` - Workflow analytics
+
+#### Executions
+- `GET /workspaces/:id/executions` - List executions
+- `GET /workspaces/:id/executions/:executionId` - Get execution details
+- `POST /workspaces/:id/executions/:executionId/cancel` - Cancel execution
+- `POST /workspaces/:id/executions/:executionId/retry` - Retry execution
+
+#### Approvals
+- `GET /workspaces/:id/approvals` - List approvals
+- `GET /workspaces/:id/approvals/:approvalId` - Get approval details
+- `POST /workspaces/:id/approvals/:approvalId/decide` - Approve/reject
+
+#### Team & Pools
+- `GET /workspaces/:id/members` - List team members
+- `POST /workspaces/:id/members/invite` - Invite member
+- `GET /workspaces/:id/pools` - List team pools
+- `POST /workspaces/:id/pools` - Create pool
+- `POST /workspaces/:id/pools/:poolId/members` - Add member to pool
+
+#### Templates
+- `GET /workspaces/:id/templates` - List templates
+- `POST /workspaces/:id/templates/:templateId/use` - Use template
+
+#### Integrations
+- `GET /integrations/marketplace` - Browse marketplace
+- `GET /workspaces/:id/integrations` - List installed integrations
+- `POST /workspaces/:id/integrations` - Install integration
+
+#### Analytics
+- `GET /workspaces/:id/analytics/overview` - Workspace analytics
+- `GET /workspaces/:id/analytics/workflows/:workflowId` - Workflow analytics
+
+#### Audit Logs
+- `GET /workspaces/:id/audit-logs` - List audit logs
+- `GET /workspaces/:id/audit-logs/:logId` - Get log details
+
+---
+
+## 🎯 Workflow Triggers
+
+Swift Flow AI supports multiple trigger types for flexible automation:
+
+### 1. Manual Trigger
+
+**Use Case:** User-initiated workflows requiring explicit permission
+
+**Configuration:**
+- Allowed Users: Specify who can trigger
+- Require Approval: Optional admin approval
+
+**Example:** Expense report approval, custom report generation
+
+### 2. Webhook Trigger
+
+**Use Case:** External systems triggering workflows via HTTP
+
+**Configuration:**
+- HTTP Method: POST, GET, PUT
+- Webhook URL: Auto-generated unique endpoint
+- Authentication: HMAC signature verification
+
+**Example:** New customer signup → onboarding workflow
+
+### 3. Workflow Complete Trigger
+
+**Use Case:** Chain workflows together
+
+**Configuration:**
+- Source Workflow: Select parent workflow
+- Trigger Condition: On success, failure, or always
+- Data Mapping: Pass output to next workflow
+
+**Example:** Employee onboarding → IT setup → Welcome email
+
+### 4. Schedule Trigger
+
+**Use Case:** Time-based automation
+
+**Configuration:**
+- Schedule Type: Cron expression or interval
+- Timezone: Workspace timezone or custom
+- Run Window: Optional start/end times
+
+**Cron Examples:**
+- `0 9 * * 1-5` - Every weekday at 9 AM
+- `0 0 1 * *` - First day of month
+- `*/15 * * * *` - Every 15 minutes
+
+**Example:** Daily reports, weekly cleanup, monthly billing
+
+### 5. Email Trigger
+
+**Use Case:** Workflows triggered by incoming emails
+
+**Configuration:**
+- Email Address: Auto-generated workflow email
+- Sender Whitelist: Only accept from specific addresses
+- Subject Filter: Optional regex matching
+- Attachment Handling: Parse and extract
+
+**Example:** Support tickets, invoice processing, order processing
+
+---
+
+## 💻 Development Guide
+
+### Setup
+
+```bash
+# Clone repository
+git clone https://github.com/swift-flow-ai/swift-flow-ai.git
+cd swift-flow-ai
+
+# Install dependencies
+npm install
+
+# Start development server
+VITE_ENABLE_MSW=true npm run dev
+```
+
+### Environment Variables
+
+Create `.env` file:
+
+```bash
+# API Configuration
+VITE_API_BASE_URL=http://localhost:3000/api
+VITE_APP_NAME=Swift Flow AI
+
+# MSW Toggle (true = mock API, false = real backend)
+VITE_ENABLE_MSW=true
+```
+
+### Development Workflow
+
+1. **Start dev server:** `npm run dev`
+2. **Open browser:** http://localhost:5173
+3. **Login:** Use demo credentials
+4. **Make changes:** Hot reload enabled
+5. **Check lints:** `npm run lint`
+6. **Build:** `npm run build`
+
+### Key Features
+
+#### Theme Support
+- Light, Dark, and System themes
+- Toggle from top bar or settings
+- Persisted in localStorage
+- CSS variables for easy customization
+
+#### Multi-Workspace
+- Switch workspaces from top bar dropdown
+- Each workspace has isolated data
+- Last-used workspace remembered
+
+#### Protected Routes
+- All `/app/*` routes require authentication
+- Automatic redirect to login if not authenticated
+- Workspace selection after login
+
+### Adding New Features
+
+#### 1. Add a New Page
+
+```typescript
+// src/pages/myfeature/MyFeaturePage.tsx
+export function MyFeaturePage() {
+  const { currentWorkspace } = useWorkspace();
+  
+  return (
+    <div className="space-y-8">
+      <h1 className="text-3xl font-bold">My Feature</h1>
+      {/* Your content */}
+    </div>
+  );
+}
+```
+
+#### 2. Add Route
+
+```typescript
+// src/App.tsx
+import { MyFeaturePage } from './pages/myfeature/MyFeaturePage';
+
+// Inside /app routes:
+<Route path="myfeature" element={<MyFeaturePage />} />
+```
+
+#### 3. Add Navigation
+
+```typescript
+// src/components/layout/AppLayout.tsx
+const navigation = [
+  // ... existing items
+  {
+    name: 'My Feature',
+    href: '/app/myfeature',
+    icon: YourIcon,
+  },
+];
+```
+
+#### 4. Add MSW Handler (Optional)
+
+```typescript
+// src/mocks/handlers/myfeature.handlers.ts
+import { http, HttpResponse, delay } from 'msw';
+import { config } from '../../config';
+
+export const myFeatureHandlers = [
+  http.get(`${config.apiBaseUrl}/myfeature`, async () => {
+    await delay(500);
+    return HttpResponse.json({
+      success: true,
+      data: { /* your data */ },
+    });
+  }),
+];
+```
+
+#### 5. Add Service
+
+```typescript
+// src/services/myfeature.service.ts
+import { api } from './api';
+
+export const myFeatureService = {
+  async getData() {
+    const response = await api.get('/myfeature');
+    return response.data.data;
+  },
+};
+```
+
+---
+
+## 🎭 MSW Integration
+
+### Overview
+
+Swift Flow AI uses Mock Service Worker (MSW) to mock backend APIs during development.
+
+**Toggle between mock and real backend:**
+
+```bash
+# Use mock APIs (no backend needed)
+VITE_ENABLE_MSW=true
+
+# Use real backend
+VITE_ENABLE_MSW=false
+VITE_API_BASE_URL=http://localhost:3000/api
+```
+
+### Benefits
+
+**With MSW Enabled:**
+- ✅ No backend required
+- ✅ Instant responses
+- ✅ Offline development
+- ✅ Consistent testing
+- ✅ Realistic delays
+
+**With MSW Disabled:**
+- ✅ Real integration testing
+- ✅ Production-like behavior
+- ✅ API validation
+
+### Mock Data
+
+All mock data is in `src/mocks/data/`:
+- **workspaces.ts** - 3 demo workspaces
+- **workflows.ts** - 6 example workflows (including HR Interview Coordination)
+- **executions.ts** - Sample workflow executions
+- **approvals.ts** - Pending approvals
+- **templates.ts** - Workflow templates
+- **integrations.ts** - Installed integrations
+- **team.ts** - Team members
+- **pools.ts** - Team pools (HR Ops, Recruiters, CAB, etc.)
+- **auditLogs.ts** - Audit trail
+
+### Demo Users
+
+```typescript
+// Admin user
+Email: admin@flowai.com
+Password: any password
+
+// Regular user
+Email: user@flowai.com
+Password: any password
+
+// Demo user
+Email: demo@flowai.com
+Password: demo123
+```
+
+---
+
+## 🤝 Contributing
+
+### Code Style
+
+- **TypeScript:** Use proper types, avoid `any`
+- **React:** Functional components with hooks
+- **Styling:** Tailwind CSS utility classes
+- **Naming:** Descriptive names, camelCase for variables
+
+### Commit Messages
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add workflow analytics page
+fix: resolve authentication token expiry
+docs: update API documentation
+style: format code with prettier
+refactor: reorganize component structure
+test: add tests for approval service
+chore: update dependencies
+```
+
+### Pull Request Process
+
+1. Fork the repo
+2. Create your branch: `git checkout -b feature/my-feature`
+3. Make changes and commit
+4. Run linter: `npm run lint`
+5. Build: `npm run build`
+6. Push and create PR
+
+### Testing
+
+```bash
+# Run linter
+npm run lint
+
+# Build (checks TypeScript)
+npm run build
+
+# Test with MSW
+VITE_ENABLE_MSW=true npm run dev
+```
+
+---
+
+## 📊 Current Status
+
+### ✅ Completed Features
+
+- [x] Authentication (Login, Signup, Logout)
+- [x] Multi-workspace support
+- [x] Workspace creation & settings
+- [x] Team management & invites
+- [x] Team Pools (HR Ops, Recruiters, CAB, etc.)
+- [x] Dashboard with stats & activity
+- [x] Workflow list & filters
+- [x] Workflow builder (visual canvas)
+- [x] Workflow viewer
+- [x] Workflow analytics (comprehensive)
+- [x] Workflow execution tracking
+- [x] Execution history & logs
+- [x] Approvals inbox & detail
+- [x] AI-powered approval recommendations
+- [x] Template marketplace
+- [x] Integration marketplace
+- [x] Multiple integrations per app (named instances)
+- [x] Audit logs
+- [x] Notifications
+- [x] Theme toggle (Light/Dark/System)
+- [x] Responsive design
+- [x] MSW integration
+- [x] Complete API documentation
+
+### 🎯 Example Workflows
+
+#### HR Interview Coordination
+
+Complete workflow demonstrating:
+- Manual trigger by HR recruiter
+- Candidate details form
+- Candidate self-scheduling (availability link)
+- Pool query (fetch available interviewers)
+- Smart pool assignment (round-robin, load-balanced)
+- Interviewer request with approval
+- Retry on rejection (select next interviewer)
+- AI agenda generation
+- Calendar event creation (Google Meet link)
+- Email confirmations
+- Reminders
+- Feedback form trigger (at event start)
+- Wait for feedback
+- ATS update
+- Slack notification
+- Complete
+
+**View at:** http://localhost:5173/app/workflows/wf_recruitment
+
+---
+
+## 🎨 Design System
+
+### Colors
+
+```css
+/* Dark Theme (Default) */
+--background: 0 0% 3.9%
+--foreground: 0 0% 98%
+--card: 0 0% 7%
+--primary: 142 76% 36%    /* Green accent */
+--muted: 0 0% 15%
+--border: 240 3.7% 15.9%
+
+/* Light Theme */
+--background: 0 0% 100%
+--foreground: 0 0% 3.9%
+--card: 0 0% 100%
+--primary: 142 76% 36%    /* Green accent */
+--muted: 240 4.8% 95.9%
+--border: 240 5.9% 90%
+```
+
+### Typography
+
+- **Font:** Inter (Google Fonts)
+- **Weights:** 400, 500, 600, 700
+- **Scale:** text-xs to text-3xl
+
+### Spacing
+
+- **Cards:** p-6 (24px)
+- **Gaps:** gap-4 (16px) or gap-6 (24px)
+- **Sections:** space-y-8 (32px)
+- **Main content:** p-8 (32px padding from AppLayout)
+
+---
+
+## 📝 Recent Updates
+
+### Latest Changes
+
+1. **Workflow Analytics** - Comprehensive analytics page with charts, bottleneck detection, and AI recommendations
+2. **Team Pools** - Support for assigning tasks to pools of people
+3. **HR Interview Workflow** - Complete example workflow with all features
+4. **Navigation Fixes** - All routes updated to use `/app` prefix
+5. **Lint Fixes** - Removed `any` types, fixed TypeScript errors
+6. **Theme Improvements** - Fixed dropdown backgrounds and contrast
+7. **Mock Data** - Realistic data for all features
+
+### Known Issues
+
+- Some useEffect exhaustive-deps warnings (safe to ignore)
+- A few remaining 'any' types in mock handlers (non-critical)
+
+---
+
+## 🚀 Deployment
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+Output: `dist/` directory
+
+### Environment Variables (Production)
+
+```bash
+VITE_ENABLE_MSW=false
+VITE_API_BASE_URL=https://api.swiftflow.ai
+VITE_APP_NAME=Swift Flow AI
+```
+
+### Deploy
+
+Deploy the `dist/` folder to:
+- Vercel
+- Netlify
+- AWS S3 + CloudFront
+- Your preferred hosting
+
+---
+
+## 📞 Support
+
+For questions or issues:
+- Check this documentation
+- Review `API_DOCUMENTATION.md` for API details
+- Check the codebase - it's well-documented
+- All code follows React and TypeScript best practices
+
+---
+
+## 📄 License
+
+[Your License Here]
+
+---
+
+**Built with ❤️ using React, TypeScript, Vite, and Tailwind CSS**
+
+**Stop Documenting. Start Executing.** 🚀

@@ -5,7 +5,6 @@ import {
   Zap,
   Brain,
   Workflow,
-  Bot,
   ArrowRight,
   CheckCircle,
   TrendingUp,

@@ -562,6 +562,121 @@ Delete workflow (soft delete, can be archived).
 
 **Response:** `204 No Content`
 
+### GET /workspaces/:workspaceId/workflows/:workflowId/analytics
+
+Get comprehensive analytics for a specific workflow.
+
+**Query Parameters:**
+
+- `period`: `7d|30d|90d|custom`
+- `startDate`, `endDate`: for custom period
+
+**Response:** `200 OK`
+
+```json
+{
+  "workflowId": "wf_recruitment",
+  "workflowName": "Interview Coordination",
+  "period": "30d",
+  "overview": {
+    "totalExecutions": 89,
+    "successRate": 96.6,
+    "avgDuration": "2.3 hours",
+    "costPerRun": 0.45,
+    "timeSaved": "18h per run",
+    "trend": {
+      "executions": 15.2,
+      "successRate": 3.1,
+      "duration": -8.5
+    }
+  },
+  "timeline": [
+    {
+      "date": "2025-01-15",
+      "executions": 13,
+      "successful": 12,
+      "failed": 1,
+      "avgDuration": 2.2
+    }
+  ],
+  "statusDistribution": [
+    {
+      "name": "Completed",
+      "value": 86,
+      "percentage": 96.6
+    },
+    {
+      "name": "Failed",
+      "value": 3,
+      "percentage": 3.4
+    }
+  ],
+  "nodePerformance": [
+    {
+      "nodeId": "node_1",
+      "nodeName": "Manual Start",
+      "avgTime": 0.3,
+      "successRate": 100,
+      "status": "healthy",
+      "executions": 89
+    },
+    {
+      "nodeId": "node_4",
+      "nodeName": "Wait for Candidate Availability",
+      "avgTime": 48.5,
+      "successRate": 98.9,
+      "status": "healthy",
+      "executions": 89
+    },
+    {
+      "nodeId": "node_8",
+      "nodeName": "Wait for Interviewer Response",
+      "avgTime": 8.5,
+      "successRate": 94.4,
+      "status": "warning",
+      "executions": 89
+    }
+  ],
+  "bottlenecks": [
+    {
+      "nodeId": "node_4",
+      "nodeName": "Wait for Candidate Availability",
+      "avgDelay": "48.5 hours",
+      "slaBreachRate": 12,
+      "recommendation": "Send reminder after 3 days instead of 5"
+    },
+    {
+      "nodeId": "node_8",
+      "nodeName": "Wait for Interviewer Response",
+      "avgDelay": "8.5 hours",
+      "slaBreachRate": 5.6,
+      "recommendation": "Reduce timeout to 12 hours and add escalation"
+    }
+  ],
+  "triggerSources": [
+    {
+      "source": "Manual (HR Recruiters)",
+      "count": 89,
+      "percentage": 100
+    }
+  ],
+  "peakTimes": [
+    {
+      "hour": "9 AM",
+      "count": 15
+    },
+    {
+      "hour": "10 AM",
+      "count": 22
+    },
+    {
+      "hour": "2 PM",
+      "count": 20
+    }
+  ]
+}
+```
+
 ---
 
 ## 📋 Workflow Templates
@@ -1601,6 +1716,226 @@ Update member role or status.
 ### DELETE /workspaces/:workspaceId/members/:userId
 
 Remove member from workspace.
+
+**Response:** `204 No Content`
+
+---
+
+## 👥 Team Pools
+
+### GET /workspaces/:workspaceId/pools
+
+Get all team pools in workspace.
+
+**Response:** `200 OK`
+
+```json
+{
+  "pools": [
+    {
+      "id": "pool_hr_ops",
+      "name": "HR Operations",
+      "description": "General HR operations and administrative tasks",
+      "type": "functional",
+      "color": "blue",
+      "icon": "Users",
+      "memberIds": ["usr_1", "usr_2", "usr_3"],
+      "members": [
+        {
+          "id": "usr_1",
+          "name": "Sarah Lee",
+          "email": "sarah@acme.com",
+          "avatar": "https://...",
+          "role": "editor"
+        }
+      ],
+      "settings": {
+        "autoAssignment": true,
+        "roundRobin": true,
+        "loadBalancing": true,
+        "notifyOnAssignment": true
+      },
+      "stats": {
+        "activeMembers": 3,
+        "totalAssignments": 145,
+        "avgResponseTime": "2.3h",
+        "currentLoad": 12
+      },
+      "createdBy": {
+        "id": "usr_admin",
+        "name": "Admin User"
+      },
+      "createdAt": "2024-06-01T10:00:00Z",
+      "updatedAt": "2025-01-15T14:30:00Z"
+    }
+  ]
+}
+```
+
+### GET /workspaces/:workspaceId/pools/:poolId
+
+Get specific pool details.
+
+**Response:** `200 OK`
+
+```json
+{
+  "id": "pool_hr_recruiters",
+  "name": "HR Recruiters",
+  "description": "Recruitment and interview coordination team",
+  "type": "functional",
+  "color": "purple",
+  "icon": "UserCheck",
+  "memberIds": ["usr_4", "usr_5"],
+  "members": [
+    {
+      "id": "usr_4",
+      "name": "John Smith",
+      "email": "john@acme.com",
+      "avatar": "https://...",
+      "role": "editor",
+      "status": "active",
+      "stats": {
+        "workflowsCreated": 5,
+        "approvalsHandled": 127,
+        "avgApprovalTime": "2.3h"
+      },
+      "poolIds": ["pool_hr_recruiters", "pool_hr_ops"]
+    }
+  ],
+  "settings": {
+    "autoAssignment": true,
+    "roundRobin": true,
+    "loadBalancing": true,
+    "notifyOnAssignment": true
+  },
+  "stats": {
+    "activeMembers": 2,
+    "totalAssignments": 89,
+    "avgResponseTime": "1.8h",
+    "currentLoad": 8
+  },
+  "createdBy": {
+    "id": "usr_admin",
+    "name": "Admin User"
+  },
+  "createdAt": "2024-06-01T10:00:00Z",
+  "updatedAt": "2025-01-15T14:30:00Z"
+}
+```
+
+### POST /workspaces/:workspaceId/pools
+
+Create a new team pool.
+
+**Request:**
+
+```json
+{
+  "name": "Support Tier 2",
+  "description": "Advanced support specialists",
+  "type": "functional",
+  "color": "green",
+  "icon": "Headphones",
+  "memberIds": ["usr_6", "usr_7"],
+  "settings": {
+    "autoAssignment": true,
+    "roundRobin": true,
+    "loadBalancing": true,
+    "notifyOnAssignment": true
+  }
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "pool": {
+    "id": "pool_support_t2",
+    "name": "Support Tier 2",
+    "description": "Advanced support specialists",
+    "type": "functional",
+    "color": "green",
+    "icon": "Headphones",
+    "memberIds": ["usr_6", "usr_7"],
+    "settings": {
+      "autoAssignment": true,
+      "roundRobin": true,
+      "loadBalancing": true,
+      "notifyOnAssignment": true
+    },
+    "stats": {
+      "activeMembers": 2,
+      "totalAssignments": 0,
+      "avgResponseTime": "0h",
+      "currentLoad": 0
+    },
+    "createdBy": {
+      "id": "usr_admin",
+      "name": "Admin User"
+    },
+    "createdAt": "2025-01-15T15:00:00Z",
+    "updatedAt": "2025-01-15T15:00:00Z"
+  }
+}
+```
+
+### PATCH /workspaces/:workspaceId/pools/:poolId
+
+Update pool settings or members.
+
+**Request:**
+
+```json
+{
+  "name": "Support Tier 2 - Updated",
+  "description": "Advanced support and escalation team",
+  "settings": {
+    "autoAssignment": true,
+    "roundRobin": false,
+    "loadBalancing": true,
+    "notifyOnAssignment": true
+  }
+}
+```
+
+**Response:** `200 OK` (returns updated pool)
+
+### POST /workspaces/:workspaceId/pools/:poolId/members
+
+Add member to pool.
+
+**Request:**
+
+```json
+{
+  "userId": "usr_8"
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "message": "Member added to pool",
+  "pool": {
+    "id": "pool_support_t2",
+    "memberIds": ["usr_6", "usr_7", "usr_8"]
+  }
+}
+```
+
+### DELETE /workspaces/:workspaceId/pools/:poolId/members/:userId
+
+Remove member from pool.
+
+**Response:** `204 No Content`
+
+### DELETE /workspaces/:workspaceId/pools/:poolId
+
+Delete a pool.
 
 **Response:** `204 No Content`
 
