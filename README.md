@@ -18,9 +18,13 @@ npm run dev
 
 **Open:** http://localhost:5173
 
-### Demo Credentials
-- **Email:** `demo@flowai.com` or `admin@acme.com`
-- **Password:** `demo123` or any password (MSW enabled)
+### Demo Credentials (with RBAC roles)
+- **Owner:** `admin@acme.com` (full access)
+- **Admin:** `john@acme.com` (manage workflows, team)
+- **Member:** `sarah@acme.com` (create & execute workflows)
+- **Viewer:** `alice@acme.com` (read-only + approvals)
+- **Guest:** `david@acme.com` (approvals only)
+- **Password:** any password (MSW enabled)
 
 ---
 
@@ -42,6 +46,7 @@ Swift Flow AI is an AI-native business process automation platform that helps or
 - 🎨 Visual workflow builder (drag & drop)
 - 🤖 AI-powered automation
 - 👥 Team pools & smart assignment
+- 🔐 **RBAC** (5 roles, 43 permissions)
 - 📊 Real-time analytics & bottleneck detection
 - 🔌 500+ integrations
 - ⚡ Workflow execution tracking
@@ -100,13 +105,23 @@ Comprehensive analytics for each workflow:
 - Node performance analysis
 - Peak time identification
 
-### 4. Real-time Execution Tracking
+### 4. RBAC (Role-Based Access Control)
+**5 Roles with granular permissions:**
+- **Owner** 👑 - Full control (43 permissions)
+- **Admin** 🔴 - Manage workflows & team (38 permissions)
+- **Member** 🔵 - Create & execute workflows (18 permissions)
+- **Viewer** 🟢 - Read-only + approvals (7 permissions)
+- **Guest** ⚪ - Approvals only (2 permissions)
+
+See [COMPLETE_DESIGN.md](./COMPLETE_DESIGN.md#rbac---role-based-access-control) for full details.
+
+### 5. Real-time Execution Tracking
 - Live progress updates
 - Detailed execution logs
 - Error tracking & retry
 - Cancel/pause workflows
 
-### 5. Multi-Workspace Support
+### 6. Multi-Workspace Support
 - Users can belong to multiple workspaces
 - Easy workspace switching
 - Isolated data per workspace

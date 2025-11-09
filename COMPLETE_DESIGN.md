@@ -11,11 +11,12 @@
 2. [Platform Overview](#platform-overview)
 3. [Core Features](#core-features)
 4. [Architecture](#architecture)
-5. [API Documentation](#api-documentation-reference)
-6. [Workflow Triggers](#workflow-triggers)
-7. [Development Guide](#development-guide)
-8. [MSW Integration](#msw-integration)
-9. [Contributing](#contributing)
+5. [RBAC - Role-Based Access Control](#rbac---role-based-access-control)
+6. [API Documentation](#api-documentation-reference)
+7. [Workflow Triggers](#workflow-triggers)
+8. [Development Guide](#development-guide)
+9. [MSW Integration](#msw-integration)
+10. [Contributing](#contributing)
 
 ---
 
@@ -227,6 +228,190 @@ src/
 └── utils/
     └── helpers.ts
 ```
+
+---
+
+## 🔐 RBAC - Role-Based Access Control
+
+Swift Flow AI implements a comprehensive Role-Based Access Control system to manage user permissions across workspaces.
+
+### Roles
+
+#### 1. Owner 👑
+**Full control over the workspace**
+- All 43 permissions (complete access)
+- Can delete workspace
+- Can manage billing
+- Can transfer ownership
+- Cannot be removed from workspace
+
+**Use case:** Workspace creator, primary administrator
+
+#### 2. Admin 🔴
+**Manage workflows, team, and integrations**
+- 38 permissions
+- Can create, edit, delete workflows
+- Can manage team and integrations
+- Cannot delete workspace or manage billing
+- Cannot change member roles (only owner can)
+
+**Use case:** Team leads, department managers
+
+#### 3. Member 🔵
+**Create and execute workflows**
+- 18 permissions
+- Can create, edit, and execute workflows
+- Can view analytics
+- Can handle approvals
+- Cannot delete workflows, invite members, or configure integrations
+
+**Use case:** Regular team members, workflow creators
+
+#### 4. Viewer 🟢
+**Read-only access with approval handling**
+- 7 permissions
+- Can view workflows and executions
+- Can handle assigned approvals
+- Cannot create, edit, or execute workflows
+- Cannot view analytics
+
+**Use case:** Stakeholders, approvers, auditors
+
+#### 5. Guest ⚪
+**Limited access for external collaborators**
+- 2 permissions
+- Can only view and decide on assigned approvals
+- Cannot access any other features
+
+**Use case:** External approvers, contractors, clients
+
+### Permission Matrix
+
+| Feature | Owner | Admin | Member | Viewer | Guest |
+|---------|-------|-------|--------|--------|-------|
+| **Workflows** |
+| View workflows | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Create workflows | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Edit workflows | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Delete workflows | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Execute workflows | ✅ | ✅ | ✅ | ❌ | ❌ |
+| **Analytics** |
+| View analytics | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Export analytics | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **Executions** |
+| Cancel executions | ✅ | ✅ | ✅ | ❌ | ❌ |
+| **Approvals** |
+| Handle approvals | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Team** |
+| Invite members | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Remove members | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Manage roles | ✅ | ❌ | ❌ | ❌ | ❌ |
+| **Integrations** |
+| Install integrations | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **Workspace** |
+| Delete workspace | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Manage billing | ✅ | ❌ | ❌ | ❌ | ❌ |
+
+### Using RBAC in Code
+
+#### Method 1: usePermissions Hook
+```typescript
+import { usePermissions } from '../../hooks/usePermissions';
+
+function MyComponent() {
+  const { can, canAny, canAll, userRole, isOwner, isAdminOrOwner } = usePermissions();
+  
+  // Check single permission
+  if (can('workflow:create')) {
+    // Show create button
+  }
+  
+  // Check multiple permissions (any)
+  if (canAny(['workflow:edit', 'workflow:delete'])) {
+    // Show edit or delete
+  }
+  
+  // Check role
+  if (isAdminOrOwner) {
+    // Show admin features
+  }
+}
+```
+
+#### Method 2: PermissionGate Component
+```typescript
+import { PermissionGate } from '../../components/common/PermissionGate';
+
+function MyComponent() {
+  return (
+    <div>
+      <PermissionGate permission="workflow:create">
+        <button>Create Workflow</button>
+      </PermissionGate>
+      
+      <PermissionGate 
+        permission="analytics:view"
+        fallback={<p>No access to analytics</p>}
+      >
+        <AnalyticsDashboard />
+      </PermissionGate>
+    </div>
+  );
+}
+```
+
+### Demo Users for Testing
+
+| Email | Role | Password | Access Level |
+|-------|------|----------|--------------|
+| admin@acme.com | Owner | any | Full access |
+| john@acme.com | Admin | any | Manage workflows, team |
+| sarah@acme.com | Member | any | Create & execute workflows |
+| alice@acme.com | Viewer | any | Read-only + approvals |
+| david@acme.com | Guest | any | Approvals only |
+
+### Testing RBAC
+
+```bash
+# Start app with mock data
+npm run mock
+
+# Open browser
+http://localhost:5173
+
+# Test as Member (can create workflows)
+Login: sarah@acme.com
+Password: demo123
+Navigate to Workflows → See "Create Workflow" button ✅
+
+# Test as Viewer (read-only)
+Logout → Login: alice@acme.com
+Navigate to Workflows → "Create Workflow" button hidden ❌
+```
+
+### RBAC Implementation Files
+
+**Core System:**
+- `src/types/rbac.ts` - Role & permission definitions (43 permissions)
+- `src/hooks/usePermissions.ts` - Permission checking hook
+- `src/components/common/PermissionGate.tsx` - Conditional rendering component
+
+**Protected Pages:**
+- `src/pages/workflows/WorkflowsList.tsx` - "Create Workflow" button
+- `src/pages/workflows/WorkflowViewer.tsx` - "Run", "Edit", "Analytics", "Delete" buttons
+- `src/pages/team/TeamPage.tsx` - "Invite Members", "Create Pool" buttons
+
+**Mock Data:**
+- `src/mocks/data/team.ts` - Team members with roles
+- `src/mocks/handlers/workspace.handlers.ts` - Returns members with workspace
+
+### Best Practices
+
+1. **Default to Least Privilege** - Grant minimum permissions required
+2. **Use Roles Appropriately** - Owner (1), Admin (2-3), Member (most), Viewer (stakeholders), Guest (external)
+3. **Regular Audits** - Review roles quarterly, remove inactive members
+4. **Onboarding** - Start new members as "Member" or "Viewer", promote based on trust
+5. **Security** - All API endpoints validate permissions server-side; frontend checks are for UX only
 
 ---
 
@@ -538,20 +723,28 @@ All mock data is in `src/mocks/data/`:
 - **pools.ts** - Team pools (HR Ops, Recruiters, CAB, etc.)
 - **auditLogs.ts** - Audit trail
 
-### Demo Users
+### Demo Users (with RBAC roles)
 
 ```typescript
-// Admin user
-Email: admin@flowai.com
-Password: any password
+// Owner - Full access
+Email: admin@acme.com
+Password: any
 
-// Regular user
-Email: user@flowai.com
-Password: any password
+// Admin - Manage workflows, team
+Email: john@acme.com
+Password: any
 
-// Demo user
-Email: demo@flowai.com
-Password: demo123
+// Member - Create & execute workflows
+Email: sarah@acme.com
+Password: any
+
+// Viewer - Read-only + approvals
+Email: alice@acme.com
+Password: any
+
+// Guest - Approvals only
+Email: david@acme.com
+Password: any
 ```
 
 ---
@@ -630,6 +823,9 @@ VITE_ENABLE_MSW=true npm run dev
 - [x] Responsive design
 - [x] MSW integration
 - [x] Complete API documentation
+- [x] **RBAC System** (5 roles, 43 permissions)
+- [x] Profile page
+- [x] Permission-based UI rendering
 
 ### 🎯 Example Workflows
 
@@ -698,18 +894,28 @@ Complete workflow demonstrating:
 
 ### Latest Changes
 
-1. **Workflow Analytics** - Comprehensive analytics page with charts, bottleneck detection, and AI recommendations
-2. **Team Pools** - Support for assigning tasks to pools of people
-3. **HR Interview Workflow** - Complete example workflow with all features
-4. **Navigation Fixes** - All routes updated to use `/app` prefix
-5. **Lint Fixes** - Removed `any` types, fixed TypeScript errors
-6. **Theme Improvements** - Fixed dropdown backgrounds and contrast
-7. **Mock Data** - Realistic data for all features
+1. **RBAC System** - Complete role-based access control with 5 roles and 43 granular permissions
+2. **Profile Page** - New user profile page with preferences and account information
+3. **Permission-Based UI** - Buttons and features hidden/shown based on user role
+4. **Workflow Analytics** - Comprehensive analytics page with charts and bottleneck detection
+5. **Team Pools** - Support for assigning tasks to pools of people
+6. **HR Interview Workflow** - Complete example workflow with all features
+7. **Navigation Fixes** - All routes updated to use `/app` prefix
+8. **Theme Improvements** - Fixed dropdown backgrounds and contrast
+9. **Mock Data** - Realistic data for all features with proper roles
+
+### Demo Users with Roles
+
+- **admin@acme.com** - Owner (full access)
+- **john@acme.com** - Admin (manage workflows, team)
+- **sarah@acme.com** - Member (create & execute workflows)
+- **alice@acme.com** - Viewer (read-only + approvals)
+- **david@acme.com** - Guest (approvals only)
 
 ### Known Issues
 
 - Some useEffect exhaustive-deps warnings (safe to ignore)
-- A few remaining 'any' types in mock handlers (non-critical)
+- TeamPage has some unused RBAC imports (non-critical)
 
 ---
 

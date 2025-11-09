@@ -2,6 +2,22 @@ import { TeamMember } from '../../types/workspace';
 
 export const mockTeamMembers: TeamMember[] = [
   {
+    id: 'usr_owner',
+    name: 'Admin User',
+    email: 'admin@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
+    role: 'owner',
+    status: 'active',
+    stats: {
+      workflowsCreated: 25,
+      approvalsHandled: 150,
+      avgApprovalTime: '2.1h',
+    },
+    joinedAt: '2024-01-01T10:00:00Z',
+    lastActiveAt: '2025-01-15T15:00:00Z',
+    poolIds: [],
+  },
+  {
     id: 'usr_john',
     name: 'John Smith',
     email: 'john@acme.com',
@@ -22,7 +38,7 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Sarah Lee',
     email: 'sarah@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-    role: 'editor',
+    role: 'member',
     status: 'active',
     stats: {
       workflowsCreated: 18,
@@ -38,7 +54,7 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Mike Brown',
     email: 'mike@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
-    role: 'editor',
+    role: 'member',
     status: 'active',
     stats: {
       workflowsCreated: 8,
@@ -54,7 +70,7 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Lisa Chen',
     email: 'lisa@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa',
-    role: 'editor',
+    role: 'member',
     status: 'active',
     stats: {
       workflowsCreated: 15,
@@ -70,10 +86,10 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Alice Johnson',
     email: 'alice@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice',
-    role: 'approver',
+    role: 'viewer',
     status: 'active',
     stats: {
-      workflowsCreated: 5,
+      workflowsCreated: 0,
       approvalsHandled: 312,
       avgApprovalTime: '2.3h',
     },
@@ -86,10 +102,10 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Bob Williams',
     email: 'bob@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob',
-    role: 'approver',
+    role: 'viewer',
     status: 'active',
     stats: {
-      workflowsCreated: 3,
+      workflowsCreated: 0,
       approvalsHandled: 278,
       avgApprovalTime: '3.8h',
     },
@@ -118,7 +134,7 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'David Martinez',
     email: 'david@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-    role: 'editor',
+    role: 'guest',
     status: 'invited',
     stats: {
       workflowsCreated: 0,

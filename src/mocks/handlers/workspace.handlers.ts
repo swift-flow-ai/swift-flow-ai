@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
 import { mockWorkspaces, getMockDashboard } from '../data/workspaces';
+import { mockTeamMembers } from '../data/team';
 
 const BASE_URL = 'http://localhost:3000/api';
 
@@ -23,7 +24,11 @@ export const workspaceHandlers = [
       );
     }
 
-    return HttpResponse.json(workspace);
+    // Include team members with workspace
+    return HttpResponse.json({
+      ...workspace,
+      members: mockTeamMembers,
+    });
   }),
 
   // GET /workspaces/:workspaceId/dashboard

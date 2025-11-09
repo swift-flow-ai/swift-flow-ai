@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useAuth } from '../../hooks/useAuth';
+import { usePermissions } from '../../hooks/usePermissions';
 import { Button, Input } from '../../components/common';
 import { Avatar } from '../../components/common/Avatar';
 import { Badge } from '../../components/common/Badge';
+import { getRoleBadgeColor } from '../../types/rbac';
 import { 
   Users, 
   UserPlus, 
@@ -29,7 +31,7 @@ interface TeamMember {
   name: string;
   email: string;
   avatar?: string;
-  role: 'admin' | 'editor' | 'approver' | 'viewer';
+  role: 'owner' | 'admin' | 'member' | 'viewer' | 'guest';
   status: 'active' | 'invited' | 'inactive';
   stats: {
     workflowsCreated: number;
@@ -73,16 +75,15 @@ interface TeamPool {
 export function TeamPage() {
   const { currentWorkspace } = useWorkspace();
   const { user } = useAuth();
+  const { isAdminOrOwner } = usePermissions();
   const [activeTab, setActiveTab] = useState<'members' | 'pools'>('members');
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [pools, setPools] = useState<TeamPool[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'editor' | 'viewer'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | 'owner' | 'admin' | 'member' | 'viewer' | 'guest'>('all');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreatePoolModal, setShowCreatePoolModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-
-  const isAdmin = currentWorkspace?.role === 'admin';
 
   useEffect(() => {
     if (currentWorkspace) {
@@ -117,21 +118,12 @@ export function TeamPage() {
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'admin': return Crown;
-      case 'editor': return Shield;
-      case 'approver': return UserIcon;
+      case 'owner': return Crown;
+      case 'admin': return Shield;
+      case 'member': return UserIcon;
       case 'viewer': return UserIcon;
+      case 'guest': return UserIcon;
       default: return UserIcon;
-    }
-  };
-
-  const getRoleBadgeClass = (role: string) => {
-    switch (role) {
-      case 'admin': return 'bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-300';
-      case 'editor': return 'bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300';
-      case 'approver': return 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300';
-      case 'viewer': return 'bg-gray-100 dark:bg-gray-500/20 text-gray-800 dark:text-gray-300';
-      default: return 'bg-gray-100 dark:bg-gray-500/20 text-gray-800 dark:text-gray-300';
     }
   };
 
@@ -161,7 +153,7 @@ export function TeamPage() {
     }
   };
 
-  const handleChangeRole = (memberId: string, newRole: 'admin' | 'editor' | 'approver' | 'viewer') => {
+  const handleChangeRole = (memberId: string, newRole: 'owner' | 'admin' | 'member' | 'viewer' | 'guest') => {
     setMembers(members.map(m => 
       m.id === memberId ? { ...m, role: newRole } : m
     ));
@@ -178,7 +170,7 @@ export function TeamPage() {
             Manage team members and organize them into pools for better collaboration
           </p>
         </div>
-        {isAdmin && (
+        {isAdminOrOwner && (
           <div className="flex gap-3">
             {activeTab === 'pools' && (
               <Button 
@@ -216,7 +208,7 @@ export function TeamPage() {
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Members
-              <Badge variant="secondary">{members.length}</Badge>
+              <Badge variant="default">{members.length}</Badge>
             </div>
           </button>
           <button
@@ -230,7 +222,7 @@ export function TeamPage() {
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Pools
-              <Badge variant="secondary">{pools.length}</Badge>
+              <Badge variant="default">{pools.length}</Badge>
             </div>
           </button>
         </div>
@@ -404,13 +396,15 @@ export function TeamPage() {
               <Filter className="h-4 w-4 text-muted-foreground" />
               <select
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value as 'all' | 'admin' | 'editor' | 'viewer')}
+                onChange={(e) => setRoleFilter(e.target.value as 'all' | 'owner' | 'admin' | 'member' | 'viewer' | 'guest')}
                 className="px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="all">All Roles</option>
+                <option value="owner">Owners</option>
                 <option value="admin">Admins</option>
-                <option value="editor">Editors</option>
+                <option value="member">Members</option>
                 <option value="viewer">Viewers</option>
+                <option value="guest">Guests</option>
               </select>
             </div>
           )}
@@ -422,19 +416,18 @@ export function TeamPage() {
         <MembersTable 
           members={filteredMembers}
           user={user}
-          isAdmin={isAdmin}
+          isAdmin={isAdminOrOwner}
           openMenuId={openMenuId}
           setOpenMenuId={setOpenMenuId}
           handleChangeRole={handleChangeRole}
           handleRemoveMember={handleRemoveMember}
           getRoleIcon={getRoleIcon}
-          getRoleBadgeClass={getRoleBadgeClass}
           getStatusBadgeClass={getStatusBadgeClass}
         />
       ) : (
         <PoolsGrid 
           pools={filteredPools}
-          isAdmin={isAdmin}
+          isAdmin={isAdminOrOwner}
           getPoolTypeIcon={getPoolTypeIcon}
         />
       )}
@@ -499,14 +492,13 @@ interface MembersTableProps {
   isAdmin: boolean;
   openMenuId: string | null;
   setOpenMenuId: (id: string | null) => void;
-  handleChangeRole: (memberId: string, role: string) => void;
+  handleChangeRole: (memberId: string, role: 'owner' | 'admin' | 'member' | 'viewer' | 'guest') => void;
   handleRemoveMember: (memberId: string) => void;
-  getRoleIcon: (role: string) => JSX.Element;
-  getRoleBadgeClass: (role: string) => string;
+  getRoleIcon: (role: string) => React.ComponentType<{ className?: string }>;
   getStatusBadgeClass: (status: string) => string;
 }
 
-function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handleChangeRole, handleRemoveMember, getRoleIcon, getRoleBadgeClass, getStatusBadgeClass }: MembersTableProps) {
+function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handleChangeRole, handleRemoveMember, getRoleIcon, getStatusBadgeClass }: MembersTableProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -557,7 +549,7 @@ function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handl
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${getRoleBadgeClass(member.role)}`}>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(member.role)}`}>
                       <RoleIcon className="h-3 w-3" />
                       {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                     </span>
@@ -584,7 +576,7 @@ function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handl
                   <td className="px-6 py-4">
                     <div className="flex gap-1">
                       {(member.poolIds && member.poolIds.length > 0) ? (
-                        <Badge variant="secondary">{member.poolIds.length} pools</Badge>
+                        <Badge variant="default">{member.poolIds.length} pools</Badge>
                       ) : (
                         <span className="text-sm text-muted-foreground">No pools</span>
                       )}
@@ -626,12 +618,12 @@ function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handl
                                 Make Admin
                               </button>
                               <button
-                                onClick={() => handleChangeRole(member.id, 'editor')}
+                                onClick={() => handleChangeRole(member.id, 'member')}
                                 className="w-full px-4 py-2 text-left text-sm hover:bg-muted transition-colors flex items-center gap-2"
-                                disabled={member.role === 'editor'}
+                                disabled={member.role === 'member'}
                               >
                                 <Shield className="h-4 w-4" />
-                                Make Editor
+                                Make Member
                               </button>
                               <button
                                 onClick={() => handleChangeRole(member.id, 'viewer')}
@@ -737,13 +729,13 @@ function PoolsGrid({ pools, isAdmin, getPoolTypeIcon }: PoolsGridProps) {
           {/* Settings Badges */}
           <div className="flex flex-wrap gap-2 mb-4">
             {pool.settings.autoAssignment && (
-              <Badge variant="secondary">Auto-assign</Badge>
+              <Badge variant="default">Auto-assign</Badge>
             )}
             {pool.settings.roundRobin && (
-              <Badge variant="secondary">Round-robin</Badge>
+              <Badge variant="default">Round-robin</Badge>
             )}
             {pool.settings.loadBalancing && (
-              <Badge variant="secondary">Load balanced</Badge>
+              <Badge variant="default">Load balanced</Badge>
             )}
           </div>
 

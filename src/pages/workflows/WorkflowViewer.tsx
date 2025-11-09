@@ -37,6 +37,8 @@ import { ApprovalNode } from '../../components/workflow/nodes/ApprovalNode';
 import { workflowService } from '../../services/workflow.service';
 import { executionService } from '../../services/execution.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
+import { usePermissions } from '../../hooks/usePermissions';
+import { PermissionGate } from '../../components/common/PermissionGate';
 import { Workflow, WorkflowExecution } from '../../types';
 
 const nodeTypes = {
@@ -243,18 +245,24 @@ export function WorkflowViewer() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="primary" onClick={handleRun}>
-              <Play className="h-4 w-4 mr-2" />
-              Run Workflow
-            </Button>
-            <Button variant="secondary" onClick={handleEdit}>
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-            <Button variant="secondary" onClick={() => navigate(`/app/workflows/${workflowId}/analytics`)}>
-              <BarChart3 className="h-4 w-4 mr-2" />
-              Analytics
-            </Button>
+            <PermissionGate permission="workflow:execute">
+              <Button variant="primary" onClick={handleRun}>
+                <Play className="h-4 w-4 mr-2" />
+                Run Workflow
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission="workflow:edit">
+              <Button variant="secondary" onClick={handleEdit}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+            </PermissionGate>
+            <PermissionGate permission="analytics:view">
+              <Button variant="secondary" onClick={() => navigate(`/app/workflows/${workflowId}/analytics`)}>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Analytics
+              </Button>
+            </PermissionGate>
             
             {/* More Actions Menu */}
             <div className="relative">
@@ -276,13 +284,15 @@ export function WorkflowViewer() {
                     animate={{ opacity: 1, y: 0 }}
                     className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-lg shadow-xl py-2 z-50"
                   >
-                    <button
-                      onClick={handleDuplicate}
-                      className="w-full flex items-center gap-3 px-4 py-2 hover:bg-muted transition-colors text-left"
-                    >
-                      <Copy className="h-4 w-4" />
-                      <span className="text-sm">Duplicate</span>
-                    </button>
+                    <PermissionGate permission="workflow:create">
+                      <button
+                        onClick={handleDuplicate}
+                        className="w-full flex items-center gap-3 px-4 py-2 hover:bg-muted transition-colors text-left"
+                      >
+                        <Copy className="h-4 w-4" />
+                        <span className="text-sm">Duplicate</span>
+                      </button>
+                    </PermissionGate>
                     <button
                       onClick={handleExport}
                       className="w-full flex items-center gap-3 px-4 py-2 hover:bg-muted transition-colors text-left"
@@ -290,14 +300,18 @@ export function WorkflowViewer() {
                       <Download className="h-4 w-4" />
                       <span className="text-sm">Export</span>
                     </button>
-                    <div className="my-1 border-t border-border" />
-                    <button
-                      onClick={handleDelete}
-                      className="w-full flex items-center gap-3 px-4 py-2 hover:bg-destructive/10 text-destructive transition-colors text-left"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <span className="text-sm">Delete</span>
-                    </button>
+                    <PermissionGate permission="workflow:delete">
+                      <>
+                        <div className="my-1 border-t border-border" />
+                        <button
+                          onClick={handleDelete}
+                          className="w-full flex items-center gap-3 px-4 py-2 hover:bg-destructive/10 text-destructive transition-colors text-left"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="text-sm">Delete</span>
+                        </button>
+                      </>
+                    </PermissionGate>
                   </motion.div>
                 </>
               )}

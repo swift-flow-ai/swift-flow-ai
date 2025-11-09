@@ -11,6 +11,7 @@ export interface Workspace {
   unreadNotifications: number;
   lastActiveAt: string;
   createdAt: string;
+  members?: TeamMember[];
 }
 
 export interface WorkspaceDashboard {

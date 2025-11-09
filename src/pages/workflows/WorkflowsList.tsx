@@ -2,17 +2,20 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../hooks/useWorkspace';
+import { usePermissions } from '../../hooks/usePermissions';
 import { workflowService } from '../../services/workflow.service';
 import { Workflow } from '../../types/workspace';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Badge } from '../../components/common/Badge';
 import { Avatar } from '../../components/common/Avatar';
 import { EmptyState } from '../../components/common/EmptyState';
-import { Zap, Plus, Search, Play, Pause, Archive } from 'lucide-react';
+import { PermissionGate } from '../../components/common/PermissionGate';
+import { Zap, Plus, Search, Play, Pause, Archive, Lock } from 'lucide-react';
 
 export function WorkflowsList() {
   const navigate = useNavigate();
   const { currentWorkspace } = useWorkspace();
+  const { can } = usePermissions();
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
@@ -80,13 +83,15 @@ export function WorkflowsList() {
             Manage and monitor your automation workflows
           </p>
         </div>
-        <button 
-          onClick={() => navigate('/app/workflows/new')}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          <Plus className="h-4 w-4" />
-          Create Workflow
-        </button>
+        <PermissionGate permission="workflow:create">
+          <button 
+            onClick={() => navigate('/app/workflows/new')}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="h-4 w-4" />
+            Create Workflow
+          </button>
+        </PermissionGate>
       </div>
 
       {/* Filters */}
