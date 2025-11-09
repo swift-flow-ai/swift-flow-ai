@@ -196,7 +196,7 @@ export function ExecutionsList() {
               transition={{ delay: index * 0.05 }}
             >
               <Link
-                to={`/executions/${execution.id}`}
+                to={`/app/executions/${execution.id}`}
                 className="block bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-all"
               >
                 <div className="flex items-start justify-between">
