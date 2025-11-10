@@ -1,4 +1,4 @@
-export interface MarketplaceApp {
+export interface AppCenterApp {
   id: string;
   name: string;
   description: string;
@@ -37,8 +37,8 @@ export const CATEGORIES = [
   { id: 'development', name: 'Development', icon: '💻' },
 ];
 
-// Mock marketplace apps
-export const marketplaceApps: MarketplaceApp[] = [
+// Mock App Center apps
+export const appCenterApps: AppCenterApp[] = [
   {
     id: 'slack',
     name: 'Slack',

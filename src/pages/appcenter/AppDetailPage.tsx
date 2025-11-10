@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '../../components/common';
-import { marketplaceApps } from '../../data/marketplaceApps';
+import { appCenterApps } from '../../data/appCenterApps';
 import {
   ArrowLeft,
   Star,
@@ -24,15 +24,15 @@ export function AppDetailPage() {
   const [isInstalling, setIsInstalling] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
-  const app = marketplaceApps.find(a => a.id === appId);
+  const app = appCenterApps.find(a => a.id === appId);
 
   if (!app) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh]">
         <h2 className="text-2xl font-bold mb-2">App not found</h2>
         <p className="text-muted-foreground mb-6">The app you're looking for doesn't exist.</p>
-        <Button onClick={() => navigate('/app/marketplace')}>
-          Back to Marketplace
+        <Button onClick={() => navigate('/app/appcenter')}>
+          Back to App Center
         </Button>
       </div>
     );
@@ -60,11 +60,11 @@ export function AppDetailPage() {
     <div className="space-y-6 max-w-6xl">
       {/* Back Button */}
       <button
-        onClick={() => navigate('/app/marketplace')}
+        onClick={() => navigate('/app/appcenter')}
         className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to Marketplace
+        Back to App Center
       </button>
 
       {/* Header */}

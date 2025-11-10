@@ -7,21 +7,19 @@ import {
   Filter,
   Star,
   Download,
-  Zap,
+  CheckCircle2,
+  Globe,
+  Sparkles,
   MessageSquare,
   Database,
   DollarSign,
   Code,
-  Globe,
-  Sparkles,
-  CheckCircle2,
+  Zap,
   Users
 } from 'lucide-react';
-import { marketplaceApps } from '../../data/marketplaceApps';
+import { appCenterApps } from '../../data/appCenterApps';
 
-// Component starts below - data moved to src/data/marketplaceApps.ts
-
-export function MarketplacePage() {
+export function IntegrationsTab() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -40,7 +38,7 @@ export function MarketplacePage() {
     { id: 'hr', label: 'HR', icon: Users },
   ];
 
-  const filteredApps = marketplaceApps.filter(app => {
+  const filteredApps = appCenterApps.filter(app => {
     const matchesSearch = app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          app.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || app.category === selectedCategory;
@@ -57,86 +55,6 @@ export function MarketplacePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Marketplace</h1>
-        <p className="text-muted-foreground mt-2">
-          Discover and install apps to power your workflows
-        </p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-card border border-border rounded-xl p-4"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <Globe className="w-5 h-5 text-blue-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{marketplaceApps.length}</p>
-              <p className="text-sm text-muted-foreground">Total Apps</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-card border border-border rounded-xl p-4"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-              <Star className="w-5 h-5 text-purple-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{marketplaceApps.filter(a => a.featured).length}</p>
-              <p className="text-sm text-muted-foreground">Featured</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-card border border-border rounded-xl p-4"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{marketplaceApps.filter(a => a.verified).length}</p>
-              <p className="text-sm text-muted-foreground">Verified</p>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-card border border-border rounded-xl p-4"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-              <Download className="w-5 h-5 text-orange-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">
-                {(marketplaceApps.reduce((sum, app) => sum + app.installs, 0) / 1000).toFixed(0)}K
-              </p>
-              <p className="text-sm text-muted-foreground">Total Installs</p>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-
       {/* Filters */}
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex flex-col gap-4">
@@ -146,7 +64,7 @@ export function MarketplacePage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search apps..."
+                placeholder="Search integrations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -210,7 +128,7 @@ export function MarketplacePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              onClick={() => navigate(`/app/marketplace/${app.id}`)}
+              onClick={() => navigate(`/app/appcenter/integration/${app.id}`)}
               className="bg-card border border-border rounded-xl p-6 hover:border-primary hover:shadow-lg transition-all cursor-pointer group"
             >
               {/* Header */}
@@ -280,7 +198,7 @@ export function MarketplacePage() {
       {filteredApps.length === 0 && (
         <div className="text-center py-12">
           <Search className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">No apps found matching your criteria</p>
+          <p className="text-muted-foreground">No integrations found matching your criteria</p>
         </div>
       )}
     </div>

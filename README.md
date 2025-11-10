@@ -234,8 +234,8 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 - [x] Execution tracking & history
 - [x] Inbox (approvals & tasks) with improved UX
 - [x] AI-powered recommendations
-- [x] Template marketplace
-- [x] Integration marketplace
+- [x] Template library
+- [x] App Center (Integrations, MCPs, Custom LLMs)
 - [x] Audit logs
 - [x] Notifications
 - [x] Theme toggle (Light/Dark/System)
@@ -264,7 +264,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 - Analytics: http://localhost:5173/app/workflows/wf_recruitment/analytics
 - Inbox: http://localhost:5173/app/inbox
 - Team: http://localhost:5173/app/team
-- Marketplace: http://localhost:5173/app/marketplace
+- App Center: http://localhost:5173/app/appcenter
 
 ---
 

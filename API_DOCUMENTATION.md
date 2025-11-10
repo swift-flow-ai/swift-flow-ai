@@ -1166,7 +1166,7 @@ Revoke a folder share link.
 
 ### GET /workspaces/:workspaceId/templates
 
-Get workflow templates available in workspace (includes marketplace templates).
+Get workflow templates available in workspace (includes public templates).
 
 **Query Parameters:**
 
@@ -1713,11 +1713,17 @@ Delegate approval to another user.
 
 ---
 
-## 🔌 Integrations
+## 🔌 App Center
 
-### GET /integrations/marketplace
+The App Center provides access to Integrations, MCP Servers, and Custom LLMs.
 
-Browse available integrations.
+---
+
+## Integrations
+
+### GET /appcenter/integrations
+
+Browse available integrations in the App Center.
 
 **Query Parameters:**
 
@@ -1978,6 +1984,320 @@ Refresh OAuth tokens.
 Disconnect/delete integration.
 
 **Response:** `204 No Content`
+
+---
+
+## MCP Servers (Model Context Protocol)
+
+### GET /appcenter/mcps
+
+Browse available MCP servers in the App Center.
+
+**Query Parameters:**
+
+- `category`: `data-sources|tools|search|actions|custom`
+- `provider`: `official|community|private`
+- `search`: search term
+- `page`, `limit`
+
+**Response:** `200 OK`
+
+```json
+{
+  "mcps": [
+    {
+      "id": "mcp_websearch",
+      "name": "Web Search MCP",
+      "description": "Search the web using Google, Bing, or DuckDuckGo",
+      "provider": "official",
+      "category": "search",
+      "icon": "🔍",
+      "version": "1.2.0",
+      "author": "Swift Flow AI",
+      "capabilities": [
+        {
+          "id": "search_web",
+          "name": "Search Web",
+          "description": "Search the web and return top results",
+          "parameters": {"query": "string", "limit": "number"}
+        }
+      ],
+      "requiresAuth": true,
+      "installCount": 15234,
+      "rating": 4.8
+    }
+  ],
+  "pagination": {...}
+}
+```
+
+### GET /workspaces/:workspaceId/mcps
+
+Get installed MCPs in workspace.
+
+**Response:** `200 OK`
+
+```json
+{
+  "mcps": [
+    {
+      "id": "installed_mcp_1",
+      "mcpId": "mcp_websearch",
+      "workspaceId": "ws_xyz",
+      "name": "Web Search MCP",
+      "provider": "official",
+      "category": "search",
+      "endpoint": "https://mcp.swiftflow.ai/websearch",
+      "credentials": {"apiKey": "***"},
+      "capabilities": [...],
+      "status": "active",
+      "lastUsed": "2024-11-09T14:30:00Z",
+      "usageCount": 234,
+      "installedAt": "2024-10-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+### POST /workspaces/:workspaceId/mcps
+
+Install an MCP server.
+
+**Request:**
+
+```json
+{
+  "mcpId": "mcp_websearch",
+  "credentials": {
+    "apiKey": "your-api-key"
+  },
+  "endpoint": "https://mcp.swiftflow.ai/websearch"
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "mcp": {
+    "id": "installed_mcp_new",
+    "mcpId": "mcp_websearch",
+    "name": "Web Search MCP",
+    "status": "active",
+    "installedAt": "2024-11-10T10:00:00Z"
+  }
+}
+```
+
+### PATCH /workspaces/:workspaceId/mcps/:mcpId
+
+Update MCP configuration.
+
+**Request:**
+
+```json
+{
+  "credentials": {
+    "apiKey": "new-api-key"
+  },
+  "status": "active"
+}
+```
+
+**Response:** `200 OK`
+
+### DELETE /workspaces/:workspaceId/mcps/:mcpId
+
+Uninstall an MCP server.
+
+**Response:** `204 No Content`
+
+### POST /workspaces/:workspaceId/mcps/:mcpId/test
+
+Test MCP connection and capabilities.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "message": "MCP connection successful",
+  "capabilities": ["search_web", "search_images", "search_news"],
+  "latency": 245
+}
+```
+
+---
+
+## Custom LLMs
+
+### GET /workspaces/:workspaceId/custom-llms
+
+Get all custom LLMs in workspace.
+
+**Response:** `200 OK`
+
+```json
+{
+  "customLLMs": [
+    {
+      "id": "llm_custom_1",
+      "workspaceId": "ws_xyz",
+      "name": "Production GPT-4",
+      "description": "Fine-tuned GPT-4 model for customer support",
+      "provider": "openai",
+      "endpoint": "https://api.openai.com/v1",
+      "model": "ft:gpt-4-0613:acme-corp::abc123",
+      "parameters": {
+        "temperature": 0.7,
+        "maxTokens": 2000,
+        "topP": 0.9
+      },
+      "costConfig": {
+        "inputPer1kTokens": 0.03,
+        "outputPer1kTokens": 0.06,
+        "currency": "USD"
+      },
+      "status": "active",
+      "usageCount": 1234,
+      "totalTokensUsed": 2456789,
+      "totalCost": 147.41,
+      "createdAt": "2024-09-01T00:00:00Z"
+    }
+  ]
+}
+```
+
+### POST /workspaces/:workspaceId/custom-llms
+
+Add a custom LLM.
+
+**Request:**
+
+```json
+{
+  "name": "Production GPT-4",
+  "description": "Fine-tuned GPT-4 model for customer support",
+  "provider": "openai",
+  "endpoint": "https://api.openai.com/v1",
+  "model": "ft:gpt-4-0613:acme-corp::abc123",
+  "apiKey": "sk-...",
+  "parameters": {
+    "temperature": 0.7,
+    "maxTokens": 2000,
+    "topP": 0.9
+  },
+  "costConfig": {
+    "inputPer1kTokens": 0.03,
+    "outputPer1kTokens": 0.06,
+    "currency": "USD"
+  }
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "customLLM": {
+    "id": "llm_custom_new",
+    "name": "Production GPT-4",
+    "status": "active",
+    "createdAt": "2024-11-10T10:00:00Z"
+  }
+}
+```
+
+### PATCH /workspaces/:workspaceId/custom-llms/:llmId
+
+Update custom LLM configuration.
+
+**Request:**
+
+```json
+{
+  "name": "Updated Name",
+  "parameters": {
+    "temperature": 0.8
+  },
+  "status": "active"
+}
+```
+
+**Response:** `200 OK`
+
+### DELETE /workspaces/:workspaceId/custom-llms/:llmId
+
+Delete a custom LLM.
+
+**Response:** `204 No Content`
+
+### POST /workspaces/:workspaceId/custom-llms/:llmId/test
+
+Test custom LLM connection.
+
+**Request:**
+
+```json
+{
+  "prompt": "Hello, how are you?"
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "message": "LLM connection successful",
+  "model": "ft:gpt-4-0613:acme-corp::abc123",
+  "latency": 1250,
+  "testResponse": "I'm doing well, thank you! How can I assist you today?"
+}
+```
+
+### GET /workspaces/:workspaceId/custom-llms/:llmId/usage
+
+Get usage statistics for a custom LLM.
+
+**Query Parameters:**
+
+- `period`: `day|week|month|all` (default: `month`)
+
+**Response:** `200 OK`
+
+```json
+{
+  "llmId": "llm_custom_1",
+  "period": "month",
+  "totalCalls": 1234,
+  "totalTokens": {
+    "input": 1456789,
+    "output": 1000000,
+    "total": 2456789
+  },
+  "totalCost": 147.41,
+  "averageLatency": 1250,
+  "successRate": 98.5,
+  "usageByWorkflow": [
+    {
+      "workflowId": "wf_customer_support",
+      "workflowName": "Customer Support Automation",
+      "calls": 567,
+      "tokens": 1123456,
+      "cost": 67.41
+    }
+  ],
+  "usageOverTime": [
+    {
+      "date": "2024-11-01",
+      "calls": 45,
+      "tokens": 89012,
+      "cost": 5.34
+    }
+  ]
+}
+```
 
 ---
 

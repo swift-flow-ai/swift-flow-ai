@@ -86,7 +86,7 @@ Available Node Types:
 ├── 🔀 Logic (If/Then, Loop, Switch, Wait)
 ├── 🧠 Smart Routing (AI-powered intelligent routing)
 ├── 🔌 Integrations (Slack, Email, Database, 500+ apps)
-├── 🔧 MCP Servers (Custom tools from marketplace)
+├── 🔧 MCP Servers (Custom tools from App Center)
 ├── 📊 Data Operations (Transform, Filter, Aggregate)
 └── 📤 Actions (Send Email, Save DB, Notify, API Call)
 ```
@@ -133,12 +133,31 @@ Comprehensive analytics for each workflow:
 - Error tracking and retry
 - Cancel/pause running workflows
 
-### 6. Marketplace & Integrations
+### 6. App Center (Integrations, MCPs & Custom LLMs)
 
-- 500+ pre-built integrations
-- MCP server support
+**Pre-built Integrations:**
+
+- 500+ pre-built app integrations (Slack, Gmail, Salesforce, etc.)
+- OAuth flows and API key authentication
+- Multiple instances per app (e.g., "Sales Slack", "Support Slack")
 - Custom API connections
-- OAuth flows
+
+**MCP Servers (Model Context Protocol):**
+
+- Install MCP servers from App Center
+- Custom tools and capabilities for AI agents
+- Community-contributed MCPs
+- Private MCP hosting support
+- MCP configuration and credentials management
+
+**Custom LLMs:**
+
+- Bring your own LLM models
+- Support for OpenAI-compatible APIs
+- Configure custom endpoints (OpenRouter, Together AI, local models)
+- Model parameters (temperature, max tokens, etc.)
+- Cost tracking per model
+- Use custom LLMs in AI Agent nodes
 
 ### 7. Workflow Collaboration (Google Drive-style)
 
@@ -267,8 +286,8 @@ src/
 │   ├── workflows/       # WorkflowsList, WorkflowBuilder, WorkflowViewer, WorkflowAnalytics
 │   ├── executions/      # ExecutionsList, ExecutionDetail
 │   ├── inbox/           # InboxPage, InboxDetail
-│   ├── templates/       # TemplateMarketplace, TemplateDetail
-│   ├── marketplace/     # MarketplacePage, AppDetailPage
+│   ├── templates/       # TemplatesPage, TemplateDetail
+│   ├── appcenter/       # AppCenterPage, IntegrationsTab, MCPsTab, CustomLLMsTab
 │   ├── integrations/    # IntegrationsList, AddIntegration, IntegrationConfig
 │   ├── analytics/       # AnalyticsDashboard
 │   ├── team/            # TeamPage (Members & Pools)
@@ -528,6 +547,307 @@ Navigate to Workflows → "Create Workflow" button hidden ❌
 
 ---
 
+## 🏪 App Center - Integrations, MCPs & Custom LLMs
+
+### Overview
+
+The **App Center** is your one-stop shop for extending Swift Flow AI with:
+
+1. **Pre-built Integrations** - Connect to 500+ popular apps
+2. **MCP Servers** - Install Model Context Protocol servers for AI agents
+3. **Custom LLMs** - Bring your own language models
+
+### Pre-built Integrations
+
+**Categories:**
+
+- Communication (Slack, Discord, Microsoft Teams)
+- Email (Gmail, Outlook, SendGrid)
+- CRM (Salesforce, HubSpot, Pipedrive)
+- Project Management (Jira, Asana, Monday.com)
+- Storage (Google Drive, Dropbox, OneDrive)
+- Databases (PostgreSQL, MongoDB, MySQL)
+- AI Services (OpenAI, Anthropic, Cohere)
+- And 490+ more...
+
+**Features:**
+
+- OAuth 2.0 authentication flow
+- API key authentication
+- Multiple instances per app (e.g., "Sales Slack", "Support Slack")
+- Test connection before saving
+- Credential encryption
+- Usage analytics per integration
+
+**Installation Flow:**
+
+1. Browse App Center
+2. Select integration
+3. Click "Install"
+4. Authenticate (OAuth or API key)
+5. Name your instance
+6. Test connection
+7. Use in workflows
+
+### MCP Servers (Model Context Protocol)
+
+**What are MCPs?**
+
+MCPs are custom tools that extend AI agent capabilities. They follow the Model Context Protocol standard, allowing AI agents to:
+
+- Access external data sources
+- Perform specialized computations
+- Interact with custom APIs
+- Use domain-specific tools
+
+**MCP Categories:**
+
+- **Data Sources** - Database connectors, API clients
+- **Tools** - Calculators, validators, converters
+- **Search** - Web search, document search, knowledge bases
+- **Actions** - File operations, system commands
+- **Custom** - Your own MCP servers
+
+**Popular MCPs:**
+
+- **Web Search MCP** - Google, Bing, DuckDuckGo search
+- **Database MCP** - SQL query execution
+- **File System MCP** - Read/write files
+- **GitHub MCP** - Repository operations
+- **Notion MCP** - Access Notion databases
+- **Slack MCP** - Advanced Slack operations
+- **Calculator MCP** - Complex calculations
+- **Weather MCP** - Weather data
+
+**MCP Installation:**
+
+1. Browse MCPs in App Center
+2. Select MCP server
+3. Click "Install"
+4. Configure credentials (if required)
+5. Test MCP connection
+6. Use in AI Agent nodes
+
+**MCP Configuration:**
+
+```typescript
+{
+  name: "Web Search MCP",
+  provider: "community",
+  endpoint: "https://mcp.example.com/websearch",
+  credentials: {
+    apiKey: "your-api-key"
+  },
+  capabilities: [
+    "search_web",
+    "search_images",
+    "search_news"
+  ],
+  status: "active"
+}
+```
+
+**Using MCPs in Workflows:**
+
+In AI Agent nodes, you can select which MCPs the agent has access to:
+
+```
+AI Agent Node Configuration:
+├── Model: GPT-4
+├── System Prompt: "You are a helpful assistant"
+├── Available MCPs:
+│   ├── ✅ Web Search MCP
+│   ├── ✅ Calculator MCP
+│   └── ✅ Database MCP
+└── Max Tokens: 2000
+```
+
+The AI agent can then use these tools during execution:
+
+```
+Agent: "Let me search for the latest pricing..."
+[Uses Web Search MCP]
+Agent: "Based on the search results, the current price is $99."
+```
+
+### Custom LLMs
+
+**Why Custom LLMs?**
+
+- Use your own fine-tuned models
+- Connect to local LLM servers
+- Use alternative providers (OpenRouter, Together AI, Replicate)
+- Cost optimization
+- Data privacy (on-premise models)
+- Specialized models for specific tasks
+
+**Supported Providers:**
+
+- OpenAI-compatible APIs
+- OpenRouter (access to 100+ models)
+- Together AI
+- Replicate
+- Local models (Ollama, LM Studio, vLLM)
+- Azure OpenAI
+- AWS Bedrock
+- Google Vertex AI
+
+**Custom LLM Configuration:**
+
+```typescript
+{
+  name: "My Fine-tuned GPT-4",
+  provider: "openai",
+  endpoint: "https://api.openai.com/v1",
+  model: "ft:gpt-4-0613:my-org::abc123",
+  apiKey: "sk-...",
+  parameters: {
+    temperature: 0.7,
+    maxTokens: 2000,
+    topP: 0.9,
+    frequencyPenalty: 0.0,
+    presencePenalty: 0.0
+  },
+  costPer1kTokens: {
+    input: 0.03,
+    output: 0.06
+  },
+  status: "active"
+}
+```
+
+**Adding a Custom LLM:**
+
+1. Navigate to App Center → Custom LLMs
+2. Click "Add Custom LLM"
+3. Fill in details:
+   - Name (e.g., "Production GPT-4")
+   - Provider (OpenAI, OpenRouter, etc.)
+   - API Endpoint
+   - Model ID
+   - API Key
+   - Default parameters
+   - Cost per 1k tokens (optional)
+4. Test connection
+5. Save
+
+**Using Custom LLMs:**
+
+In AI Agent nodes, select your custom LLM from the model dropdown:
+
+```
+AI Agent Node:
+├── Model: [Custom] My Fine-tuned GPT-4
+├── Temperature: 0.7
+├── Max Tokens: 2000
+└── System Prompt: "..."
+```
+
+**Cost Tracking:**
+
+Custom LLMs track usage and costs:
+
+- Tokens used (input/output)
+- Estimated cost per execution
+- Total cost per workflow
+- Cost analytics dashboard
+
+### App Center UI Structure
+
+```
+App Center
+├── Overview Tab
+│   ├── Quick Stats (Installed apps, MCPs, Custom LLMs)
+│   ├── Recently Added
+│   └── Popular This Week
+├── Integrations Tab
+│   ├── Search & Filters
+│   ├── Categories
+│   ├── Integration Cards
+│   └── Installation Modal
+├── MCPs Tab
+│   ├── Installed MCPs
+│   ├── Browse MCPs
+│   ├── MCP Configuration
+│   └── Test MCP Tool
+└── Custom LLMs Tab
+    ├── Your Custom LLMs
+    ├── Add Custom LLM
+    ├── LLM Configuration
+    └── Usage Analytics
+```
+
+### Security & Privacy
+
+**Credentials:**
+
+- All credentials encrypted at rest
+- Encrypted in transit (TLS)
+- Never logged or exposed
+- Workspace-scoped (not shared across workspaces)
+
+**Permissions:**
+
+- Only workspace Admins and Owners can install/configure
+- Members can use installed integrations/MCPs/LLMs
+- Audit log tracks all installations and changes
+
+**MCP Security:**
+
+- MCPs run in sandboxed environments
+- Rate limiting per MCP
+- Timeout protection
+- Resource limits (CPU, memory)
+
+**Custom LLM Security:**
+
+- API keys encrypted
+- Support for private endpoints
+- VPC/VPN support for on-premise models
+- No data retention on external providers (configurable)
+
+### Examples
+
+#### Example 1: Using Web Search MCP
+
+```yaml
+Workflow: "Research Competitor Pricing"
+Nodes:
+  - Trigger: Manual
+  - AI Agent:
+      model: GPT-4
+      mcps: [Web Search MCP]
+      prompt: "Research pricing for {competitor_name}"
+  - Save to Database
+```
+
+#### Example 2: Custom LLM for Code Review
+
+```yaml
+Workflow: "Automated Code Review"
+Nodes:
+  - Trigger: GitHub Webhook (PR opened)
+  - AI Agent:
+      model: [Custom] Code-Review-GPT-4
+      prompt: "Review this code for bugs and improvements"
+      temperature: 0.3
+  - Post Comment to GitHub
+```
+
+#### Example 3: Multiple Integrations
+
+```yaml
+Workflow: "Customer Onboarding"
+Nodes:
+  - Trigger: Webhook (new signup)
+  - Create Salesforce Lead (Salesforce Integration)
+  - Send Welcome Email (Gmail Integration)
+  - Create Slack Channel (Slack Integration)
+  - Add to Google Drive Folder (Google Drive Integration)
+```
+
+---
+
 ## 📡 API Documentation Reference
 
 **Full API documentation:** See `API_DOCUMENTATION.md`
@@ -618,11 +938,32 @@ Navigate to Workflows → "Create Workflow" button hidden ❌
 - `GET /workspaces/:id/templates` - List templates
 - `POST /workspaces/:id/templates/:templateId/use` - Use template
 
-#### Integrations
+#### App Center
 
-- `GET /integrations/marketplace` - Browse marketplace
+**Integrations:**
+
+- `GET /appcenter/integrations` - Browse integrations in App Center
 - `GET /workspaces/:id/integrations` - List installed integrations
 - `POST /workspaces/:id/integrations` - Install integration
+- `DELETE /workspaces/:id/integrations/:integrationId` - Uninstall integration
+
+**MCPs:**
+
+- `GET /appcenter/mcps` - Browse MCPs in App Center
+- `GET /workspaces/:id/mcps` - List installed MCPs
+- `POST /workspaces/:id/mcps` - Install MCP
+- `PATCH /workspaces/:id/mcps/:mcpId` - Update MCP configuration
+- `DELETE /workspaces/:id/mcps/:mcpId` - Uninstall MCP
+- `POST /workspaces/:id/mcps/:mcpId/test` - Test MCP connection
+
+**Custom LLMs:**
+
+- `GET /workspaces/:id/custom-llms` - List custom LLMs
+- `POST /workspaces/:id/custom-llms` - Add custom LLM
+- `PATCH /workspaces/:id/custom-llms/:llmId` - Update custom LLM
+- `DELETE /workspaces/:id/custom-llms/:llmId` - Delete custom LLM
+- `POST /workspaces/:id/custom-llms/:llmId/test` - Test LLM connection
+- `GET /workspaces/:id/custom-llms/:llmId/usage` - Get usage statistics
 
 #### Analytics
 
@@ -985,8 +1326,8 @@ VITE_ENABLE_MSW=true npm run dev
 - [x] AI-powered approval recommendations
 - [x] Quick actions (approve/reject from list)
 - [x] Smart grouping by priority
-- [x] Template marketplace
-- [x] Integration marketplace
+- [x] Template library
+- [x] App Center (Integrations, MCPs, Custom LLMs)
 - [x] Multiple integrations per app (named instances)
 - [x] Audit logs
 - [x] Notifications

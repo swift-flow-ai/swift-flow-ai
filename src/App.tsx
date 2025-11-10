@@ -20,10 +20,10 @@ import { AnalyticsDashboard } from './pages/analytics/AnalyticsDashboard';
 import { InboxPage } from './pages/inbox/InboxPage';
 import { InboxDetail } from './pages/inbox/InboxDetail';
 import { TeamPage } from './pages/team/TeamPage';
-import { MarketplacePage } from './pages/marketplace/MarketplacePage';
-import { AppDetailPage } from './pages/marketplace/AppDetailPage';
+import { AppCenterPage } from './pages/appcenter/AppCenterPage';
+import { AppDetailPage } from './pages/appcenter/AppDetailPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
-import { TemplateMarketplace } from './pages/templates/TemplateMarketplace';
+import { TemplatesPage } from './pages/templates/TemplatesPage';
 import { TemplateDetail } from './pages/templates/TemplateDetail';
 import { IntegrationsList } from './pages/integrations/IntegrationsList';
 import { AddIntegration } from './pages/integrations/AddIntegration';
@@ -94,7 +94,7 @@ function App() {
                 <Route path="analytics" element={<AnalyticsDashboard />} />
                 <Route path="inbox" element={<InboxPage />} />
                 <Route path="inbox/:approvalId" element={<InboxDetail />} />
-                <Route path="templates" element={<TemplateMarketplace />} />
+                <Route path="templates" element={<TemplatesPage />} />
                 <Route path="templates/:templateId" element={<TemplateDetail />} />
                 <Route path="integrations" element={<IntegrationsList />} />
                 <Route path="integrations/add" element={<AddIntegration />} />
@@ -102,8 +102,8 @@ function App() {
                 <Route path="integrations/:integrationId" element={<IntegrationConfig />} />
                 <Route path="audit" element={<AuditLogs />} />
                 <Route path="audit/:logId" element={<AuditLogDetail />} />
-                <Route path="marketplace" element={<MarketplacePage />} />
-                <Route path="marketplace/:appId" element={<AppDetailPage />} />
+                <Route path="appcenter" element={<AppCenterPage />} />
+                <Route path="appcenter/integration/:appId" element={<AppDetailPage />} />
                 <Route path="team" element={<TeamPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="workspace-settings" element={<WorkspaceSettings />} />

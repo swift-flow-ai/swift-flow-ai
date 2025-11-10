@@ -13,7 +13,7 @@ import { templateService } from '../../services/template.service';
 import { WorkflowTemplate } from '../../types';
 import { cn } from '../../utils';
 
-export function TemplateMarketplace() {
+export function TemplatesPage() {
   const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');

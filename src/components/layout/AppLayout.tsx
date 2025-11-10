@@ -38,7 +38,7 @@ const navigation = [
   { name: 'Templates', href: '/app/templates', icon: BookTemplate },
   { name: 'Integrations', href: '/app/integrations', icon: Plug },
   { name: 'Audit Logs', href: '/app/audit', icon: FileText },
-  { name: 'Marketplace', href: '/app/marketplace', icon: ShoppingBag },
+  { name: 'App Center', href: '/app/appcenter', icon: ShoppingBag },
   { name: 'Team', href: '/app/team', icon: Users },
   { name: 'Workspace', href: '/app/workspace-settings', icon: Settings },
 ];

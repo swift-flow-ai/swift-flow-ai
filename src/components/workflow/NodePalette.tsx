@@ -11,7 +11,7 @@ import {
   Clock,
   Filter
 } from 'lucide-react';
-import { marketplaceApps } from '../../data/marketplaceApps';
+import { appCenterApps } from '../../data/appCenterApps';
 
 interface NodeData {
   label: string;
@@ -227,7 +227,7 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
           Popular Apps
         </h4>
         <div className="space-y-2">
-          {marketplaceApps.slice(0, 5).map((app) => (
+          {appCenterApps.slice(0, 5).map((app) => (
             <button
               key={app.id}
               onClick={() => onAddNode('action', {
