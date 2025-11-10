@@ -10,14 +10,15 @@ export const auditHandlers = [
     const { workspaceId } = params;
     const url = new URL(request.url);
     
+    // Axios sends params as params[key]=value, so we need to check both formats
     const filters = {
-      userId: url.searchParams.get('userId'),
-      action: url.searchParams.get('action'),
-      resourceType: url.searchParams.get('resourceType'),
-      severity: url.searchParams.get('severity'),
-      startDate: url.searchParams.get('startDate'),
-      endDate: url.searchParams.get('endDate'),
-      search: url.searchParams.get('search'),
+      userId: url.searchParams.get('userId') || url.searchParams.get('params[userId]'),
+      action: url.searchParams.get('action') || url.searchParams.get('params[action]'),
+      resourceType: url.searchParams.get('resourceType') || url.searchParams.get('params[resourceType]'),
+      severity: url.searchParams.get('severity') || url.searchParams.get('params[severity]'),
+      startDate: url.searchParams.get('startDate') || url.searchParams.get('params[startDate]'),
+      endDate: url.searchParams.get('endDate') || url.searchParams.get('params[endDate]'),
+      search: url.searchParams.get('search') || url.searchParams.get('params[search]'),
     };
 
     console.log('🔷 MSW: GET /workspaces/:workspaceId/audit-logs', {

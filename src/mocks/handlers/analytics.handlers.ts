@@ -8,7 +8,7 @@ export const analyticsHandlers = [
   // GET /workspaces/:workspaceId/analytics/overview
   http.get(`${BASE_URL}/workspaces/:workspaceId/analytics/overview`, ({ request }) => {
     const url = new URL(request.url);
-    const period = url.searchParams.get('period') || '30d';
+    const period = url.searchParams.get('period') || url.searchParams.get('params[period]') || '30d';
 
     console.log('🔷 MSW: GET /workspaces/:workspaceId/analytics/overview', {
       period,
@@ -26,7 +26,7 @@ export const analyticsHandlers = [
   http.get(`${BASE_URL}/workspaces/:workspaceId/analytics/workflows/:workflowId`, ({ params, request }) => {
     const { workflowId } = params;
     const url = new URL(request.url);
-    const period = url.searchParams.get('period') || '30d';
+    const period = url.searchParams.get('period') || url.searchParams.get('params[period]') || '30d';
 
     console.log('🔷 MSW: GET /workspaces/:workspaceId/analytics/workflows/:workflowId', {
       workflowId,

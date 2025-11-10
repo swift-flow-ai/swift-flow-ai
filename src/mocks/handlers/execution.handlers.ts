@@ -8,8 +8,10 @@ export const executionHandlers = [
   // GET /workspaces/:workspaceId/executions
   http.get(`${BASE_URL}/workspaces/:workspaceId/executions`, ({ request }) => {
     const url = new URL(request.url);
-    const workflowId = url.searchParams.get('workflowId');
-    const status = url.searchParams.get('status');
+    
+    // Axios sends params as params[key]=value, so we need to check both formats
+    const workflowId = url.searchParams.get('workflowId') || url.searchParams.get('params[workflowId]');
+    const status = url.searchParams.get('status') || url.searchParams.get('params[status]');
 
     console.log('🔷 MSW: GET /workspaces/:workspaceId/executions', {
       workflowId,

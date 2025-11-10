@@ -8,14 +8,17 @@ export const workflowHandlers = [
   // GET /workspaces/:workspaceId/workflows
   http.get(`${BASE_URL}/workspaces/:workspaceId/workflows`, ({ request, params }) => {
     const url = new URL(request.url);
-    const status = url.searchParams.get('status');
-    const category = url.searchParams.get('category');
-    const search = url.searchParams.get('search');
+    
+    // Axios sends params as params[key]=value, so we need to check both formats
+    const status = url.searchParams.get('status') || url.searchParams.get('params[status]');
+    const category = url.searchParams.get('category') || url.searchParams.get('params[category]');
+    const search = url.searchParams.get('search') || url.searchParams.get('params[search]');
     
     console.log('🔷 MSW INTERCEPTED: GET /workspaces/:workspaceId/workflows');
     console.log('🔷 Request URL:', url.toString());
     console.log('🔷 Params:', params);
     console.log('🔷 Query params:', { status, category, search });
+    console.log('🔷 All search params:', Object.fromEntries(url.searchParams.entries()));
     console.log('🔷 BASE_URL:', BASE_URL);
     
     let workflows = getWorkflowsByWorkspace();

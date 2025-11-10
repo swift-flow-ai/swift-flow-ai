@@ -7,8 +7,10 @@ export const approvalHandlers = [
   // GET /workspaces/:workspaceId/approvals
   http.get(`${BASE_URL}/workspaces/:workspaceId/approvals`, ({ request }) => {
     const url = new URL(request.url);
-    const status = url.searchParams.get('status');
-    const priority = url.searchParams.get('priority');
+    
+    // Axios sends params as params[key]=value, so we need to check both formats
+    const status = url.searchParams.get('status') || url.searchParams.get('params[status]');
+    const priority = url.searchParams.get('priority') || url.searchParams.get('params[priority]');
     
     let approvals = getApprovalsByWorkspace();
     
