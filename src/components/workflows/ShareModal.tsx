@@ -14,6 +14,7 @@ import { useWorkspace } from '../../hooks/useWorkspace';
 import { shareService } from '../../services/share.service';
 import { WorkflowShare, ShareLink, SharePermission } from '../../types/collaboration';
 import { Avatar } from '../common/Avatar';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 
 interface ShareModalProps {
   workflowId: string;
@@ -28,6 +29,10 @@ export function ShareModal({ workflowId, workflowName, onClose }: ShareModalProp
   const [isLoading, setIsLoading] = useState(true);
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'users' | 'links'>('users');
+  const [showRevokeLinkDialog, setShowRevokeLinkDialog] = useState(false);
+  const [revokingLinkId, setRevokingLinkId] = useState<string | null>(null);
+  const [showRemoveShareDialog, setShowRemoveShareDialog] = useState(false);
+  const [removingShareId, setRemovingShareId] = useState<string | null>(null);
 
   useEffect(() => {
     if (currentWorkspace) {
@@ -73,25 +78,35 @@ export function ShareModal({ workflowId, workflowName, onClose }: ShareModalProp
     setTimeout(() => setCopiedLinkId(null), 2000);
   };
 
-  const handleRevokeLink = async (linkId: string) => {
-    if (!currentWorkspace) return;
-    if (!confirm('Are you sure you want to revoke this link?')) return;
+  const handleRevokeLinkClick = (linkId: string) => {
+    setRevokingLinkId(linkId);
+    setShowRevokeLinkDialog(true);
+  };
+
+  const handleRevokeLinkConfirm = async () => {
+    if (!currentWorkspace || !revokingLinkId) return;
     
     try {
-      await shareService.revokeShareLink(currentWorkspace.id, workflowId, linkId);
-      setShareLinks(shareLinks.filter(l => l.id !== linkId));
+      await shareService.revokeShareLink(currentWorkspace.id, workflowId, revokingLinkId);
+      setShareLinks(shareLinks.filter(l => l.id !== revokingLinkId));
+      setRevokingLinkId(null);
     } catch (error) {
       console.error('Failed to revoke link:', error);
     }
   };
 
-  const handleRemoveShare = async (shareId: string) => {
-    if (!currentWorkspace) return;
-    if (!confirm('Remove this user\'s access?')) return;
+  const handleRemoveShareClick = (shareId: string) => {
+    setRemovingShareId(shareId);
+    setShowRemoveShareDialog(true);
+  };
+
+  const handleRemoveShareConfirm = async () => {
+    if (!currentWorkspace || !removingShareId) return;
     
     try {
-      await shareService.removeShare(currentWorkspace.id, workflowId, shareId);
-      setShares(shares.filter(s => s.id !== shareId));
+      await shareService.removeShare(currentWorkspace.id, workflowId, removingShareId);
+      setShares(shares.filter(s => s.id !== removingShareId));
+      setRemovingShareId(null);
     } catch (error) {
       console.error('Failed to remove share:', error);
     }
@@ -204,7 +219,7 @@ export function ShareModal({ workflowId, workflowName, onClose }: ShareModalProp
                             {share.permission}
                           </span>
                           <button
-                            onClick={() => handleRemoveShare(share.id)}
+                            onClick={() => handleRemoveShareClick(share.id)}
                             className="p-1 hover:bg-destructive/10 text-destructive rounded transition-colors"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -258,7 +273,7 @@ export function ShareModal({ workflowId, workflowName, onClose }: ShareModalProp
                           </span>
                         </div>
                         <button
-                          onClick={() => handleRevokeLink(link.id)}
+                          onClick={() => handleRevokeLinkClick(link.id)}
                           className="p-1 hover:bg-destructive/10 text-destructive rounded transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -303,6 +318,36 @@ export function ShareModal({ workflowId, workflowName, onClose }: ShareModalProp
           )}
         </div>
       </motion.div>
+
+      {/* Revoke Link Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showRevokeLinkDialog}
+        onClose={() => {
+          setShowRevokeLinkDialog(false);
+          setRevokingLinkId(null);
+        }}
+        onConfirm={handleRevokeLinkConfirm}
+        title="Revoke Share Link"
+        message="Are you sure you want to revoke this link? Anyone with this link will no longer be able to access the workflow."
+        confirmText="Revoke Link"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
+      {/* Remove Share Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showRemoveShareDialog}
+        onClose={() => {
+          setShowRemoveShareDialog(false);
+          setRemovingShareId(null);
+        }}
+        onConfirm={handleRemoveShareConfirm}
+        title="Remove User Access"
+        message={`Are you sure you want to remove ${shares.find(s => s.id === removingShareId)?.user?.name || 'this user'}'s access to this workflow?`}
+        confirmText="Remove Access"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

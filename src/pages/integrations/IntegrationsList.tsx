@@ -13,7 +13,7 @@ import {
 import { integrationService } from '../../services/integration.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { Integration } from '../../types';
-import { Button } from '../../components/common';
+import { Button, ConfirmDialog } from '../../components/common';
 import { cn } from '../../utils';
 
 export function IntegrationsList() {
@@ -22,6 +22,8 @@ export function IntegrationsList() {
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshingId, setRefreshingId] = useState<string | null>(null);
+  const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
+  const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
 
   useEffect(() => {
     if (currentWorkspace) {
@@ -57,15 +59,21 @@ export function IntegrationsList() {
     }
   };
 
-  const handleDisconnect = async (integrationId: string) => {
-    if (!currentWorkspace) return;
-    if (!confirm('Are you sure you want to disconnect this integration?')) return;
+  const handleDisconnectClick = (integrationId: string) => {
+    setDisconnectingId(integrationId);
+    setShowDisconnectDialog(true);
+  };
+
+  const handleDisconnectConfirm = async () => {
+    if (!currentWorkspace || !disconnectingId) return;
 
     try {
-      await integrationService.disconnectIntegration(currentWorkspace.id, integrationId);
+      await integrationService.disconnectIntegration(currentWorkspace.id, disconnectingId);
       await loadIntegrations();
     } catch (error) {
       console.error('Failed to disconnect integration:', error);
+    } finally {
+      setDisconnectingId(null);
     }
   };
 
@@ -209,7 +217,7 @@ export function IntegrationsList() {
                 )}
                 <Button
                   variant="danger"
-                  onClick={() => handleDisconnect(integration.id)}
+                  onClick={() => handleDisconnectClick(integration.id)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -218,6 +226,21 @@ export function IntegrationsList() {
           ))}
         </div>
       )}
+
+      {/* Disconnect Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDisconnectDialog}
+        onClose={() => {
+          setShowDisconnectDialog(false);
+          setDisconnectingId(null);
+        }}
+        onConfirm={handleDisconnectConfirm}
+        title="Disconnect Integration"
+        message="Are you sure you want to disconnect this integration? This action will remove all associated configurations and credentials."
+        confirmText="Disconnect"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

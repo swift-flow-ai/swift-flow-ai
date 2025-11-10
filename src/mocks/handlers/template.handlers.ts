@@ -10,13 +10,13 @@ export const templateHandlers = [
     const url = new URL(request.url);
 
     // Axios sends params as params[key]=value, so we need to check both formats
-    let category =
+    const category =
       url.searchParams.get("category") ||
       url.searchParams.get("params[category]");
-    let featured =
+    const featured =
       url.searchParams.get("featured") ||
       url.searchParams.get("params[featured]");
-    let search =
+    const search =
       url.searchParams.get("search") || url.searchParams.get("params[search]");
 
     console.log("🔷 MSW: GET /templates", {

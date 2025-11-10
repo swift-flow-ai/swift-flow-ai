@@ -11,7 +11,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Button } from '../../components/common';
+import { Button, ConfirmDialog } from '../../components/common';
 import {
   ArrowLeft,
   Edit,
@@ -60,6 +60,7 @@ export function WorkflowViewer() {
   const [showMenu, setShowMenu] = useState(false);
   const [executions, setExecutions] = useState<WorkflowExecution[]>([]);
   const [isLoadingExecutions, setIsLoadingExecutions] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showExecutions, setShowExecutions] = useState(true);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -127,11 +128,15 @@ export function WorkflowViewer() {
     // In real app, would export workflow definition
   };
 
-  const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this workflow?')) {
-      console.log('Deleting workflow:', workflowId);
-      navigate('/app/workflows');
-    }
+  const handleDeleteClick = () => {
+    setShowDeleteDialog(true);
+    setShowMenu(false);
+  };
+
+  const handleDeleteConfirm = () => {
+    console.log('Deleting workflow:', workflowId);
+    // In production, call workflowService.deleteWorkflow here
+    navigate('/app/workflows');
   };
 
   if (isLoading) {
@@ -310,7 +315,7 @@ export function WorkflowViewer() {
                       <>
                         <div className="my-1 border-t border-border" />
                         <button
-                          onClick={handleDelete}
+                          onClick={handleDeleteClick}
                           className="w-full flex items-center gap-3 px-4 py-2 hover:bg-destructive/10 text-destructive transition-colors text-left"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -548,6 +553,18 @@ export function WorkflowViewer() {
           onClose={() => setShowShareModal(false)}
         />
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Workflow"
+        message={`Are you sure you want to delete "${workflow?.name}"? This action cannot be undone and all execution history will be lost.`}
+        confirmText="Delete Workflow"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

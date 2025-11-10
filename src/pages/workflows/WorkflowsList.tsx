@@ -11,6 +11,7 @@ import { Badge } from '../../components/common/Badge';
 import { Avatar } from '../../components/common/Avatar';
 import { EmptyState } from '../../components/common/EmptyState';
 import { PermissionGate } from '../../components/common/PermissionGate';
+import { ConfirmDialog } from '../../components/common';
 import { FolderTree } from '../../components/workflows/FolderTree';
 import { Zap, Plus, Search, Play, Pause, Archive, FolderPlus, X, MessageSquare, Users2, FileText, Share2, Copy, Check, Link as LinkIcon } from 'lucide-react';
 
@@ -27,6 +28,8 @@ export function WorkflowsList() {
   const [newFolderParentId, setNewFolderParentId] = useState<string | null>(null);
   const [showShareFolderModal, setShowShareFolderModal] = useState(false);
   const [shareFolderId, setShareFolderId] = useState<string | null>(null);
+  const [showDeleteFolderDialog, setShowDeleteFolderDialog] = useState(false);
+  const [deletingFolderId, setDeletingFolderId] = useState<string | null>(null);
 
   const loadWorkflows = useCallback(async () => {
     if (!currentWorkspace) return;
@@ -83,15 +86,21 @@ export function WorkflowsList() {
     setShowCreateFolderModal(true);
   };
 
-  const handleDeleteFolder = async (folderId: string) => {
-    if (!currentWorkspace) return;
-    if (!confirm('Are you sure you want to delete this folder? Workflows inside will not be deleted.')) return;
+  const handleDeleteFolderClick = (folderId: string) => {
+    setDeletingFolderId(folderId);
+    setShowDeleteFolderDialog(true);
+  };
+
+  const handleDeleteFolderConfirm = async () => {
+    if (!currentWorkspace || !deletingFolderId) return;
     
     try {
-      await folderService.deleteFolder(currentWorkspace.id, folderId);
+      await folderService.deleteFolder(currentWorkspace.id, deletingFolderId);
       await loadFolders();
     } catch (error) {
       console.error('Failed to delete folder:', error);
+    } finally {
+      setDeletingFolderId(null);
     }
   };
 
@@ -137,7 +146,7 @@ export function WorkflowsList() {
             selectedFolderId={selectedFolderId}
             onSelectFolder={setSelectedFolderId}
             onCreateFolder={handleCreateFolder}
-            onDeleteFolder={handleDeleteFolder}
+            onDeleteFolder={handleDeleteFolderClick}
             onShareFolder={handleShareFolder}
             showActions={true}
           />
@@ -367,6 +376,21 @@ export function WorkflowsList() {
           }}
         />
       )}
+
+      {/* Delete Folder Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteFolderDialog}
+        onClose={() => {
+          setShowDeleteFolderDialog(false);
+          setDeletingFolderId(null);
+        }}
+        onConfirm={handleDeleteFolderConfirm}
+        title="Delete Folder"
+        message="Are you sure you want to delete this folder? Workflows inside will not be deleted, they will just be moved out of the folder."
+        confirmText="Delete Folder"
+        cancelText="Cancel"
+        variant="danger"
+      />
       </div>
     </div>
   );

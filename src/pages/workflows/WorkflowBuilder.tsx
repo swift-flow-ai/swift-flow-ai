@@ -80,6 +80,7 @@ export function WorkflowBuilder() {
     isPublic: false,
   });
   const [isSavingTemplate, setIsSavingTemplate] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Load existing workflow if editing
   useEffect(() => {
@@ -154,7 +155,8 @@ export function WorkflowBuilder() {
 
   const handleSaveAsTemplate = async () => {
     if (!workflowId || !currentWorkspace) {
-      alert('Please save the workflow first before creating a template');
+      setToast({ message: 'Please save the workflow first before creating a template', type: 'info' });
+      setTimeout(() => setToast(null), 3000);
       return;
     }
 
@@ -169,10 +171,12 @@ export function WorkflowBuilder() {
         isPublic: templateData.isPublic,
       });
       setShowSaveAsTemplate(false);
-      alert('Template created successfully!');
+      setToast({ message: 'Template created successfully!', type: 'success' });
+      setTimeout(() => setToast(null), 3000);
     } catch (error) {
       console.error('Failed to save as template:', error);
-      alert('Failed to create template');
+      setToast({ message: 'Failed to create template', type: 'error' });
+      setTimeout(() => setToast(null), 3000);
     } finally {
       setIsSavingTemplate(false);
     }
@@ -627,6 +631,28 @@ export function WorkflowBuilder() {
             </div>
           </motion.div>
         </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
+          className="fixed bottom-4 right-4 z-50"
+        >
+          <div
+            className={`px-4 py-3 rounded-lg shadow-lg border ${
+              toast.type === 'success'
+                ? 'bg-green-500/10 border-green-500/20 text-green-600'
+                : toast.type === 'error'
+                ? 'bg-red-500/10 border-red-500/20 text-red-600'
+                : 'bg-blue-500/10 border-blue-500/20 text-blue-600'
+            }`}
+          >
+            {toast.message}
+          </div>
+        </motion.div>
       )}
     </div>
   );

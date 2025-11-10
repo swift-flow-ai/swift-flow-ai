@@ -14,7 +14,7 @@ import {
 import { integrationService } from '../../services/integration.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { Integration, IntegrationApp, ConnectionTestResult } from '../../types';
-import { Button } from '../../components/common';
+import { Button, ConfirmDialog } from '../../components/common';
 import { cn } from '../../utils';
 
 export function IntegrationConfig() {
@@ -34,6 +34,9 @@ export function IntegrationConfig() {
     autoRefresh: true,
     notifications: true,
   });
+  const [showDisconnectDialog, setShowDisconnectDialog] = useState(false);
+  const [showOAuthInfo, setShowOAuthInfo] = useState(false);
+  const [oauthUrl, setOauthUrl] = useState('');
 
   useEffect(() => {
     if (integrationId) {
@@ -88,7 +91,8 @@ export function IntegrationConfig() {
       
       // Simulate OAuth flow (in real app, would open popup or redirect)
       console.log('OAuth URL:', result.authUrl);
-      alert(`OAuth flow initiated!\n\nIn a real app, you would be redirected to:\n${result.authUrl}\n\nFor this demo, we'll simulate a successful connection.`);
+      setOauthUrl(result.authUrl);
+      setShowOAuthInfo(true);
 
       // Simulate OAuth callback
       await integrationService.completeOAuthFlow(
@@ -156,9 +160,12 @@ export function IntegrationConfig() {
     }
   };
 
-  const handleDisconnect = async () => {
+  const handleDisconnectClick = () => {
+    setShowDisconnectDialog(true);
+  };
+
+  const handleDisconnectConfirm = async () => {
     if (!integration || !currentWorkspace) return;
-    if (!confirm('Are you sure you want to disconnect this integration?')) return;
 
     try {
       await integrationService.disconnectIntegration(currentWorkspace.id, integration.id);
@@ -365,7 +372,7 @@ export function IntegrationConfig() {
                           <p>API Version: {testResult.details.apiVersion}</p>
                         )}
                         {testResult.details.accountInfo && (
-                          <p>Account: {testResult.details.accountInfo.email}</p>
+                          <p>Account: {String((testResult.details.accountInfo as Record<string, unknown>).email || '')}</p>
                         )}
                       </div>
                     )}
@@ -605,12 +612,36 @@ export function IntegrationConfig() {
           <p className="text-sm text-muted-foreground mb-4">
             Disconnecting will remove all credentials and stop all workflows using this integration.
           </p>
-          <Button variant="danger" onClick={handleDisconnect}>
+          <Button variant="danger" onClick={handleDisconnectClick}>
             <Trash2 className="h-4 w-4 mr-2" />
             Disconnect Integration
           </Button>
         </motion.div>
       )}
+
+      {/* Disconnect Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDisconnectDialog}
+        onClose={() => setShowDisconnectDialog(false)}
+        onConfirm={handleDisconnectConfirm}
+        title="Disconnect Integration"
+        message="Are you sure you want to disconnect this integration? This will remove all credentials and stop all workflows using this integration."
+        confirmText="Disconnect"
+        cancelText="Cancel"
+        variant="danger"
+      />
+
+      {/* OAuth Info Dialog */}
+      <ConfirmDialog
+        isOpen={showOAuthInfo}
+        onClose={() => setShowOAuthInfo(false)}
+        onConfirm={() => setShowOAuthInfo(false)}
+        title="OAuth Flow Initiated"
+        message={`In a real app, you would be redirected to:\n\n${oauthUrl}\n\nFor this demo, we'll simulate a successful connection.`}
+        confirmText="Got it"
+        cancelText=""
+        variant="info"
+      />
     </div>
   );
 }

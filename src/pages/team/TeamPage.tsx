@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useAuth } from '../../hooks/useAuth';
 import { usePermissions } from '../../hooks/usePermissions';
-import { Button, Input } from '../../components/common';
+import { Button, Input, ConfirmDialog } from '../../components/common';
 import { Avatar } from '../../components/common/Avatar';
 import { Badge } from '../../components/common/Badge';
 import { getRoleBadgeColor } from '../../types/rbac';
@@ -84,6 +84,8 @@ export function TeamPage() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreatePoolModal, setShowCreatePoolModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showRemoveMemberDialog, setShowRemoveMemberDialog] = useState(false);
+  const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
 
   useEffect(() => {
     if (currentWorkspace) {
@@ -146,11 +148,16 @@ export function TeamPage() {
     }
   };
 
-  const handleRemoveMember = (memberId: string) => {
-    if (confirm('Are you sure you want to remove this member from the workspace?')) {
-      setMembers(members.filter(m => m.id !== memberId));
-      setOpenMenuId(null);
-    }
+  const handleRemoveMemberClick = (memberId: string) => {
+    setRemovingMemberId(memberId);
+    setShowRemoveMemberDialog(true);
+    setOpenMenuId(null);
+  };
+
+  const handleRemoveMemberConfirm = () => {
+    if (!removingMemberId) return;
+    setMembers(members.filter(m => m.id !== removingMemberId));
+    setRemovingMemberId(null);
   };
 
   const handleChangeRole = (memberId: string, newRole: 'owner' | 'admin' | 'member' | 'viewer' | 'guest') => {
@@ -420,7 +427,7 @@ export function TeamPage() {
           openMenuId={openMenuId}
           setOpenMenuId={setOpenMenuId}
           handleChangeRole={handleChangeRole}
-          handleRemoveMember={handleRemoveMember}
+          handleRemoveMember={handleRemoveMemberClick}
           getRoleIcon={getRoleIcon}
           getStatusBadgeClass={getStatusBadgeClass}
         />
@@ -481,6 +488,21 @@ export function TeamPage() {
           </motion.div>
         </div>
       )}
+
+      {/* Remove Member Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showRemoveMemberDialog}
+        onClose={() => {
+          setShowRemoveMemberDialog(false);
+          setRemovingMemberId(null);
+        }}
+        onConfirm={handleRemoveMemberConfirm}
+        title="Remove Team Member"
+        message={`Are you sure you want to remove ${members.find(m => m.id === removingMemberId)?.name || 'this member'} from the workspace? They will lose access to all workflows and data.`}
+        confirmText="Remove Member"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }
@@ -493,12 +515,12 @@ interface MembersTableProps {
   openMenuId: string | null;
   setOpenMenuId: (id: string | null) => void;
   handleChangeRole: (memberId: string, role: 'owner' | 'admin' | 'member' | 'viewer' | 'guest') => void;
-  handleRemoveMember: (memberId: string) => void;
+  handleRemoveMemberClick: (memberId: string) => void;
   getRoleIcon: (role: string) => React.ComponentType<{ className?: string }>;
   getStatusBadgeClass: (status: string) => string;
 }
 
-function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handleChangeRole, handleRemoveMember, getRoleIcon, getStatusBadgeClass }: MembersTableProps) {
+function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handleChangeRole, handleRemoveMemberClick, getRoleIcon, getStatusBadgeClass }: MembersTableProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -635,7 +657,7 @@ function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handl
                               </button>
                               <div className="border-t border-border my-2" />
                               <button
-                                onClick={() => handleRemoveMember(member.id)}
+                                onClick={() => handleRemoveMemberClick(member.id)}
                                 className="w-full px-4 py-2 text-left text-sm hover:bg-destructive/10 text-destructive transition-colors flex items-center gap-2"
                               >
                                 <Trash2 className="h-4 w-4" />
