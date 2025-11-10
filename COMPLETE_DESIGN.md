@@ -91,6 +91,16 @@ Available Node Types:
 └── 📤 Actions (Send Email, Save DB, Notify, API Call)
 ```
 
+**Collaboration Features:**
+
+- 📁 **Folder Organization** - Organize workflows in nested folders
+- 🔗 **Share with Link** - Anyone with link can access (Viewer/Editor/Commenter)
+- 👥 **Share with Users** - Invite specific users with custom permissions
+- 📝 **Draft State** - Save workflows as drafts for review before publishing
+- 💬 **Live Comments** - Real-time commenting like Google Docs
+- 👀 **Live Presence** - See who's viewing/editing in real-time
+- 📜 **Version History** - Track changes and restore previous versions
+
 ### 2. Multi-Workspace Support
 
 - Users can belong to multiple workspaces
@@ -130,7 +140,80 @@ Comprehensive analytics for each workflow:
 - Custom API connections
 - OAuth flows
 
-### 7. Audit Logs
+### 7. Workflow Collaboration (Google Drive-style)
+
+**Folder Organization:**
+
+- Create nested folders to organize workflows
+- Move workflows between folders (drag & drop)
+- Folder-level permissions (share entire folders)
+- Breadcrumb navigation
+- Search across folders
+
+**Sharing & Permissions:**
+
+- **Share with Link:**
+
+  - Anyone with link (Viewer, Commenter, Editor)
+  - Link expiration dates
+  - Password protection (optional)
+  - Revoke link access anytime
+
+- **Share with Users:**
+
+  - Invite specific workspace members
+  - Custom permissions per user:
+    - **Viewer** - Can view only
+    - **Commenter** - Can view and comment
+    - **Editor** - Can view, comment, and edit
+    - **Owner** - Full control (transfer ownership)
+  - Remove access anytime
+
+- **Folder Sharing:**
+  - Share entire folders with users/teams
+  - Inherited permissions (workflows inherit folder permissions)
+  - Override permissions at workflow level
+
+**Draft & Review Workflow:**
+
+- **Draft State:**
+
+  - Save workflows as drafts (not executable)
+  - Request review from specific users
+  - Review workflow before publishing
+  - Track review status (Pending, Approved, Changes Requested)
+
+- **Review Process:**
+  - Reviewers can add comments
+  - Approve or request changes
+  - Workflow owner addresses feedback
+  - Publish after approval
+
+**Live Comments:**
+
+- Add comments on specific workflow nodes
+- Reply to comments (threaded discussions)
+- Mention users (@username) for notifications
+- Resolve comments when addressed
+- Comment history and timestamps
+- Real-time updates (see new comments instantly)
+
+**Live Presence:**
+
+- See who's currently viewing the workflow
+- See who's editing (with cursor position)
+- Avatars of active users
+- Real-time collaboration indicators
+
+**Version History:**
+
+- Auto-save every change
+- View previous versions
+- Compare versions (diff view)
+- Restore previous version
+- See who made each change
+
+### 8. Audit Logs
 
 Complete audit trail of all actions:
 
@@ -138,6 +221,8 @@ Complete audit trail of all actions:
 - Workflow executions
 - Configuration changes
 - Team modifications
+- Sharing and permission changes
+- Comment activity
 
 ---
 
@@ -474,6 +559,38 @@ Navigate to Workflows → "Create Workflow" button hidden ❌
 - `PATCH /workspaces/:id/workflows/:workflowId` - Update workflow
 - `POST /workspaces/:id/workflows/:workflowId/execute` - Execute workflow
 - `GET /workspaces/:id/workflows/:workflowId/analytics` - Workflow analytics
+- `POST /workspaces/:id/workflows/:workflowId/publish` - Publish draft workflow
+- `POST /workspaces/:id/workflows/:workflowId/request-review` - Request review
+- `GET /workspaces/:id/workflows/:workflowId/versions` - Get version history
+- `POST /workspaces/:id/workflows/:workflowId/versions/:versionId/restore` - Restore version
+
+#### Folders
+
+- `GET /workspaces/:id/folders` - List folders
+- `POST /workspaces/:id/folders` - Create folder
+- `GET /workspaces/:id/folders/:folderId` - Get folder details
+- `PATCH /workspaces/:id/folders/:folderId` - Update folder
+- `DELETE /workspaces/:id/folders/:folderId` - Delete folder
+- `POST /workspaces/:id/folders/:folderId/move` - Move folder
+- `POST /workspaces/:id/workflows/:workflowId/move` - Move workflow to folder
+
+#### Sharing
+
+- `POST /workspaces/:id/workflows/:workflowId/share` - Share workflow
+- `POST /workspaces/:id/folders/:folderId/share` - Share folder
+- `GET /workspaces/:id/workflows/:workflowId/shares` - List shares
+- `DELETE /workspaces/:id/workflows/:workflowId/shares/:shareId` - Remove share
+- `POST /workspaces/:id/workflows/:workflowId/share-link` - Generate share link
+- `DELETE /workspaces/:id/workflows/:workflowId/share-link` - Revoke share link
+
+#### Comments
+
+- `GET /workspaces/:id/workflows/:workflowId/comments` - List comments
+- `POST /workspaces/:id/workflows/:workflowId/comments` - Add comment
+- `PATCH /workspaces/:id/workflows/:workflowId/comments/:commentId` - Update comment
+- `DELETE /workspaces/:id/workflows/:workflowId/comments/:commentId` - Delete comment
+- `POST /workspaces/:id/workflows/:workflowId/comments/:commentId/resolve` - Resolve comment
+- `POST /workspaces/:id/workflows/:workflowId/comments/:commentId/reply` - Reply to comment
 
 #### Executions
 
@@ -880,6 +997,12 @@ VITE_ENABLE_MSW=true npm run dev
 - [x] **RBAC System** (5 roles, 43 permissions)
 - [x] Profile page
 - [x] Permission-based UI rendering
+- [ ] **Workflow Collaboration** (Google Drive-style)
+  - [ ] Folder organization
+  - [ ] Share with link/users
+  - [ ] Draft & review workflow
+  - [ ] Live comments
+  - [ ] Version history
 
 ### 🎯 Example Workflows
 
@@ -1017,6 +1140,460 @@ For questions or issues:
 - Review `API_DOCUMENTATION.md` for API details
 - Check the codebase - it's well-documented
 - All code follows React and TypeScript best practices
+
+---
+
+## 📋 Collaboration Implementation Guide
+
+### Phase-by-Phase Implementation Plan
+
+#### Phase 1: Folder Organization UI (Priority: Must Have)
+
+**Files to Create:**
+
+```
+src/pages/workflows/WorkflowsListWithFolders.tsx  # Replace WorkflowsList
+src/components/workflows/FolderTree.tsx            # Folder navigation
+src/components/workflows/CreateFolderModal.tsx     # Create folder
+src/components/workflows/MoveToFolderModal.tsx     # Move workflow/folder
+src/services/folder.service.ts                     # Folder API service
+src/mocks/handlers/folder.handlers.ts              # MSW handlers
+```
+
+**Features:**
+
+- Folder tree navigation (left sidebar)
+- Breadcrumb navigation
+- Drag & drop to move workflows
+- Create/rename/delete folders
+- Folder icons and colors
+
+**Folder Service:**
+
+```typescript
+// src/services/folder.service.ts
+export const folderService = {
+  getFolders(workspaceId: string): Promise<WorkflowFolder[]>
+  createFolder(workspaceId: string, data: CreateFolderData): Promise<WorkflowFolder>
+  updateFolder(workspaceId: string, folderId: string, data: UpdateFolderData): Promise<WorkflowFolder>
+  deleteFolder(workspaceId: string, folderId: string): Promise<void>
+  moveFolder(workspaceId: string, folderId: string, parentId: string | null): Promise<void>
+  moveWorkflow(workspaceId: string, workflowId: string, folderId: string | null): Promise<void>
+}
+```
+
+#### Phase 2: Sharing Modal (Priority: Must Have)
+
+**Files to Create:**
+
+```
+src/components/workflows/ShareModal.tsx            # Main sharing modal
+src/components/workflows/ShareWithUsers.tsx        # Invite users
+src/components/workflows/ShareWithLink.tsx         # Generate link
+src/components/workflows/ShareList.tsx             # List of shares
+src/services/share.service.ts                      # Share API service
+src/mocks/handlers/share.handlers.ts               # MSW handlers
+```
+
+**Features:**
+
+- Share with specific users (search & select)
+- Permission dropdown (Viewer, Commenter, Editor, Owner)
+- Generate shareable link
+- Link settings (expiration, password)
+- Remove access
+- Transfer ownership
+
+**Share Service:**
+
+```typescript
+// src/services/share.service.ts
+export const shareService = {
+  shareWorkflow(workspaceId: string, workflowId: string, data: ShareData): Promise<WorkflowShare>
+  shareFolder(workspaceId: string, folderId: string, data: ShareData): Promise<FolderShare>
+  getShares(workspaceId: string, resourceId: string, type: 'workflow' | 'folder'): Promise<Share[]>
+  removeShare(workspaceId: string, shareId: string): Promise<void>
+  generateShareLink(workspaceId: string, resourceId: string, data: ShareLinkData): Promise<ShareLink>
+  revokeShareLink(workspaceId: string, linkId: string): Promise<void>
+}
+```
+
+#### Phase 3: Live Comments (Priority: Must Have)
+
+**Files to Create:**
+
+```
+src/components/workflows/CommentsPanel.tsx         # Comments sidebar
+src/components/workflows/CommentThread.tsx         # Comment + replies
+src/components/workflows/AddComment.tsx            # Add comment form
+src/components/workflows/CommentBubble.tsx         # Node comment indicator
+src/services/comment.service.ts                    # Comment API service
+src/mocks/handlers/comment.handlers.ts             # MSW handlers
+```
+
+**Features:**
+
+- Add comments on nodes
+- Reply to comments (threaded)
+- Mention users (@username)
+- Resolve comments
+- Comment count badges
+- Real-time updates (WebSocket)
+
+**Comment Service:**
+
+```typescript
+// src/services/comment.service.ts
+export const commentService = {
+  getComments(workspaceId: string, workflowId: string): Promise<WorkflowComment[]>
+  addComment(workspaceId: string, workflowId: string, data: CommentData): Promise<WorkflowComment>
+  updateComment(workspaceId: string, commentId: string, content: string): Promise<WorkflowComment>
+  deleteComment(workspaceId: string, commentId: string): Promise<void>
+  resolveComment(workspaceId: string, commentId: string): Promise<WorkflowComment>
+  replyToComment(workspaceId: string, commentId: string, content: string): Promise<WorkflowComment>
+}
+```
+
+#### Phase 4: Draft & Review Workflow (Priority: Should Have)
+
+**Files to Create:**
+
+```
+src/components/workflows/DraftBadge.tsx            # Draft indicator
+src/components/workflows/RequestReviewModal.tsx    # Request review
+src/components/workflows/ReviewPanel.tsx           # Review UI
+src/components/workflows/PublishWorkflowModal.tsx  # Publish confirmation
+src/services/draft.service.ts                      # Draft API service
+src/mocks/handlers/draft.handlers.ts               # MSW handlers
+```
+
+**Features:**
+
+- Save as draft (not executable)
+- Request review from users
+- Review status badges
+- Approve/request changes
+- Publish workflow
+
+**Draft Service:**
+
+```typescript
+// src/services/draft.service.ts
+export const draftService = {
+  saveDraft(workspaceId: string, workflowId: string, definition: unknown): Promise<WorkflowDraft>
+  getDraft(workspaceId: string, workflowId: string): Promise<WorkflowDraft>
+  publishDraft(workspaceId: string, workflowId: string): Promise<Workflow>
+  requestReview(workspaceId: string, workflowId: string, reviewers: string[]): Promise<ReviewRequest[]>
+  submitReview(workspaceId: string, reviewId: string, data: ReviewData): Promise<ReviewRequest>
+}
+```
+
+#### Phase 5: Version History (Priority: Should Have)
+
+**Files to Create:**
+
+```
+src/components/workflows/VersionHistoryPanel.tsx   # Version list
+src/components/workflows/VersionDiff.tsx           # Compare versions
+src/components/workflows/RestoreVersionModal.tsx   # Restore confirmation
+src/services/version.service.ts                    # Version API service
+src/mocks/handlers/version.handlers.ts             # MSW handlers
+```
+
+**Features:**
+
+- List all versions
+- View version details
+- Compare versions (diff view)
+- Restore previous version
+- Auto-save on changes
+
+**Version Service:**
+
+```typescript
+// src/services/version.service.ts
+export const versionService = {
+  getVersions(workspaceId: string, workflowId: string): Promise<WorkflowVersion[]>
+  getVersion(workspaceId: string, workflowId: string, versionId: string): Promise<WorkflowVersion>
+  compareVersions(workspaceId: string, workflowId: string, v1: string, v2: string): Promise<VersionDiff>
+  restoreVersion(workspaceId: string, workflowId: string, versionId: string): Promise<Workflow>
+}
+```
+
+#### Phase 6: Live Presence (Priority: Nice to Have)
+
+**Files to Create:**
+
+```
+src/components/workflows/ActiveUsers.tsx           # Active user avatars
+src/components/workflows/UserCursor.tsx            # Other user cursors
+src/hooks/usePresence.ts                           # Presence hook
+```
+
+**Features:**
+
+- Show active users
+- Real-time cursor positions
+- User avatars
+- "Viewing" vs "Editing" status
+
+### UI Components Architecture
+
+#### Workflow Builder with Collaboration
+
+```
+WorkflowBuilder
+├── TopBar
+│   ├── DraftBadge (if draft)
+│   ├── ActiveUsers (live presence)
+│   ├── ShareButton → ShareModal
+│   ├── RequestReviewButton
+│   └── PublishButton
+├── LeftSidebar
+│   ├── FolderTree (navigation)
+│   └── NodePalette
+├── Canvas (React Flow)
+│   ├── Nodes (with comment bubbles)
+│   └── UserCursors (live presence)
+└── RightSidebar (tabs)
+    ├── CommentsPanel
+    ├── VersionHistoryPanel
+    └── PropertiesPanel
+```
+
+#### Workflows List with Folders
+
+```
+WorkflowsListWithFolders
+├── Header
+│   ├── Breadcrumbs
+│   ├── CreateFolderButton
+│   └── CreateWorkflowButton
+├── LeftSidebar
+│   └── FolderTree
+└── MainContent
+    ├── FolderCards (current folder's subfolders)
+    └── WorkflowCards (current folder's workflows)
+        ├── DraftBadge
+        ├── CommentCount
+        ├── ShareIndicator
+        └── ActiveUsers
+```
+
+### Quick Start Implementation
+
+#### Step 1: Update Workflow Type
+
+```typescript
+// src/types/workspace.ts
+import { CollaborativeWorkflow } from "./collaboration";
+
+export interface Workflow extends CollaborativeWorkflow {
+  // Existing workflow fields...
+}
+```
+
+#### Step 2: Update Mock Workflows
+
+```typescript
+// src/mocks/data/workflows.ts
+import { mockFolders } from "./folders";
+import { mockWorkflowShares } from "./shares";
+import {
+  mockComments,
+  getTotalCommentCount,
+  getUnresolvedCommentCount,
+} from "./comments";
+
+// Add folder IDs to workflows
+export const mockWorkflows = [
+  {
+    // ... existing fields
+    folderId: "folder_hr_recruitment",
+    status: "published",
+    shares: mockWorkflowShares.filter((s) => s.workflowId === "wf_recruitment"),
+    commentCount: getTotalCommentCount("wf_recruitment"),
+    unresolvedCommentCount: getUnresolvedCommentCount("wf_recruitment"),
+    currentVersion: 3,
+    versionCount: 5,
+    activeUsers: [],
+  },
+  // ... more workflows
+];
+```
+
+#### Step 3: Create Folder Navigation Component
+
+```typescript
+// src/components/workflows/FolderTree.tsx
+import { WorkflowFolder } from "../../types/collaboration";
+import { Folder, ChevronRight, ChevronDown } from "lucide-react";
+
+export function FolderTree({ folders, onSelectFolder }: Props) {
+  // Render tree with expand/collapse
+  // Highlight selected folder
+  // Show workflow count
+}
+```
+
+#### Step 4: Update WorkflowsList
+
+```typescript
+// src/pages/workflows/WorkflowsList.tsx
+import { FolderTree } from "../../components/workflows/FolderTree";
+import { mockFolders } from "../../mocks/data/folders";
+
+export function WorkflowsList() {
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+
+  // Filter workflows by folder
+  const filteredWorkflows = workflows.filter(
+    (w) => w.folderId === selectedFolder
+  );
+
+  return (
+    <div className="flex gap-6">
+      <FolderTree folders={folders} onSelectFolder={setSelectedFolder} />
+      <WorkflowGrid workflows={filteredWorkflows} />
+    </div>
+  );
+}
+```
+
+### Testing Checklist
+
+#### Folder Organization
+
+- [ ] Create folder
+- [ ] Create nested folder
+- [ ] Rename folder
+- [ ] Delete folder (empty)
+- [ ] Delete folder (with workflows - move to parent)
+- [ ] Move workflow to folder (drag & drop)
+- [ ] Move folder to another folder
+- [ ] Navigate folder tree
+- [ ] Breadcrumb navigation
+- [ ] Search workflows across folders
+
+#### Sharing
+
+- [ ] Share workflow with user (Viewer)
+- [ ] Share workflow with user (Editor)
+- [ ] Share folder with user
+- [ ] Remove user access
+- [ ] Generate share link
+- [ ] Access workflow via share link
+- [ ] Revoke share link
+- [ ] Link expiration
+- [ ] Inherited folder permissions
+
+#### Comments
+
+- [ ] Add comment on workflow
+- [ ] Add comment on specific node
+- [ ] Reply to comment
+- [ ] Mention user (@username)
+- [ ] Edit comment
+- [ ] Delete comment
+- [ ] Resolve comment
+- [ ] View comment history
+- [ ] Filter by unresolved comments
+
+#### Draft & Review
+
+- [ ] Save workflow as draft
+- [ ] Request review from users
+- [ ] Approve workflow
+- [ ] Request changes
+- [ ] Publish workflow
+- [ ] Draft indicator visible
+- [ ] Cannot execute draft workflow
+
+#### Version History
+
+- [ ] View version history
+- [ ] View version details
+- [ ] Compare two versions
+- [ ] Restore previous version
+- [ ] Auto-save on changes
+
+### Design Tokens
+
+#### Folder Colors
+
+```typescript
+const folderColors = {
+  blue: "#3b82f6",
+  green: "#10b981",
+  purple: "#8b5cf6",
+  orange: "#f59e0b",
+  red: "#ef4444",
+  pink: "#ec4899",
+  yellow: "#eab308",
+  gray: "#6b7280",
+};
+```
+
+#### Permission Badge Colors
+
+```typescript
+const permissionColors = {
+  owner: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+  editor: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+  commenter: "bg-green-500/10 text-green-500 border-green-500/20",
+  viewer: "bg-gray-500/10 text-gray-500 border-gray-500/20",
+};
+```
+
+#### Status Badge Colors
+
+```typescript
+const statusColors = {
+  draft: "bg-yellow-500/10 text-yellow-500",
+  published: "bg-green-500/10 text-green-500",
+  archived: "bg-gray-500/10 text-gray-500",
+};
+```
+
+### Implementation Effort Estimate
+
+| Phase               | Effort          | Priority     |
+| ------------------- | --------------- | ------------ |
+| Folder Organization | 8-12 hours      | Must Have    |
+| Sharing Modal       | 6-8 hours       | Must Have    |
+| Comments System     | 10-14 hours     | Must Have    |
+| Draft & Review      | 6-8 hours       | Should Have  |
+| Version History     | 8-10 hours      | Should Have  |
+| Live Presence       | 6-8 hours       | Nice to Have |
+| **Total**           | **44-60 hours** |              |
+
+### Related Files
+
+**Types:**
+
+- `src/types/collaboration.ts` - All collaboration types
+
+**Mock Data:**
+
+- `src/mocks/data/folders.ts` - Folder mock data (5 sample folders)
+- `src/mocks/data/shares.ts` - Share mock data (workflow & folder shares, links)
+- `src/mocks/data/comments.ts` - Comment mock data (comments with replies)
+
+**Services to Create:**
+
+- `src/services/folder.service.ts` - Folder operations
+- `src/services/share.service.ts` - Sharing operations
+- `src/services/comment.service.ts` - Comment operations
+- `src/services/draft.service.ts` - Draft & review operations
+- `src/services/version.service.ts` - Version history operations
+
+**MSW Handlers to Create:**
+
+- `src/mocks/handlers/folder.handlers.ts` - Folder API endpoints
+- `src/mocks/handlers/share.handlers.ts` - Share API endpoints
+- `src/mocks/handlers/comment.handlers.ts` - Comment API endpoints
+- `src/mocks/handlers/draft.handlers.ts` - Draft API endpoints
+- `src/mocks/handlers/version.handlers.ts` - Version API endpoints
 
 ---
 

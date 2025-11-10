@@ -61,6 +61,7 @@ export interface Workflow {
   status: 'active' | 'draft' | 'paused' | 'archived';
   category: 'hr' | 'sales' | 'support' | 'operations' | 'finance' | 'custom';
   version: number;
+  folderId?: string | null;
   createdBy: {
     id: string;
     name: string;
@@ -75,6 +76,8 @@ export interface Workflow {
   definition?: WorkflowDefinition;
   createdAt: string;
   updatedAt: string;
+  commentCount?: number;
+  shares?: Array<{ id: string }>;
 }
 
 export interface WorkflowDefinition {

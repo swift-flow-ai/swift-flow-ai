@@ -19,15 +19,18 @@ Authorization: Bearer <access_token>
 1. [Authentication](#authentication)
 2. [Workspaces](#workspaces)
 3. [Workflows](#workflows)
-4. [Workflow Templates](#workflow-templates)
-5. [AI Agents](#ai-agents)
-6. [Approvals](#approvals)
-7. [Integrations](#integrations)
-8. [Analytics](#analytics)
-9. [Team Management](#team-management)
-10. [Notifications](#notifications)
-11. [Executions](#executions)
-12. [Audit Logs](#audit-logs)
+4. [Folders & Organization](#folders--organization)
+5. [Sharing & Collaboration](#sharing--collaboration)
+6. [Workflow Templates](#workflow-templates)
+7. [AI Agents](#ai-agents)
+8. [Approvals](#approvals)
+9. [Integrations](#integrations)
+10. [Analytics](#analytics)
+11. [Team Management](#team-management)
+12. [Team Pools](#team-pools)
+13. [Notifications](#notifications)
+14. [Executions](#executions)
+15. [Audit Logs](#audit-logs)
 
 ---
 
@@ -676,6 +679,412 @@ Get comprehensive analytics for a specific workflow.
   ]
 }
 ```
+
+---
+
+## 📁 Folders & Organization
+
+### GET /workspaces/:workspaceId/folders
+
+Get all folders in workspace.
+
+**Response:** `200 OK`
+
+```json
+{
+  "folders": [
+    {
+      "id": "folder_hr",
+      "name": "HR Workflows",
+      "description": "Human Resources workflows and processes",
+      "parentId": null,
+      "color": "#3b82f6",
+      "icon": "Users",
+      "workflowCount": 8,
+      "metadata": {
+        "createdBy": "usr_abc",
+        "createdAt": "2024-06-01T10:00:00Z",
+        "updatedAt": "2025-01-15T14:30:00Z"
+      }
+    },
+    {
+      "id": "folder_hr_recruitment",
+      "name": "Recruitment",
+      "description": "Hiring and interview workflows",
+      "parentId": "folder_hr",
+      "color": "#8b5cf6",
+      "icon": "UserPlus",
+      "workflowCount": 3,
+      "metadata": {
+        "createdBy": "usr_abc",
+        "createdAt": "2024-06-01T10:00:00Z",
+        "updatedAt": "2025-01-15T14:30:00Z"
+      }
+    }
+  ]
+}
+```
+
+### POST /workspaces/:workspaceId/folders
+
+Create a new folder.
+
+**Request:**
+
+```json
+{
+  "name": "Finance Workflows",
+  "description": "Financial processes and approvals",
+  "parentId": null,
+  "color": "#10b981",
+  "icon": "DollarSign"
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "folder": {
+    "id": "folder_finance",
+    "name": "Finance Workflows",
+    "description": "Financial processes and approvals",
+    "parentId": null,
+    "color": "#10b981",
+    "icon": "DollarSign",
+    "workflowCount": 0,
+    "metadata": {
+      "createdBy": "usr_abc",
+      "createdAt": "2025-01-15T15:00:00Z",
+      "updatedAt": "2025-01-15T15:00:00Z"
+    }
+  }
+}
+```
+
+### PATCH /workspaces/:workspaceId/folders/:folderId
+
+Update folder details.
+
+**Request:**
+
+```json
+{
+  "name": "Updated Folder Name",
+  "description": "Updated description",
+  "color": "#ef4444"
+}
+```
+
+**Response:** `200 OK` (returns updated folder)
+
+### DELETE /workspaces/:workspaceId/folders/:folderId
+
+Delete a folder (workflows inside are not deleted, just unassigned).
+
+**Response:** `204 No Content`
+
+### POST /workspaces/:workspaceId/workflows/:workflowId/move
+
+Move workflow to a folder.
+
+**Request:**
+
+```json
+{
+  "folderId": "folder_hr_recruitment"
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "workflow": {
+    "id": "wf_abc123",
+    "folderId": "folder_hr_recruitment"
+  }
+}
+```
+
+---
+
+## 🔗 Sharing & Collaboration
+
+### GET /workspaces/:workspaceId/workflows/:workflowId/shares
+
+Get all users/teams with access to a workflow.
+
+**Response:** `200 OK`
+
+```json
+{
+  "shares": [
+    {
+      "id": "share_abc123",
+      "workflowId": "wf_abc123",
+      "user": {
+        "id": "usr_xyz",
+        "name": "John Smith",
+        "email": "john@acme.com",
+        "avatar": "https://..."
+      },
+      "permission": "editor",
+      "sharedBy": {
+        "id": "usr_owner",
+        "name": "Admin User",
+        "avatar": "https://..."
+      },
+      "sharedAt": "2025-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+### POST /workspaces/:workspaceId/workflows/:workflowId/shares
+
+Share workflow with a user.
+
+**Request:**
+
+```json
+{
+  "userId": "usr_xyz",
+  "permission": "editor"
+}
+```
+
+**Permissions:**
+
+- `viewer`: Can view workflow
+- `commenter`: Can view and comment
+- `editor`: Can view, comment, and edit
+- `owner`: Full control
+
+**Response:** `201 Created`
+
+```json
+{
+  "share": {
+    "id": "share_new123",
+    "workflowId": "wf_abc123",
+    "user": {
+      "id": "usr_xyz",
+      "name": "John Smith",
+      "email": "john@acme.com"
+    },
+    "permission": "editor",
+    "sharedAt": "2025-01-15T15:00:00Z"
+  }
+}
+```
+
+### PATCH /workspaces/:workspaceId/workflows/:workflowId/shares/:shareId
+
+Update share permission.
+
+**Request:**
+
+```json
+{
+  "permission": "viewer"
+}
+```
+
+**Response:** `200 OK` (returns updated share)
+
+### DELETE /workspaces/:workspaceId/workflows/:workflowId/shares/:shareId
+
+Remove user access to workflow.
+
+**Response:** `204 No Content`
+
+### POST /workspaces/:workspaceId/workflows/:workflowId/share-links
+
+Generate a shareable link for workflow.
+
+**Request:**
+
+```json
+{
+  "permission": "viewer",
+  "expiresAt": "2025-02-15T00:00:00Z"
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "link": {
+    "id": "link_abc123",
+    "resourceId": "wf_abc123",
+    "resourceType": "workflow",
+    "token": "sh_a1b2c3d4e5f6",
+    "url": "https://app.swiftflow.ai/shared/sh_a1b2c3d4e5f6",
+    "permission": "viewer",
+    "createdBy": {
+      "id": "usr_abc",
+      "name": "Admin User"
+    },
+    "createdAt": "2025-01-15T15:00:00Z",
+    "expiresAt": "2025-02-15T00:00:00Z",
+    "accessCount": 0,
+    "isActive": true
+  }
+}
+```
+
+### GET /workspaces/:workspaceId/workflows/:workflowId/share-links
+
+Get all share links for a workflow.
+
+**Response:** `200 OK`
+
+```json
+{
+  "links": [
+    {
+      "id": "link_abc123",
+      "resourceId": "wf_abc123",
+      "resourceType": "workflow",
+      "token": "sh_a1b2c3d4e5f6",
+      "url": "https://app.swiftflow.ai/shared/sh_a1b2c3d4e5f6",
+      "permission": "viewer",
+      "createdBy": {
+        "id": "usr_abc",
+        "name": "Admin User"
+      },
+      "createdAt": "2025-01-15T15:00:00Z",
+      "expiresAt": "2025-02-15T00:00:00Z",
+      "accessCount": 15,
+      "isActive": true
+    }
+  ]
+}
+```
+
+### DELETE /workspaces/:workspaceId/workflows/:workflowId/share-links/:linkId
+
+Revoke a share link.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "message": "Link revoked successfully"
+}
+```
+
+### GET /workspaces/:workspaceId/folders/:folderId/shares
+
+Get all users/teams with access to a folder (and all workflows inside).
+
+**Response:** `200 OK`
+
+```json
+{
+  "shares": [
+    {
+      "id": "share_folder_abc",
+      "folderId": "folder_hr",
+      "user": {
+        "id": "usr_xyz",
+        "name": "John Smith",
+        "email": "john@acme.com",
+        "avatar": "https://..."
+      },
+      "permission": "viewer",
+      "sharedBy": {
+        "id": "usr_owner",
+        "name": "Admin User"
+      },
+      "sharedAt": "2025-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+### POST /workspaces/:workspaceId/folders/:folderId/shares
+
+Share folder with a user (grants access to all workflows inside).
+
+**Request:**
+
+```json
+{
+  "userId": "usr_xyz",
+  "permission": "viewer"
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "share": {
+    "id": "share_folder_new",
+    "folderId": "folder_hr",
+    "user": {
+      "id": "usr_xyz",
+      "name": "John Smith",
+      "email": "john@acme.com"
+    },
+    "permission": "viewer",
+    "sharedAt": "2025-01-15T15:00:00Z"
+  }
+}
+```
+
+### POST /workspaces/:workspaceId/folders/:folderId/share-links
+
+Generate a shareable link for folder.
+
+**Request:**
+
+```json
+{
+  "permission": "viewer",
+  "expiresAt": "2025-02-15T00:00:00Z"
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "link": {
+    "id": "link_folder_abc",
+    "resourceId": "folder_hr",
+    "resourceType": "folder",
+    "token": "sh_folder_xyz123",
+    "url": "https://app.swiftflow.ai/shared/folder/sh_folder_xyz123",
+    "permission": "viewer",
+    "createdBy": {
+      "id": "usr_abc",
+      "name": "Admin User"
+    },
+    "createdAt": "2025-01-15T15:00:00Z",
+    "expiresAt": "2025-02-15T00:00:00Z",
+    "accessCount": 0,
+    "isActive": true
+  }
+}
+```
+
+### GET /workspaces/:workspaceId/folders/:folderId/share-links
+
+Get all share links for a folder.
+
+**Response:** `200 OK` (similar structure to workflow share links)
+
+### DELETE /workspaces/:workspaceId/folders/:folderId/share-links/:linkId
+
+Revoke a folder share link.
+
+**Response:** `200 OK`
 
 ---
 

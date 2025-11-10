@@ -29,6 +29,7 @@ import {
   Loader2,
   AlertCircle,
   BarChart3,
+  Share2,
 } from 'lucide-react';
 import { TriggerNode } from '../../components/workflow/nodes/TriggerNode';
 import { ActionNode } from '../../components/workflow/nodes/ActionNode';
@@ -38,6 +39,7 @@ import { workflowService } from '../../services/workflow.service';
 import { executionService } from '../../services/execution.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { PermissionGate } from '../../components/common/PermissionGate';
+import { ShareModal } from '../../components/workflows/ShareModal';
 import { Workflow, WorkflowExecution } from '../../types';
 
 const nodeTypes = {
@@ -60,6 +62,7 @@ export function WorkflowViewer() {
   const [isLoadingExecutions, setIsLoadingExecutions] = useState(false);
   const [showExecutions, setShowExecutions] = useState(true);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     if (workflowId && currentWorkspace) {
@@ -256,6 +259,10 @@ export function WorkflowViewer() {
                 Edit
               </Button>
             </PermissionGate>
+            <Button variant="secondary" onClick={() => setShowShareModal(true)}>
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
+            </Button>
             <PermissionGate permission="analytics:view">
               <Button variant="secondary" onClick={() => navigate(`/app/workflows/${workflowId}/analytics`)}>
                 <BarChart3 className="h-4 w-4 mr-2" />
@@ -532,6 +539,15 @@ export function WorkflowViewer() {
           )}
         </motion.div>
       </div>
+
+      {/* Share Modal */}
+      {showShareModal && workflow && (
+        <ShareModal
+          workflowId={workflow.id}
+          workflowName={workflow.name}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
     </div>
   );
 }

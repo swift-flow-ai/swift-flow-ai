@@ -33,9 +33,11 @@ export function usePermissions() {
   };
 
   // Check if user can access a specific workflow
-  const canAccessWorkflow = (_workflowId: string): boolean => {
+  const canAccessWorkflow = (workflowId: string): boolean => {
     // For now, use role-based permissions
     // In production, this would also check workflow-level permissions
+    // workflowId will be used when implementing granular workflow permissions
+    void workflowId; // Suppress unused warning - will be used in future implementation
     return can('workflow:view');
   };
 
