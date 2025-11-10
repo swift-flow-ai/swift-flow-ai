@@ -52,8 +52,10 @@ export function AppLayout() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // Auto-collapse sidebar on workflow builder/viewer routes
-  const isWorkflowCanvas = (location.pathname.startsWith('/app/workflows/') && location.pathname !== '/app/workflows') || 
+  // Auto-collapse sidebar on workflow builder/viewer routes (but not analytics)
+  const isWorkflowCanvas = (location.pathname.startsWith('/app/workflows/') && 
+                           location.pathname !== '/app/workflows' &&
+                           !location.pathname.endsWith('/analytics')) || 
                            location.pathname === '/app/workflows/new';
 
   const toggleTheme = () => {
