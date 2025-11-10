@@ -76,7 +76,32 @@ Swift Flow AI helps you **execute and track** them.
 
 ### 1. Visual Workflow Builder
 
-Drag-and-drop interface for creating executable workflows:
+Drag-and-drop interface for creating executable workflows with a three-panel layout:
+
+#### UI Layout
+
+**Left: App Drawer**
+
+- Browse and select apps, triggers, actions, and utilities
+- Search and filter available integrations
+- Categorized view (Communication, AI, Databases, etc.)
+- Drag or click to add to canvas
+
+**Center: Canvas**
+
+- Visual workflow builder with drag-and-drop
+- Connect steps with edges
+- Zoom and pan controls
+- Real-time validation
+
+**Right: Config Panel**
+
+- Configure selected step/node
+- Dynamic form fields based on app/action
+- Data picker to insert data from previous steps
+- Test action before saving
+
+#### Available Node Types
 
 ```
 Available Node Types:
@@ -84,7 +109,7 @@ Available Node Types:
 ├── 🤖 AI Agents (GPT-4, Claude, Custom AI)
 ├── ✅ Human Tasks (Approval, Review, Form Fill)
 ├── 🔀 Logic (If/Then, Loop, Switch, Wait)
-├── 🧠 Smart Routing (AI-powered intelligent routing)
+├── 🧠 Smart Routing (AI-powered content analysis and intelligent routing)
 ├── 🔌 Integrations (Slack, Email, Database, 500+ apps)
 ├── 🔧 MCP Servers (Custom tools from App Center)
 ├── 📊 Data Operations (Transform, Filter, Aggregate)

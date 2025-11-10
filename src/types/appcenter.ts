@@ -6,9 +6,14 @@
 // MCP (Model Context Protocol) Types
 // ============================================================================
 
-export type MCPProvider = 'official' | 'community' | 'private';
-export type MCPStatus = 'active' | 'inactive' | 'error';
-export type MCPCategory = 'data-sources' | 'tools' | 'search' | 'actions' | 'custom';
+export type MCPProvider = "official" | "community" | "private";
+export type MCPStatus = "active" | "inactive" | "error";
+export type MCPCategory =
+  | "data-sources"
+  | "tools"
+  | "search"
+  | "actions"
+  | "custom";
 
 export interface MCPCapability {
   id: string;
@@ -78,19 +83,25 @@ export interface MCPTestResult {
 // Custom LLM Types
 // ============================================================================
 
-export type LLMProvider = 
-  | 'openai'
-  | 'anthropic'
-  | 'openrouter'
-  | 'together'
-  | 'replicate'
-  | 'ollama'
-  | 'azure-openai'
-  | 'aws-bedrock'
-  | 'google-vertex'
-  | 'custom';
+export type LLMProvider =
+  | "openai"
+  | "anthropic"
+  | "openrouter"
+  | "together"
+  | "replicate"
+  | "ollama"
+  | "azure-openai"
+  | "aws-bedrock"
+  | "google-vertex"
+  | "self-hosted"
+  | "custom";
 
-export type LLMStatus = 'active' | 'inactive' | 'error';
+export type LLMStatus =
+  | "active"
+  | "inactive"
+  | "error"
+  | "deploying"
+  | "scaling";
 
 export interface LLMParameters {
   temperature?: number;
@@ -108,6 +119,42 @@ export interface LLMCostConfig {
   currency: string;
 }
 
+export interface LLMHostingConfig {
+  mode: "external" | "self-hosted";
+  infrastructure?: {
+    provider: "aws" | "gcp" | "azure" | "on-premise";
+    region?: string;
+    instanceType?: string;
+    instanceCount: number;
+    autoScaling: boolean;
+    minInstances?: number;
+    maxInstances?: number;
+  };
+  deployment?: {
+    modelVersion: string;
+    framework: "vllm" | "tgi" | "ollama" | "custom";
+    gpuType?: string;
+    quantization?: "none" | "int8" | "int4" | "gptq" | "awq";
+  };
+  monitoring?: {
+    enabled: boolean;
+    metricsEndpoint?: string;
+    alertsEnabled: boolean;
+  };
+  loadBalancing?: {
+    enabled: boolean;
+    strategy: "round-robin" | "least-connections" | "weighted";
+    healthCheckInterval: number;
+  };
+}
+
+export interface LLMMetrics {
+  averageLatency: number; // ms
+  throughput: number; // requests/second
+  uptime: number; // percentage
+  errorRate: number; // percentage
+}
+
 export interface CustomLLM {
   id: string;
   workspaceId: string;
@@ -119,11 +166,13 @@ export interface CustomLLM {
   apiKey: string;
   parameters: LLMParameters;
   costConfig?: LLMCostConfig;
+  hosting?: LLMHostingConfig;
   status: LLMStatus;
   lastUsed?: string;
   usageCount: number;
   totalTokensUsed: number;
   totalCost: number;
+  metrics?: LLMMetrics;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -161,7 +210,7 @@ export interface LLMTestResult {
 
 export interface LLMUsageStats {
   llmId: string;
-  period: 'day' | 'week' | 'month' | 'all';
+  period: "day" | "week" | "month" | "all";
   totalCalls: number;
   totalTokens: {
     input: number;
@@ -196,7 +245,7 @@ export interface IntegrationApp {
   description: string;
   category: string;
   icon: string;
-  authType: 'oauth2' | 'api-key' | 'basic' | 'custom';
+  authType: "oauth2" | "api-key" | "basic" | "custom";
   authUrl?: string;
   scopes?: string[];
   capabilities: string[];
@@ -231,11 +280,10 @@ export interface AppCenterStats {
     totalCost: number;
   };
   recentlyAdded: Array<{
-    type: 'integration' | 'mcp' | 'custom-llm';
+    type: "integration" | "mcp" | "custom-llm";
     id: string;
     name: string;
     icon?: string;
     addedAt: string;
   }>;
 }
-
