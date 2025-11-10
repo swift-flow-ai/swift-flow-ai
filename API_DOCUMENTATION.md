@@ -168,6 +168,80 @@ Invalidate current session.
 
 **Response:** `204 No Content`
 
+### POST /auth/google/login
+
+Authenticate user with Google OAuth.
+
+**Request:**
+
+```json
+{
+  "idToken": "google_id_token_here"
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "user": {
+    "id": "usr_abc123",
+    "name": "John Smith",
+    "email": "john@gmail.com",
+    "avatar": "https://lh3.googleusercontent.com/...",
+    "workspaces": [
+      {
+        "id": "ws_xyz789",
+        "name": "Acme Corp",
+        "role": "admin",
+        "slug": "acme-corp"
+      }
+    ]
+  },
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "refresh_token_here",
+  "expiresIn": 3600
+}
+```
+
+### POST /auth/google/signup
+
+Create new user account with Google OAuth.
+
+**Request:**
+
+```json
+{
+  "idToken": "google_id_token_here"
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "user": {
+    "id": "usr_abc123",
+    "name": "John Smith",
+    "email": "john@gmail.com",
+    "avatar": "https://lh3.googleusercontent.com/...",
+    "createdAt": "2025-01-15T10:30:00Z"
+  },
+  "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "refreshToken": "refresh_token_here",
+  "expiresIn": 3600
+}
+```
+
+**Error Response:** `409 Conflict` (if email already exists)
+
+```json
+{
+  "success": false,
+  "message": "User with this email already exists. Please use login instead."
+}
+```
+
 ---
 
 ## 🏢 Workspaces

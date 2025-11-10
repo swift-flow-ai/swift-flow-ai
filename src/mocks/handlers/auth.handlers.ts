@@ -1,14 +1,14 @@
-import { http, HttpResponse, delay } from 'msw';
-import { config } from '../../config';
-import type { User, LoginCredentials, SignupData } from '../../types';
-import { mockTeamMembers } from '../data/team';
+import { http, HttpResponse, delay } from "msw";
+import { config } from "../../config";
+import type { User, LoginCredentials, SignupData } from "../../types";
+import { mockTeamMembers } from "../data/team";
 
 // Mock user database - use team members as users
-const users: User[] = mockTeamMembers.map(member => ({
+const users: User[] = mockTeamMembers.map((member) => ({
   id: member.id,
   email: member.email,
   name: member.name,
-  role: member.role as 'admin' | 'user', // Map RBAC roles to User type
+  role: member.role as "admin" | "user", // Map RBAC roles to User type
   avatar: member.avatar,
   createdAt: member.joinedAt,
   updatedAt: member.lastActiveAt,
@@ -24,7 +24,7 @@ const generateToken = (userId: string): string => {
 
 // Helper to find user by email
 const findUserByEmail = (email: string): User | undefined => {
-  return users.find(u => u.email.toLowerCase() === email.toLowerCase());
+  return users.find((u) => u.email.toLowerCase() === email.toLowerCase());
 };
 
 export const authHandlers = [
@@ -32,7 +32,7 @@ export const authHandlers = [
   http.post(`${config.apiBaseUrl}/auth/login`, async ({ request }) => {
     await delay(800); // Simulate network delay
 
-    const body = await request.json() as LoginCredentials;
+    const body = (await request.json()) as LoginCredentials;
     const { email, password } = body;
 
     // Validate input
@@ -40,7 +40,7 @@ export const authHandlers = [
       return HttpResponse.json(
         {
           success: false,
-          message: 'Email and password are required',
+          message: "Email and password are required",
           data: null,
         },
         { status: 400 }
@@ -53,7 +53,7 @@ export const authHandlers = [
       return HttpResponse.json(
         {
           success: false,
-          message: 'Invalid email or password',
+          message: "Invalid email or password",
           data: null,
         },
         { status: 401 }
@@ -68,7 +68,7 @@ export const authHandlers = [
     return HttpResponse.json(
       {
         success: true,
-        message: 'Login successful',
+        message: "Login successful",
         data: {
           user,
           token,
@@ -82,7 +82,7 @@ export const authHandlers = [
   http.post(`${config.apiBaseUrl}/auth/signup`, async ({ request }) => {
     await delay(1000); // Simulate network delay
 
-    const body = await request.json() as SignupData;
+    const body = (await request.json()) as SignupData;
     const { name, email, password } = body;
 
     // Validate input
@@ -90,7 +90,7 @@ export const authHandlers = [
       return HttpResponse.json(
         {
           success: false,
-          message: 'Name, email, and password are required',
+          message: "Name, email, and password are required",
           data: null,
         },
         { status: 400 }
@@ -102,7 +102,7 @@ export const authHandlers = [
       return HttpResponse.json(
         {
           success: false,
-          message: 'User with this email already exists',
+          message: "User with this email already exists",
           data: null,
         },
         { status: 409 }
@@ -114,7 +114,7 @@ export const authHandlers = [
       id: String(users.length + 1),
       email,
       name,
-      role: 'user',
+      role: "user",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -127,7 +127,7 @@ export const authHandlers = [
     return HttpResponse.json(
       {
         success: true,
-        message: 'User created successfully',
+        message: "User created successfully",
         data: {
           user: newUser,
           token,
@@ -142,12 +142,12 @@ export const authHandlers = [
     await delay(500); // Simulate network delay
 
     // Extract token from Authorization header
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    const authHeader = request.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return HttpResponse.json(
         {
           success: false,
-          message: 'Unauthorized - No token provided',
+          message: "Unauthorized - No token provided",
           data: null,
         },
         { status: 401 }
@@ -161,7 +161,7 @@ export const authHandlers = [
       return HttpResponse.json(
         {
           success: false,
-          message: 'Unauthorized - Invalid token',
+          message: "Unauthorized - Invalid token",
           data: null,
         },
         { status: 401 }
@@ -171,7 +171,7 @@ export const authHandlers = [
     return HttpResponse.json(
       {
         success: true,
-        message: 'User retrieved successfully',
+        message: "User retrieved successfully",
         data: user,
       },
       { status: 200 }
@@ -183,8 +183,8 @@ export const authHandlers = [
     await delay(300); // Simulate network delay
 
     // Extract token from Authorization header
-    const authHeader = request.headers.get('Authorization');
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    const authHeader = request.headers.get("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.substring(7);
       sessions.delete(token);
     }
@@ -192,11 +192,65 @@ export const authHandlers = [
     return HttpResponse.json(
       {
         success: true,
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
         data: null,
       },
       { status: 200 }
     );
   }),
-];
 
+  // POST /api/auth/google/login
+  http.post(`${config.apiBaseUrl}/auth/google/login`, async () => {
+    await delay(1200); // Simulate OAuth flow delay
+
+    // For demo, use the first user (admin) as the Google-authenticated user
+    const user = users[0];
+    const token = generateToken(user.id);
+    sessions.set(token, user);
+
+    return HttpResponse.json(
+      {
+        success: true,
+        message: "Google login successful",
+        data: {
+          user,
+          token,
+        },
+      },
+      { status: 200 }
+    );
+  }),
+
+  // POST /api/auth/google/signup
+  http.post(`${config.apiBaseUrl}/auth/google/signup`, async () => {
+    await delay(1200); // Simulate OAuth flow delay
+
+    // For demo, create a new user with Google data
+    const newUser: User = {
+      id: `usr_google_${Date.now()}`,
+      email: "newuser@gmail.com",
+      name: "Google User",
+      role: "user",
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=GoogleUser",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    users.push(newUser);
+
+    const token = generateToken(newUser.id);
+    sessions.set(token, newUser);
+
+    return HttpResponse.json(
+      {
+        success: true,
+        message: "Google signup successful",
+        data: {
+          user: newUser,
+          token,
+        },
+      },
+      { status: 201 }
+    );
+  }),
+];

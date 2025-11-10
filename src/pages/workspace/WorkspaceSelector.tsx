@@ -86,7 +86,7 @@ export function WorkspaceSelector() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: workspaces.length * 0.1 }}
-            onClick={() => navigate('/workspace-create')}
+            onClick={() => navigate('/app/workspace-create')}
             className="group relative overflow-hidden rounded-xl border border-dashed bg-card p-6 text-center transition-all hover:border-primary hover:shadow-lg flex flex-col items-center justify-center min-h-[200px]"
           >
             <div className="h-14 w-14 rounded-lg bg-muted flex items-center justify-center mb-4">
