@@ -1,26 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Package, 
   Plug, 
   Brain,
-  Clock,
   DollarSign
 } from 'lucide-react';
 import { IntegrationsTab } from './IntegrationsTab';
 import { MCPsTab } from './MCPsTab';
 import { CustomLLMsTab } from './CustomLLMsTab';
-import { mockAppCenterStats } from '../../mocks/data/appcenter';
+import { integrationSystemService } from '../../services/integration-system.service';
+import { useWorkspace } from '../../hooks/useWorkspace';
 
 type Tab = 'integrations' | 'mcps' | 'custom-llms';
 
 export function AppCenterPage() {
   const [activeTab, setActiveTab] = useState<Tab>('integrations');
+  const { currentWorkspace } = useWorkspace();
+  const [stats, setStats] = useState({
+    integrationsInstalled: 0,
+    mcpsInstalled: 0,
+    customLLMs: 0,
+    llmCost: 0,
+  });
+
+  const loadStats = useCallback(async () => {
+    try {
+      if (currentWorkspace?.id) {
+        const installed = await integrationSystemService.listInstalledIntegrations(currentWorkspace.id);
+        setStats({
+          integrationsInstalled: installed.length,
+          mcpsInstalled: 0, // TODO: Add MCP stats
+          customLLMs: 0, // TODO: Add Custom LLM stats
+          llmCost: 0, // TODO: Add cost tracking
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  }, [currentWorkspace?.id]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   const tabs = [
-    { id: 'integrations' as Tab, label: 'Integrations', icon: Plug, count: mockAppCenterStats.integrations.installed },
-    { id: 'mcps' as Tab, label: 'MCPs', icon: Package, count: mockAppCenterStats.mcps.installed },
-    { id: 'custom-llms' as Tab, label: 'Custom LLMs', icon: Brain, count: mockAppCenterStats.customLLMs.total },
+    { id: 'integrations' as Tab, label: 'Integrations', icon: Plug, count: stats.integrationsInstalled },
+    { id: 'mcps' as Tab, label: 'MCPs', icon: Package, count: stats.mcpsInstalled },
+    { id: 'custom-llms' as Tab, label: 'Custom LLMs', icon: Brain, count: stats.customLLMs },
   ];
 
   return (
@@ -45,7 +72,7 @@ export function AppCenterPage() {
               <Plug className="w-5 h-5 text-blue-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{mockAppCenterStats.integrations.installed}</p>
+              <p className="text-2xl font-bold">{stats.integrationsInstalled}</p>
               <p className="text-sm text-muted-foreground">Integrations</p>
             </div>
           </div>
@@ -62,7 +89,7 @@ export function AppCenterPage() {
               <Package className="w-5 h-5 text-purple-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{mockAppCenterStats.mcps.installed}</p>
+              <p className="text-2xl font-bold">{stats.mcpsInstalled}</p>
               <p className="text-sm text-muted-foreground">MCPs Installed</p>
             </div>
           </div>
@@ -79,7 +106,7 @@ export function AppCenterPage() {
               <Brain className="w-5 h-5 text-green-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{mockAppCenterStats.customLLMs.total}</p>
+              <p className="text-2xl font-bold">{stats.customLLMs}</p>
               <p className="text-sm text-muted-foreground">Custom LLMs</p>
             </div>
           </div>
@@ -96,39 +123,12 @@ export function AppCenterPage() {
               <DollarSign className="w-5 h-5 text-orange-500" />
             </div>
             <div>
-              <p className="text-2xl font-bold">${mockAppCenterStats.customLLMs.totalCost.toFixed(0)}</p>
+              <p className="text-2xl font-bold">${stats.llmCost.toFixed(0)}</p>
               <p className="text-sm text-muted-foreground">LLM Cost (MTD)</p>
             </div>
           </div>
         </motion.div>
       </div>
-
-      {/* Recently Added */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-card border border-border rounded-xl p-6"
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <Clock className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-semibold">Recently Added</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-          {mockAppCenterStats.recentlyAdded.slice(0, 4).map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary transition-colors"
-            >
-              {item.icon && <span className="text-2xl">{item.icon}</span>}
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm truncate">{item.name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{item.type.replace('-', ' ')}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
 
       {/* Tabs */}
       <div className="border-b border-border">

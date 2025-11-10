@@ -40,9 +40,16 @@ export const mockWorkflows: Workflow[] = [
           type: "action",
           position: { x: 250, y: 200 },
           data: {
-            label: "Create Email Account",
-            description: "Set up company email via Google Workspace",
-            app: "google-workspace",
+            label: "Send Welcome Email",
+            description: "Send welcome email with onboarding checklist",
+            integrationId: "gmail",
+            actionKey: "send_email",
+            installedAppId: "installed_gmail_1",
+            config: {
+              to: "{{trigger.email}}",
+              subject: "Welcome to the Team!",
+              body: "Welcome {{trigger.name}}! Here's your onboarding checklist...",
+            },
           },
         },
         {
@@ -50,9 +57,16 @@ export const mockWorkflows: Workflow[] = [
           type: "action",
           position: { x: 250, y: 350 },
           data: {
-            label: "Send Welcome Email",
-            description: "Send welcome email with onboarding checklist",
-            app: "gmail",
+            label: "Create Calendar Event",
+            description: "Schedule first day orientation",
+            integrationId: "google_calendar",
+            actionKey: "create_event",
+            installedAppId: "installed_gcal_1",
+            config: {
+              summary: "{{trigger.name}} - First Day Orientation",
+              start_time: "{{trigger.start_date}}T09:00:00",
+              duration: 60,
+            },
           },
         },
         {
@@ -70,9 +84,15 @@ export const mockWorkflows: Workflow[] = [
           type: "action",
           position: { x: 250, y: 650 },
           data: {
-            label: "Assign Buddy",
-            description: "Assign onboarding buddy from team",
-            app: "slack",
+            label: "Send Slack Message",
+            description: "Notify team about new hire",
+            integrationId: "slack",
+            actionKey: "send_message",
+            installedAppId: "installed_slack_1",
+            config: {
+              channel: "general",
+              message: "Welcome {{trigger.name}} to the team! 🎉",
+            },
           },
         },
       ] as Node[],
@@ -125,7 +145,14 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Extract Invoice Data",
             description: "AI extracts invoice details",
-            app: "ai-ocr",
+            integrationId: "openai",
+            actionKey: "analyze_document",
+            installedAppId: "installed_openai_1",
+            config: {
+              prompt:
+                "Extract invoice number, amount, vendor, and due date from this document",
+              model: "gpt-4-vision-preview",
+            },
           },
         },
         {
@@ -162,9 +189,16 @@ export const mockWorkflows: Workflow[] = [
           type: "action",
           position: { x: 100, y: 650 },
           data: {
-            label: "Process Payment",
-            description: "Initiate payment via accounting system",
-            app: "quickbooks",
+            label: "Send Notification",
+            description: "Notify finance team of approved invoice",
+            integrationId: "slack",
+            actionKey: "send_message",
+            installedAppId: "installed_slack_1",
+            config: {
+              channel: "finance",
+              message:
+                "Invoice {{step_2.invoice_number}} approved for ${{step_2.amount}}",
+            },
           },
         },
       ] as Node[],
@@ -218,7 +252,14 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "AI Classification",
             description: "Classify ticket urgency and category",
-            app: "openai",
+            integrationId: "openai",
+            actionKey: "chat_completion",
+            installedAppId: "installed_openai_1",
+            config: {
+              prompt:
+                "Classify this support ticket: {{trigger.message}}. Determine urgency (low/medium/high) and category (technical/billing/general)",
+              model: "gpt-4",
+            },
           },
         },
         {
@@ -235,9 +276,15 @@ export const mockWorkflows: Workflow[] = [
           type: "action",
           position: { x: 450, y: 500 },
           data: {
-            label: "Assign to Tech Support",
-            description: "Technical issues",
-            app: "zendesk",
+            label: "Notify Tech Support",
+            description: "Send to tech support channel",
+            integrationId: "slack",
+            actionKey: "send_message",
+            installedAppId: "installed_slack_1",
+            config: {
+              channel: "tech-support",
+              message: "🔧 New technical ticket: {{trigger.subject}}",
+            },
           },
         },
         {
@@ -245,9 +292,15 @@ export const mockWorkflows: Workflow[] = [
           type: "action",
           position: { x: 50, y: 500 },
           data: {
-            label: "Assign to Billing",
-            description: "Billing inquiries",
-            app: "zendesk",
+            label: "Notify Billing Team",
+            description: "Send to billing channel",
+            integrationId: "slack",
+            actionKey: "send_message",
+            installedAppId: "installed_slack_1",
+            config: {
+              channel: "billing",
+              message: "💰 New billing inquiry: {{trigger.subject}}",
+            },
           },
         },
       ] as Node[],
@@ -520,13 +573,14 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Send Availability Link to Candidate",
             description: "Email candidate with self-scheduling link",
-            app: "email",
+            integrationId: "gmail",
+            actionKey: "send_email",
+            installedAppId: "installed_gmail_1",
             config: {
-              template: "candidate-availability-request",
+              to: "{{candidateEmail}}",
               subject: "Interview Invitation - Please Select Your Availability",
-              includeLink: true,
-              linkType: "availability-form",
-              linkExpiry: "7 days",
+              body: "Dear {{candidateName}},\n\nWe are excited to invite you for an interview for the {{position}} position. Please select your preferred time slots using the link below:\n\n{{availabilityFormLink}}\n\nBest regards,\nHR Team",
+              from: "hr@company.com",
             },
           },
         },
@@ -594,12 +648,14 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Send Interview Request to Interviewer",
             description: "Request interviewer to accept/reject the interview",
-            app: "email",
+            integrationId: "gmail",
+            actionKey: "send_email",
+            installedAppId: "installed_gmail_1",
             config: {
-              template: "interviewer-request",
+              to: "{{interviewerEmail}}",
               subject: "Interview Request - {{candidateName}} for {{position}}",
-              attachments: ["candidate-resume.pdf", "candidate-profile.pdf"],
-              includeActions: ["Accept", "Reject", "Suggest Alternative Time"],
+              body: "Hi {{interviewerName}},\n\nYou have been assigned to interview {{candidateName}} for the {{position}} position.\n\nInterview Type: {{interviewType}}\nProposed Time: {{selectedTimeSlot}}\n\nPlease review the attached resume and confirm your availability.\n\nBest regards,\nHR Team",
+              from: "hr@company.com",
             },
           },
         },
@@ -652,13 +708,14 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "AI - Generate Interview Agenda",
             description: "Create personalized interview plan and questions",
-            app: "openai",
+            integrationId: "openai",
+            actionKey: "chat_completion",
+            installedAppId: "installed_openai_1",
             config: {
               model: "gpt-4",
               prompt:
                 "Generate detailed interview agenda for {{position}} - {{interviewType}} round. Include: 1) Introduction (5 min), 2) Technical/Behavioral questions (40 min), 3) Candidate Q&A (10 min), 4) Next steps (5 min)",
               temperature: 0.7,
-              includeQuestions: true,
             },
           },
         },
@@ -669,13 +726,18 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Create Calendar Event",
             description: "Schedule interview with Google Meet link",
-            app: "google-calendar",
+            integrationId: "google_calendar",
+            actionKey: "create_event",
+            installedAppId: "installed_gcal_1",
             config: {
-              createMeetLink: true,
-              sendNotifications: true,
-              attendees: ["interviewer", "candidate"],
-              duration: "60 minutes",
-              addBuffer: "15 minutes before",
+              calendar: "primary",
+              summary: "Interview - {{candidateName}} - {{position}}",
+              description: "{{interviewType}} interview with {{candidateName}}",
+              start_time: "{{selectedTimeSlot}}",
+              duration: 60,
+              attendees: "{{candidateEmail}},{{interviewerEmail}}",
+              send_notifications: true,
+              conference_solution: "hangoutsMeet",
             },
           },
         },
@@ -684,29 +746,16 @@ export const mockWorkflows: Workflow[] = [
           type: "action",
           position: { x: 400, y: 1680 },
           data: {
-            label: "Send Confirmations",
-            description: "Email both candidate and interviewer with details",
-            app: "email-batch",
+            label: "Send Confirmation to Candidate",
+            description: "Email candidate with interview details",
+            integrationId: "gmail",
+            actionKey: "send_email",
+            installedAppId: "installed_gmail_1",
             config: {
-              templates: [
-                {
-                  to: "candidate",
-                  template: "interview-confirmation-candidate",
-                  attachments: [
-                    "interview-prep-guide.pdf",
-                    "company-overview.pdf",
-                  ],
-                },
-                {
-                  to: "interviewer",
-                  template: "interview-confirmation-interviewer",
-                  attachments: [
-                    "candidate-resume.pdf",
-                    "interview-agenda.pdf",
-                    "evaluation-form.pdf",
-                  ],
-                },
-              ],
+              to: "{{candidateEmail}}",
+              subject: "Interview Confirmed - {{position}} at {{company}}",
+              body: "Dear {{candidateName}},\n\nYour interview has been confirmed!\n\nDate & Time: {{interviewDateTime}}\nInterviewer: {{interviewerName}}\nMeeting Link: {{meetingLink}}\n\nPlease review the attached preparation guide.\n\nBest regards,\nHR Team",
+              from: "hr@company.com",
             },
           },
         },
@@ -839,12 +888,13 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Notify HR Team",
             description: "Send interview completion notification",
-            app: "slack",
+            integrationId: "slack",
+            actionKey: "send_message",
+            installedAppId: "installed_slack_1",
             config: {
-              channel: "#hr-interviews",
+              channel: "C007",
               message:
-                "Interview completed: {{candidateName}} with {{interviewerName}}. Recommendation: {{overallRecommendation}}",
-              includeLink: "View Full Feedback",
+                "✅ Interview completed: {{candidateName}} with {{interviewerName}}.\n\nPosition: {{position}}\nRecommendation: {{overallRecommendation}}\n\nView full feedback in ATS.",
             },
           },
         },

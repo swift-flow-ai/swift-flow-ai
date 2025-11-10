@@ -1,52 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../components/common';
 import { 
   Search, 
   Filter,
-  Star,
-  Download,
   CheckCircle2,
   Globe,
   Sparkles,
   MessageSquare,
   Database,
-  DollarSign,
   Code,
   Zap,
   Users
 } from 'lucide-react';
-import { appCenterApps } from '../../data/appCenterApps';
+import { integrationSystemService, IntegrationDefinition } from '../../services/integration-system.service';
 
 export function IntegrationsTab() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedPrice, setSelectedPrice] = useState<string>('all');
-  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
+  const [integrations, setIntegrations] = useState<IntegrationDefinition[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const categories = [
     { id: 'all', label: 'All Apps', icon: Globe },
-    { id: 'ai', label: 'AI & ML', icon: Sparkles },
     { id: 'communication', label: 'Communication', icon: MessageSquare },
-    { id: 'crm', label: 'CRM', icon: Users },
-    { id: 'database', label: 'Database', icon: Database },
     { id: 'productivity', label: 'Productivity', icon: Zap },
-    { id: 'finance', label: 'Finance', icon: DollarSign },
+    { id: 'ai', label: 'AI & ML', icon: Sparkles },
+    { id: 'database', label: 'Database', icon: Database },
     { id: 'development', label: 'Development', icon: Code },
-    { id: 'hr', label: 'HR', icon: Users },
+    { id: 'calendar', label: 'Calendar', icon: Users },
   ];
 
-  const filteredApps = appCenterApps.filter(app => {
-    const matchesSearch = app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         app.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || app.category === selectedCategory;
-    const matchesPrice = selectedPrice === 'all' || app.price === selectedPrice;
-    const matchesFeatured = !showFeaturedOnly || app.featured;
-    
-    return matchesSearch && matchesCategory && matchesPrice && matchesFeatured;
-  });
+  useEffect(() => {
+    loadIntegrations();
+  }, [selectedCategory, searchQuery]);
+
+  const loadIntegrations = async () => {
+    try {
+      setLoading(true);
+      const response = await integrationSystemService.listCatalog({
+        category: selectedCategory !== 'all' ? selectedCategory : undefined,
+        search: searchQuery || undefined,
+      });
+      setIntegrations(response.integrations);
+    } catch (error) {
+      console.error('Failed to load integrations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredApps = integrations;
 
   const getCategoryIcon = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
@@ -89,111 +95,99 @@ export function IntegrationsTab() {
               ))}
             </select>
 
-            <select
-              value={selectedPrice}
-              onChange={(e) => setSelectedPrice(e.target.value)}
-              className="px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-            >
-              <option value="all">All Pricing</option>
-              <option value="free">Free</option>
-              <option value="freemium">Freemium</option>
-              <option value="paid">Paid</option>
-            </select>
-
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showFeaturedOnly}
-                onChange={(e) => setShowFeaturedOnly(e.target.checked)}
-                className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-2 focus:ring-primary"
-              />
-              <span className="text-sm">Featured only</span>
-            </label>
-
             <div className="ml-auto text-sm text-muted-foreground">
-              {filteredApps.length} {filteredApps.length === 1 ? 'app' : 'apps'}
+              {filteredApps.length} {filteredApps.length === 1 ? 'integration' : 'integrations'}
             </div>
           </div>
         </div>
       </div>
 
       {/* Apps Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredApps.map((app, index) => {
-          const CategoryIcon = getCategoryIcon(app.category);
-          
-          return (
-            <motion.div
-              key={app.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              onClick={() => navigate(`/app/appcenter/integration/${app.id}`)}
-              className="bg-card border border-border rounded-xl p-6 hover:border-primary hover:shadow-lg transition-all cursor-pointer group"
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="text-4xl">{app.icon}</div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                        {app.name}
-                      </h3>
-                      {app.verified && (
-                        <CheckCircle2 className="h-4 w-4 text-blue-500" />
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-3"></div>
+          <p className="text-muted-foreground">Loading integrations...</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredApps.map((app, index) => {
+            const CategoryIcon = getCategoryIcon(app.category);
+            const actionCount = (app.actions?.length || 0) + (app.triggers?.length || 0);
+            
+            return (
+              <motion.div
+                key={app.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                onClick={() => navigate(`/app/appcenter/integration/${app.id}`)}
+                className="bg-card border border-border rounded-xl p-6 hover:border-primary hover:shadow-lg transition-all cursor-pointer group"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 flex items-center justify-center flex-shrink-0">
+                      {app.icon?.startsWith('http') ? (
+                        <img
+                          src={app.icon}
+                          alt={app.name}
+                          className="w-12 h-12 rounded object-contain"
+                        />
+                      ) : (
+                        <span className="text-4xl">{app.icon}</span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">{app.provider}</p>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                          {app.name}
+                        </h3>
+                        {app.verified && (
+                          <CheckCircle2 className="h-4 w-4 text-blue-500" />
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{app.category}</p>
                   </div>
                 </div>
-                {app.featured && (
-                  <div className="px-2 py-1 bg-yellow-500/10 rounded-md">
-                    <Star className="h-4 w-4 text-yellow-500" />
+                {app.verified && (
+                  <div className="px-2 py-1 bg-blue-500/10 rounded-md">
+                    <CheckCircle2 className="h-4 w-4 text-blue-500" />
                   </div>
                 )}
               </div>
 
-              {/* Description */}
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                {app.description}
-              </p>
+                {/* Description */}
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                  {app.description}
+                </p>
 
-              {/* Category & Price */}
-              <div className="flex items-center gap-2 mb-4">
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-xs">
-                  <CategoryIcon className="h-3 w-3" />
-                  {app.category}
-                </span>
-                <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-                  app.price === 'free' 
-                    ? 'bg-green-500/10 text-green-600 dark:text-green-400'
-                    : app.price === 'freemium'
-                    ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                    : 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
-                }`}>
-                  {app.price === 'free' ? 'Free' : app.price === 'freemium' ? 'Freemium' : 'Paid'}
-                </span>
-              </div>
+                {/* Category & Actions */}
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted rounded-md text-xs">
+                    <CategoryIcon className="h-3 w-3" />
+                    {app.category}
+                  </span>
+                  <span className="px-2 py-1 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-md text-xs font-medium">
+                    {actionCount} {actionCount === 1 ? 'action' : 'actions'}
+                  </span>
+                </div>
 
-              {/* Stats */}
-              <div className="flex items-center justify-between pt-4 border-t border-border">
-                <div className="flex items-center gap-1 text-sm">
-                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="font-medium">{app.rating}</span>
-                  <span className="text-muted-foreground">({app.reviews.toLocaleString()})</span>
+                {/* Stats */}
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <div className="flex items-center gap-1 text-sm">
+                    <Zap className="h-4 w-4 text-primary" />
+                    <span className="font-medium">{app.triggers?.length || 0} triggers</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <Code className="h-4 w-4" />
+                    <span>{app.actions?.length || 0} actions</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                  <Download className="h-4 w-4" />
-                  {app.installs >= 1000 
-                    ? `${(app.installs / 1000).toFixed(0)}K` 
-                    : app.installs}
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
 
       {filteredApps.length === 0 && (
         <div className="text-center py-12">

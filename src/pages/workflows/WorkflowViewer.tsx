@@ -408,6 +408,35 @@ export function WorkflowViewer() {
                 <p className="text-foreground">{selectedNode.data.label}</p>
               </div>
 
+              {/* Integration Info (for action nodes) */}
+              {selectedNode.type === 'action' && selectedNode.data.integrationId && (
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-muted-foreground">Integration</label>
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="font-medium capitalize">{selectedNode.data.integrationId.replace(/_/g, ' ')}</span>
+                    {selectedNode.data.actionKey && (
+                      <>
+                        <span className="text-muted-foreground">•</span>
+                        <span className="text-muted-foreground">{selectedNode.data.actionKey.replace(/_/g, ' ')}</span>
+                      </>
+                    )}
+                  </div>
+                  {selectedNode.data.installedAppId && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      App: {selectedNode.data.installedAppId}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Utility App Info (for utility nodes) */}
+              {selectedNode.data.app && !selectedNode.data.integrationId && (
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-muted-foreground">Utility</label>
+                  <p className="text-sm font-medium capitalize">{selectedNode.data.app.replace(/-/g, ' ')}</p>
+                </div>
+              )}
+
               {/* Description */}
               {selectedNode.data.description && (
                 <div>
@@ -416,13 +445,54 @@ export function WorkflowViewer() {
                 </div>
               )}
 
+              {/* Trigger Type (for trigger nodes) */}
+              {selectedNode.type === 'trigger' && selectedNode.data.triggerType && (
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-muted-foreground">Trigger Type</label>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 capitalize">
+                    {selectedNode.data.triggerType}
+                  </span>
+                </div>
+              )}
+
               {/* Configuration */}
-              {selectedNode.data.config && (
+              {selectedNode.data.config && Object.keys(selectedNode.data.config).length > 0 && (
                 <div>
                   <label className="block text-sm font-medium mb-2 text-muted-foreground">Configuration</label>
-                  <pre className="text-xs bg-muted p-3 rounded-lg overflow-auto">
-                    {JSON.stringify(selectedNode.data.config, null, 2)}
-                  </pre>
+                  <div className="bg-muted p-3 rounded-lg space-y-2">
+                    {Object.entries(selectedNode.data.config).map(([key, value]) => (
+                      <div key={key} className="text-xs">
+                        <span className="font-medium text-foreground">{key.replace(/_/g, ' ')}:</span>{' '}
+                        <span className="text-muted-foreground">
+                          {typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Approvers (for approval nodes) */}
+              {selectedNode.type === 'approval' && selectedNode.data.approvers && (
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-muted-foreground">Approvers</label>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedNode.data.approvers.map((approver: string, idx: number) => (
+                      <span key={idx} className="px-2 py-1 bg-muted rounded text-xs">
+                        {approver}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Condition (for condition nodes) */}
+              {selectedNode.type === 'condition' && selectedNode.data.condition && (
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-muted-foreground">Condition</label>
+                  <code className="text-xs bg-muted p-2 rounded block">
+                    {selectedNode.data.condition}
+                  </code>
                 </div>
               )}
             </div>

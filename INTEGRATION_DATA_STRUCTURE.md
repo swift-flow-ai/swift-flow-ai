@@ -690,7 +690,7 @@ interface NodeData {
       "as_user": true
     },
     "label": "Send to #engineering",
-    "icon": "https://cdn.swiftflow.ai/icons/slack.svg",
+    "icon": "https://logo.clearbit.com/slack.com",
     "continueOnError": false
   }
 }
@@ -912,8 +912,8 @@ The system can handle:
   "displayName": "Slack",
   "description": "Team communication platform",
   "category": "communication",
-  "icon": "https://cdn.swiftflow.ai/icons/slack.svg",
-  "logoUrl": "https://cdn.swiftflow.ai/logos/slack.png",
+  "icon": "https://logo.clearbit.com/slack.com",
+  "logoUrl": "https://logo.clearbit.com/slack.com",
   "version": "1.0.0",
   "verified": true,
   "popular": true,
@@ -1108,7 +1108,7 @@ The system can handle:
   "displayName": "Gmail",
   "description": "Email service by Google",
   "category": "email",
-  "icon": "https://cdn.swiftflow.ai/icons/gmail.svg",
+  "icon": "https://logo.clearbit.com/gmail.com",
   "version": "1.0.0",
   "verified": true,
   "popular": true,

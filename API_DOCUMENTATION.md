@@ -89,14 +89,14 @@ Authenticate user and get access token.
     "id": "usr_abc123",
     "name": "John Smith",
     "email": "john@example.com",
-    "avatar": "https://cdn.swiftflow.ai/avatars/usr_abc123.jpg",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
     "workspaces": [
       {
         "id": "ws_xyz789",
         "name": "Acme Corp",
         "role": "admin",
         "slug": "acme-corp",
-        "logo": "https://cdn.swiftflow.ai/logos/ws_xyz789.png"
+        "logo": "https://ui-avatars.com/api/?name=Acme+Corp&background=0D8ABC&color=fff"
       }
     ]
   },
@@ -138,14 +138,14 @@ Get current authenticated user.
   "id": "usr_abc123",
   "name": "John Smith",
   "email": "john@example.com",
-  "avatar": "https://cdn.swiftflow.ai/avatars/usr_abc123.jpg",
+  "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=John",
   "workspaces": [
     {
       "id": "ws_xyz789",
       "name": "Acme Corp",
       "role": "admin",
       "slug": "acme-corp",
-      "logo": "https://cdn.swiftflow.ai/logos/ws_xyz789.png",
+      "logo": "https://ui-avatars.com/api/?name=Acme+Corp&background=0D8ABC&color=fff",
       "unreadNotifications": 5,
       "pendingApprovals": 3,
       "lastActiveAt": "2025-01-15T14:20:00Z"
@@ -259,7 +259,7 @@ Get all workspaces for current user.
       "id": "ws_xyz789",
       "name": "Acme Corp",
       "slug": "acme-corp",
-      "logo": "https://cdn.swiftflow.ai/logos/ws_xyz789.png",
+      "logo": "https://ui-avatars.com/api/?name=Acme+Corp&background=0D8ABC&color=fff",
       "role": "admin",
       "memberCount": 15,
       "activeWorkflows": 12,
@@ -338,7 +338,7 @@ Get workspace details.
   "id": "ws_xyz789",
   "name": "Acme Corp",
   "slug": "acme-corp",
-  "logo": "https://cdn.swiftflow.ai/logos/ws_xyz789.png",
+  "logo": "https://ui-avatars.com/api/?name=Acme+Corp&background=0D8ABC&color=fff",
   "industry": "Technology",
   "description": "Main workspace",
   "memberCount": 15,
@@ -1186,7 +1186,7 @@ Get workflow templates available in workspace (includes public templates).
       "name": "Employee Onboarding",
       "description": "Complete employee onboarding workflow with AI-powered plan generation",
       "category": "hr",
-      "thumbnail": "https://cdn.swiftflow.ai/templates/onboarding.png",
+      "thumbnail": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
       "featured": true,
       "rating": 4.8,
       "usageCount": 1250,
@@ -1238,7 +1238,7 @@ Get template details with full workflow definition.
   "name": "Employee Onboarding",
   "description": "Complete employee onboarding workflow",
   "category": "hr",
-  "thumbnail": "https://cdn.swiftflow.ai/templates/onboarding.png",
+  "thumbnail": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=300&fit=crop",
   "featured": true,
   "rating": 4.8,
   "usageCount": 1250,
@@ -1742,7 +1742,7 @@ Browse available integrations in the App Center.
       "name": "Slack",
       "description": "Send messages, create channels, manage users",
       "category": "communication",
-      "icon": "https://cdn.swiftflow.ai/integrations/slack.png",
+      "icon": "https://logo.clearbit.com/slack.com",
       "rating": 4.9,
       "installs": 12500,
       "featured": true,
@@ -3179,7 +3179,7 @@ Check export status and get download link.
   "format": "csv",
   "size": "2.3 MB",
   "recordCount": 1247,
-  "downloadUrl": "https://cdn.swiftflow.ai/exports/exp_abc123.csv",
+  "downloadUrl": "https://example.com/exports/exp_abc123.csv",
   "expiresAt": "2025-01-16T15:00:00Z",
   "createdAt": "2025-01-15T15:00:00Z",
   "completedAt": "2025-01-15T15:00:25Z"

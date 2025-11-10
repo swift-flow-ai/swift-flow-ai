@@ -34,13 +34,7 @@ export function ShareModal({ workflowId, workflowName, onClose }: ShareModalProp
   const [showRemoveShareDialog, setShowRemoveShareDialog] = useState(false);
   const [removingShareId, setRemovingShareId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (currentWorkspace) {
-      loadShares();
-    }
-  }, [currentWorkspace, workflowId]);
-
-  const loadShares = async () => {
+  const loadShares = useCallback(async () => {
     if (!currentWorkspace) return;
     
     try {
@@ -56,7 +50,13 @@ export function ShareModal({ workflowId, workflowName, onClose }: ShareModalProp
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentWorkspace, workflowId]);
+
+  useEffect(() => {
+    if (currentWorkspace) {
+      loadShares();
+    }
+  }, [currentWorkspace, loadShares]);
 
   const handleGenerateLink = async (permission: SharePermission) => {
     if (!currentWorkspace) return;
