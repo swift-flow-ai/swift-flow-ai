@@ -23,17 +23,21 @@
 ## 🚀 Quick Start
 
 ### Start Development
+
 ```bash
 cd /Users/nabajit.das/Documents/dev/experiments/dots
 npm run dev
 ```
+
 **Open:** http://localhost:5173
 
 ### Demo Credentials
+
 - **Email:** `demo@flowai.com` or `admin@acme.com`
 - **Password:** `demo123` or any password (MSW enabled)
 
 ### Key Commands
+
 ```bash
 npm run dev      # Start dev server (port 5173)
 npm run build    # Build for production
@@ -58,6 +62,7 @@ Traditional tools (Jira, Notion, etc.) help you **document** processes.
 Swift Flow AI helps you **execute and track** them.
 
 **Example Use Cases:**
+
 - HR Interview Coordination
 - Employee Onboarding
 - Invoice Processing
@@ -95,6 +100,7 @@ Available Node Types:
 ### 3. Team Pools
 
 Assign tasks to pools of people instead of individuals:
+
 - **HR Recruiters Pool** - Round-robin assignment
 - **Approval Pool** - Load-balanced approvals
 - **Support Tier 1** - Smart routing based on expertise
@@ -103,6 +109,7 @@ Assign tasks to pools of people instead of individuals:
 ### 4. Workflow Analytics
 
 Comprehensive analytics for each workflow:
+
 - **Execution metrics** - Success rate, duration, cost
 - **Bottleneck detection** - AI-powered recommendations
 - **Node performance** - Identify slow steps
@@ -126,6 +133,7 @@ Comprehensive analytics for each workflow:
 ### 7. Audit Logs
 
 Complete audit trail of all actions:
+
 - Who did what, when
 - Workflow executions
 - Configuration changes
@@ -138,6 +146,7 @@ Complete audit trail of all actions:
 ### Technology Stack
 
 **Frontend:**
+
 - React 19 + TypeScript
 - Vite (dev server & build)
 - React Router v7 (routing)
@@ -148,10 +157,12 @@ Complete audit trail of all actions:
 - MSW (API mocking)
 
 **State Management:**
+
 - React Context (Auth, Workspace, Theme)
 - Custom hooks (useAuth, useWorkspace, useTheme)
 
 **API Layer:**
+
 - Axios (HTTP client)
 - Service pattern (per-domain services)
 - MSW handlers (mock backend)
@@ -170,13 +181,14 @@ src/
 │   ├── dashboard/       # Dashboard
 │   ├── workflows/       # WorkflowsList, WorkflowBuilder, WorkflowViewer, WorkflowAnalytics
 │   ├── executions/      # ExecutionsList, ExecutionDetail
-│   ├── approvals/       # ApprovalsList, ApprovalDetail
+│   ├── inbox/           # InboxPage, InboxDetail
 │   ├── templates/       # TemplateMarketplace, TemplateDetail
 │   ├── marketplace/     # MarketplacePage, AppDetailPage
 │   ├── integrations/    # IntegrationsList, AddIntegration, IntegrationConfig
 │   ├── analytics/       # AnalyticsDashboard
 │   ├── team/            # TeamPage (Members & Pools)
 │   ├── audit/           # AuditLogs, AuditLogDetail
+│   ├── profile/         # ProfilePage
 │   └── notifications/   # NotificationsPage
 ├── contexts/
 │   ├── AuthContext.tsx       # Authentication state
@@ -238,7 +250,9 @@ Swift Flow AI implements a comprehensive Role-Based Access Control system to man
 ### Roles
 
 #### 1. Owner 👑
+
 **Full control over the workspace**
+
 - All 43 permissions (complete access)
 - Can delete workspace
 - Can manage billing
@@ -248,7 +262,9 @@ Swift Flow AI implements a comprehensive Role-Based Access Control system to man
 **Use case:** Workspace creator, primary administrator
 
 #### 2. Admin 🔴
+
 **Manage workflows, team, and integrations**
+
 - 38 permissions
 - Can create, edit, delete workflows
 - Can manage team and integrations
@@ -258,7 +274,9 @@ Swift Flow AI implements a comprehensive Role-Based Access Control system to man
 **Use case:** Team leads, department managers
 
 #### 3. Member 🔵
+
 **Create and execute workflows**
+
 - 18 permissions
 - Can create, edit, and execute workflows
 - Can view analytics
@@ -268,7 +286,9 @@ Swift Flow AI implements a comprehensive Role-Based Access Control system to man
 **Use case:** Regular team members, workflow creators
 
 #### 4. Viewer 🟢
+
 **Read-only access with approval handling**
+
 - 7 permissions
 - Can view workflows and executions
 - Can handle assigned approvals
@@ -278,7 +298,9 @@ Swift Flow AI implements a comprehensive Role-Based Access Control system to man
 **Use case:** Stakeholders, approvers, auditors
 
 #### 5. Guest ⚪
+
 **Limited access for external collaborators**
+
 - 2 permissions
 - Can only view and decide on assigned approvals
 - Cannot access any other features
@@ -287,50 +309,52 @@ Swift Flow AI implements a comprehensive Role-Based Access Control system to man
 
 ### Permission Matrix
 
-| Feature | Owner | Admin | Member | Viewer | Guest |
-|---------|-------|-------|--------|--------|-------|
-| **Workflows** |
-| View workflows | ✅ | ✅ | ✅ | ✅ | ❌ |
-| Create workflows | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Edit workflows | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Delete workflows | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Execute workflows | ✅ | ✅ | ✅ | ❌ | ❌ |
-| **Analytics** |
-| View analytics | ✅ | ✅ | ✅ | ❌ | ❌ |
-| Export analytics | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **Executions** |
-| Cancel executions | ✅ | ✅ | ✅ | ❌ | ❌ |
-| **Approvals** |
-| Handle approvals | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Team** |
-| Invite members | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Remove members | ✅ | ✅ | ❌ | ❌ | ❌ |
-| Manage roles | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **Integrations** |
-| Install integrations | ✅ | ✅ | ❌ | ❌ | ❌ |
-| **Workspace** |
-| Delete workspace | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Manage billing | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Feature              | Owner | Admin | Member | Viewer | Guest |
+| -------------------- | ----- | ----- | ------ | ------ | ----- |
+| **Workflows**        |
+| View workflows       | ✅    | ✅    | ✅     | ✅     | ❌    |
+| Create workflows     | ✅    | ✅    | ✅     | ❌     | ❌    |
+| Edit workflows       | ✅    | ✅    | ✅     | ❌     | ❌    |
+| Delete workflows     | ✅    | ✅    | ❌     | ❌     | ❌    |
+| Execute workflows    | ✅    | ✅    | ✅     | ❌     | ❌    |
+| **Analytics**        |
+| View analytics       | ✅    | ✅    | ✅     | ❌     | ❌    |
+| Export analytics     | ✅    | ✅    | ❌     | ❌     | ❌    |
+| **Executions**       |
+| Cancel executions    | ✅    | ✅    | ✅     | ❌     | ❌    |
+| **Approvals**        |
+| Handle approvals     | ✅    | ✅    | ✅     | ✅     | ✅    |
+| **Team**             |
+| Invite members       | ✅    | ✅    | ❌     | ❌     | ❌    |
+| Remove members       | ✅    | ✅    | ❌     | ❌     | ❌    |
+| Manage roles         | ✅    | ❌    | ❌     | ❌     | ❌    |
+| **Integrations**     |
+| Install integrations | ✅    | ✅    | ❌     | ❌     | ❌    |
+| **Workspace**        |
+| Delete workspace     | ✅    | ❌    | ❌     | ❌     | ❌    |
+| Manage billing       | ✅    | ❌    | ❌     | ❌     | ❌    |
 
 ### Using RBAC in Code
 
 #### Method 1: usePermissions Hook
+
 ```typescript
-import { usePermissions } from '../../hooks/usePermissions';
+import { usePermissions } from "../../hooks/usePermissions";
 
 function MyComponent() {
-  const { can, canAny, canAll, userRole, isOwner, isAdminOrOwner } = usePermissions();
-  
+  const { can, canAny, canAll, userRole, isOwner, isAdminOrOwner } =
+    usePermissions();
+
   // Check single permission
-  if (can('workflow:create')) {
+  if (can("workflow:create")) {
     // Show create button
   }
-  
+
   // Check multiple permissions (any)
-  if (canAny(['workflow:edit', 'workflow:delete'])) {
+  if (canAny(["workflow:edit", "workflow:delete"])) {
     // Show edit or delete
   }
-  
+
   // Check role
   if (isAdminOrOwner) {
     // Show admin features
@@ -339,8 +363,9 @@ function MyComponent() {
 ```
 
 #### Method 2: PermissionGate Component
+
 ```typescript
-import { PermissionGate } from '../../components/common/PermissionGate';
+import { PermissionGate } from "../../components/common/PermissionGate";
 
 function MyComponent() {
   return (
@@ -348,8 +373,8 @@ function MyComponent() {
       <PermissionGate permission="workflow:create">
         <button>Create Workflow</button>
       </PermissionGate>
-      
-      <PermissionGate 
+
+      <PermissionGate
         permission="analytics:view"
         fallback={<p>No access to analytics</p>}
       >
@@ -362,13 +387,13 @@ function MyComponent() {
 
 ### Demo Users for Testing
 
-| Email | Role | Password | Access Level |
-|-------|------|----------|--------------|
-| admin@acme.com | Owner | any | Full access |
-| john@acme.com | Admin | any | Manage workflows, team |
-| sarah@acme.com | Member | any | Create & execute workflows |
-| alice@acme.com | Viewer | any | Read-only + approvals |
-| david@acme.com | Guest | any | Approvals only |
+| Email          | Role   | Password | Access Level               |
+| -------------- | ------ | -------- | -------------------------- |
+| admin@acme.com | Owner  | any      | Full access                |
+| john@acme.com  | Admin  | any      | Manage workflows, team     |
+| sarah@acme.com | Member | any      | Create & execute workflows |
+| alice@acme.com | Viewer | any      | Read-only + approvals      |
+| david@acme.com | Guest  | any      | Approvals only             |
 
 ### Testing RBAC
 
@@ -392,16 +417,19 @@ Navigate to Workflows → "Create Workflow" button hidden ❌
 ### RBAC Implementation Files
 
 **Core System:**
+
 - `src/types/rbac.ts` - Role & permission definitions (43 permissions)
 - `src/hooks/usePermissions.ts` - Permission checking hook
 - `src/components/common/PermissionGate.tsx` - Conditional rendering component
 
 **Protected Pages:**
+
 - `src/pages/workflows/WorkflowsList.tsx` - "Create Workflow" button
 - `src/pages/workflows/WorkflowViewer.tsx` - "Run", "Edit", "Analytics", "Delete" buttons
 - `src/pages/team/TeamPage.tsx` - "Invite Members", "Create Pool" buttons
 
 **Mock Data:**
+
 - `src/mocks/data/team.ts` - Team members with roles
 - `src/mocks/handlers/workspace.handlers.ts` - Returns members with workspace
 
@@ -425,18 +453,21 @@ Navigate to Workflows → "Create Workflow" button hidden ❌
 ### Key Endpoints
 
 #### Authentication
+
 - `POST /auth/login` - User login
 - `POST /auth/signup` - User registration
 - `GET /auth/me` - Get current user
 - `POST /auth/logout` - Logout
 
 #### Workspaces
+
 - `GET /workspaces` - List workspaces
 - `POST /workspaces` - Create workspace
 - `GET /workspaces/:id` - Get workspace details
 - `GET /workspaces/:id/dashboard` - Dashboard data
 
 #### Workflows
+
 - `GET /workspaces/:id/workflows` - List workflows
 - `POST /workspaces/:id/workflows` - Create workflow
 - `GET /workspaces/:id/workflows/:workflowId` - Get workflow
@@ -445,17 +476,20 @@ Navigate to Workflows → "Create Workflow" button hidden ❌
 - `GET /workspaces/:id/workflows/:workflowId/analytics` - Workflow analytics
 
 #### Executions
+
 - `GET /workspaces/:id/executions` - List executions
 - `GET /workspaces/:id/executions/:executionId` - Get execution details
 - `POST /workspaces/:id/executions/:executionId/cancel` - Cancel execution
 - `POST /workspaces/:id/executions/:executionId/retry` - Retry execution
 
-#### Approvals
-- `GET /workspaces/:id/approvals` - List approvals
-- `GET /workspaces/:id/approvals/:approvalId` - Get approval details
+#### Inbox (Approvals & Tasks)
+
+- `GET /workspaces/:id/approvals` - List inbox items
+- `GET /workspaces/:id/approvals/:approvalId` - Get inbox item details
 - `POST /workspaces/:id/approvals/:approvalId/decide` - Approve/reject
 
 #### Team & Pools
+
 - `GET /workspaces/:id/members` - List team members
 - `POST /workspaces/:id/members/invite` - Invite member
 - `GET /workspaces/:id/pools` - List team pools
@@ -463,19 +497,23 @@ Navigate to Workflows → "Create Workflow" button hidden ❌
 - `POST /workspaces/:id/pools/:poolId/members` - Add member to pool
 
 #### Templates
+
 - `GET /workspaces/:id/templates` - List templates
 - `POST /workspaces/:id/templates/:templateId/use` - Use template
 
 #### Integrations
+
 - `GET /integrations/marketplace` - Browse marketplace
 - `GET /workspaces/:id/integrations` - List installed integrations
 - `POST /workspaces/:id/integrations` - Install integration
 
 #### Analytics
+
 - `GET /workspaces/:id/analytics/overview` - Workspace analytics
 - `GET /workspaces/:id/analytics/workflows/:workflowId` - Workflow analytics
 
 #### Audit Logs
+
 - `GET /workspaces/:id/audit-logs` - List audit logs
 - `GET /workspaces/:id/audit-logs/:logId` - Get log details
 
@@ -490,6 +528,7 @@ Swift Flow AI supports multiple trigger types for flexible automation:
 **Use Case:** User-initiated workflows requiring explicit permission
 
 **Configuration:**
+
 - Allowed Users: Specify who can trigger
 - Require Approval: Optional admin approval
 
@@ -500,6 +539,7 @@ Swift Flow AI supports multiple trigger types for flexible automation:
 **Use Case:** External systems triggering workflows via HTTP
 
 **Configuration:**
+
 - HTTP Method: POST, GET, PUT
 - Webhook URL: Auto-generated unique endpoint
 - Authentication: HMAC signature verification
@@ -511,6 +551,7 @@ Swift Flow AI supports multiple trigger types for flexible automation:
 **Use Case:** Chain workflows together
 
 **Configuration:**
+
 - Source Workflow: Select parent workflow
 - Trigger Condition: On success, failure, or always
 - Data Mapping: Pass output to next workflow
@@ -522,11 +563,13 @@ Swift Flow AI supports multiple trigger types for flexible automation:
 **Use Case:** Time-based automation
 
 **Configuration:**
+
 - Schedule Type: Cron expression or interval
 - Timezone: Workspace timezone or custom
 - Run Window: Optional start/end times
 
 **Cron Examples:**
+
 - `0 9 * * 1-5` - Every weekday at 9 AM
 - `0 0 1 * *` - First day of month
 - `*/15 * * * *` - Every 15 minutes
@@ -538,6 +581,7 @@ Swift Flow AI supports multiple trigger types for flexible automation:
 **Use Case:** Workflows triggered by incoming emails
 
 **Configuration:**
+
 - Email Address: Auto-generated workflow email
 - Sender Whitelist: Only accept from specific addresses
 - Subject Filter: Optional regex matching
@@ -588,17 +632,20 @@ VITE_ENABLE_MSW=true
 ### Key Features
 
 #### Theme Support
+
 - Light, Dark, and System themes
 - Toggle from top bar or settings
 - Persisted in localStorage
 - CSS variables for easy customization
 
 #### Multi-Workspace
+
 - Switch workspaces from top bar dropdown
 - Each workspace has isolated data
 - Last-used workspace remembered
 
 #### Protected Routes
+
 - All `/app/*` routes require authentication
 - Automatic redirect to login if not authenticated
 - Workspace selection after login
@@ -611,7 +658,7 @@ VITE_ENABLE_MSW=true
 // src/pages/myfeature/MyFeaturePage.tsx
 export function MyFeaturePage() {
   const { currentWorkspace } = useWorkspace();
-  
+
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold">My Feature</h1>
@@ -625,10 +672,10 @@ export function MyFeaturePage() {
 
 ```typescript
 // src/App.tsx
-import { MyFeaturePage } from './pages/myfeature/MyFeaturePage';
+import { MyFeaturePage } from "./pages/myfeature/MyFeaturePage";
 
 // Inside /app routes:
-<Route path="myfeature" element={<MyFeaturePage />} />
+<Route path="myfeature" element={<MyFeaturePage />} />;
 ```
 
 #### 3. Add Navigation
@@ -638,8 +685,8 @@ import { MyFeaturePage } from './pages/myfeature/MyFeaturePage';
 const navigation = [
   // ... existing items
   {
-    name: 'My Feature',
-    href: '/app/myfeature',
+    name: "My Feature",
+    href: "/app/myfeature",
     icon: YourIcon,
   },
 ];
@@ -649,15 +696,17 @@ const navigation = [
 
 ```typescript
 // src/mocks/handlers/myfeature.handlers.ts
-import { http, HttpResponse, delay } from 'msw';
-import { config } from '../../config';
+import { http, HttpResponse, delay } from "msw";
+import { config } from "../../config";
 
 export const myFeatureHandlers = [
   http.get(`${config.apiBaseUrl}/myfeature`, async () => {
     await delay(500);
     return HttpResponse.json({
       success: true,
-      data: { /* your data */ },
+      data: {
+        /* your data */
+      },
     });
   }),
 ];
@@ -667,11 +716,11 @@ export const myFeatureHandlers = [
 
 ```typescript
 // src/services/myfeature.service.ts
-import { api } from './api';
+import { api } from "./api";
 
 export const myFeatureService = {
   async getData() {
-    const response = await api.get('/myfeature');
+    const response = await api.get("/myfeature");
     return response.data.data;
   },
 };
@@ -699,6 +748,7 @@ VITE_API_BASE_URL=http://localhost:3000/api
 ### Benefits
 
 **With MSW Enabled:**
+
 - ✅ No backend required
 - ✅ Instant responses
 - ✅ Offline development
@@ -706,6 +756,7 @@ VITE_API_BASE_URL=http://localhost:3000/api
 - ✅ Realistic delays
 
 **With MSW Disabled:**
+
 - ✅ Real integration testing
 - ✅ Production-like behavior
 - ✅ API validation
@@ -713,6 +764,7 @@ VITE_API_BASE_URL=http://localhost:3000/api
 ### Mock Data
 
 All mock data is in `src/mocks/data/`:
+
 - **workspaces.ts** - 3 demo workspaces
 - **workflows.ts** - 6 example workflows (including HR Interview Coordination)
 - **executions.ts** - Sample workflow executions
@@ -812,8 +864,10 @@ VITE_ENABLE_MSW=true npm run dev
 - [x] Workflow analytics (comprehensive)
 - [x] Workflow execution tracking
 - [x] Execution history & logs
-- [x] Approvals inbox & detail
+- [x] Inbox (approvals & tasks) with improved UX
 - [x] AI-powered approval recommendations
+- [x] Quick actions (approve/reject from list)
+- [x] Smart grouping by priority
 - [x] Template marketplace
 - [x] Integration marketplace
 - [x] Multiple integrations per app (named instances)
@@ -832,6 +886,7 @@ VITE_ENABLE_MSW=true npm run dev
 #### HR Interview Coordination
 
 Complete workflow demonstrating:
+
 - Manual trigger by HR recruiter
 - Candidate details form
 - Candidate self-scheduling (availability link)
@@ -894,15 +949,21 @@ Complete workflow demonstrating:
 
 ### Latest Changes
 
-1. **RBAC System** - Complete role-based access control with 5 roles and 43 granular permissions
-2. **Profile Page** - New user profile page with preferences and account information
-3. **Permission-Based UI** - Buttons and features hidden/shown based on user role
-4. **Workflow Analytics** - Comprehensive analytics page with charts and bottleneck detection
-5. **Team Pools** - Support for assigning tasks to pools of people
-6. **HR Interview Workflow** - Complete example workflow with all features
-7. **Navigation Fixes** - All routes updated to use `/app` prefix
-8. **Theme Improvements** - Fixed dropdown backgrounds and contrast
-9. **Mock Data** - Realistic data for all features with proper roles
+1. **Inbox (Renamed from Approvals)** - Modern inbox UI with improved UX
+   - Quick actions (approve/reject from list view)
+   - Smart grouping by priority (critical, high, medium, low)
+   - Better filters (status, priority, search)
+   - Stats cards (total, urgent, due today, AI-assisted)
+   - Improved detail page with better layout
+2. **RBAC System** - Complete role-based access control with 5 roles and 43 granular permissions
+3. **Profile Page** - New user profile page with preferences and account information
+4. **Permission-Based UI** - Buttons and features hidden/shown based on user role
+5. **Workflow Analytics** - Comprehensive analytics page with charts and bottleneck detection
+6. **Team Pools** - Support for assigning tasks to pools of people
+7. **HR Interview Workflow** - Complete example workflow with all features
+8. **Navigation Fixes** - All routes updated to use `/app` prefix
+9. **Theme Improvements** - Fixed dropdown backgrounds and contrast
+10. **Mock Data** - Realistic data for all features with proper roles
 
 ### Demo Users with Roles
 
@@ -940,6 +1001,7 @@ VITE_APP_NAME=Swift Flow AI
 ### Deploy
 
 Deploy the `dist/` folder to:
+
 - Vercel
 - Netlify
 - AWS S3 + CloudFront
@@ -950,6 +1012,7 @@ Deploy the `dist/` folder to:
 ## 📞 Support
 
 For questions or issues:
+
 - Check this documentation
 - Review `API_DOCUMENTATION.md` for API details
 - Check the codebase - it's well-documented

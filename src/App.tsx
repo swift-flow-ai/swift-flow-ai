@@ -17,8 +17,8 @@ import { WorkflowAnalytics } from './pages/workflows/WorkflowAnalytics';
 import { ExecutionsList } from './pages/executions/ExecutionsList';
 import { ExecutionDetail } from './pages/executions/ExecutionDetail';
 import { AnalyticsDashboard } from './pages/analytics/AnalyticsDashboard';
-import { ApprovalsList } from './pages/approvals/ApprovalsList';
-import { ApprovalDetail } from './pages/approvals/ApprovalDetail';
+import { InboxPage } from './pages/inbox/InboxPage';
+import { InboxDetail } from './pages/inbox/InboxDetail';
 import { TeamPage } from './pages/team/TeamPage';
 import { MarketplacePage } from './pages/marketplace/MarketplacePage';
 import { AppDetailPage } from './pages/marketplace/AppDetailPage';
@@ -92,8 +92,8 @@ function App() {
                 <Route path="executions" element={<ExecutionsList />} />
                 <Route path="executions/:executionId" element={<ExecutionDetail />} />
                 <Route path="analytics" element={<AnalyticsDashboard />} />
-                <Route path="approvals" element={<ApprovalsList />} />
-                <Route path="approvals/:approvalId" element={<ApprovalDetail />} />
+                <Route path="inbox" element={<InboxPage />} />
+                <Route path="inbox/:approvalId" element={<InboxDetail />} />
                 <Route path="templates" element={<TemplateMarketplace />} />
                 <Route path="templates/:templateId" element={<TemplateDetail />} />
                 <Route path="integrations" element={<IntegrationsList />} />

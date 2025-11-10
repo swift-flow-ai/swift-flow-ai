@@ -22,8 +22,8 @@ npm run dev
 - **Owner:** `admin@acme.com` (full access)
 - **Admin:** `john@acme.com` (manage workflows, team)
 - **Member:** `sarah@acme.com` (create & execute workflows)
-- **Viewer:** `alice@acme.com` (read-only + approvals)
-- **Guest:** `david@acme.com` (approvals only)
+- **Viewer:** `alice@acme.com` (read-only + inbox)
+- **Guest:** `david@acme.com` (inbox only)
 - **Password:** any password (MSW enabled)
 
 ---
@@ -110,8 +110,8 @@ Comprehensive analytics for each workflow:
 - **Owner** 👑 - Full control (43 permissions)
 - **Admin** 🔴 - Manage workflows & team (38 permissions)
 - **Member** 🔵 - Create & execute workflows (18 permissions)
-- **Viewer** 🟢 - Read-only + approvals (7 permissions)
-- **Guest** ⚪ - Approvals only (2 permissions)
+- **Viewer** 🟢 - Read-only + inbox (7 permissions)
+- **Guest** ⚪ - Inbox only (2 permissions)
 
 See [COMPLETE_DESIGN.md](./COMPLETE_DESIGN.md#rbac---role-based-access-control) for full details.
 
@@ -232,7 +232,8 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 - [x] Workflow builder (visual canvas)
 - [x] Workflow viewer & analytics
 - [x] Execution tracking & history
-- [x] Approvals with AI recommendations
+- [x] Inbox (approvals & tasks) with improved UX
+- [x] AI-powered recommendations
 - [x] Template marketplace
 - [x] Integration marketplace
 - [x] Audit logs
@@ -261,7 +262,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 - Dashboard: http://localhost:5173/app/dashboard
 - Workflows: http://localhost:5173/app/workflows
 - Analytics: http://localhost:5173/app/workflows/wf_recruitment/analytics
-- Approvals: http://localhost:5173/app/approvals
+- Inbox: http://localhost:5173/app/inbox
 - Team: http://localhost:5173/app/team
 - Marketplace: http://localhost:5173/app/marketplace
 
