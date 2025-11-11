@@ -416,6 +416,14 @@ export interface WorkspaceAnalytics {
     impact: 'high' | 'medium' | 'low';
     recommendation: string;
   }>;
+  integrationMetrics?: Array<{
+    integrationId: string;
+    name: string;
+    calls: number;
+    cost: number;
+    avgLatency: string;
+    successRate: number;
+  }>;
 }
 
 export interface WorkflowAnalytics {

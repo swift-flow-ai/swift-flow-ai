@@ -345,6 +345,71 @@ export function AnalyticsDashboard() {
         </div>
       </div>
 
+      {/* Integration Metrics */}
+      {analytics.integrationMetrics && analytics.integrationMetrics.length > 0 && (
+        <div className="bg-card border border-border rounded-lg p-6">
+          <h3 className="text-lg font-semibold mb-4">Integration Usage & Performance</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Integration</th>
+                  <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">API Calls</th>
+                  <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">Cost</th>
+                  <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">Avg Latency</th>
+                  <th className="text-right py-3 px-2 text-sm font-medium text-muted-foreground">Success Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analytics.integrationMetrics.map((integration, index) => (
+                  <motion.tr
+                    key={integration.integrationId}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="py-3 px-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <span className="text-xs font-bold text-primary">
+                            {integration.name.substring(0, 2).toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="font-medium">{integration.name}</span>
+                      </div>
+                    </td>
+                    <td className="text-right py-3 px-2 font-medium">
+                      {formatNumber(integration.calls)}
+                    </td>
+                    <td className="text-right py-3 px-2 font-medium">
+                      {formatCurrency(integration.cost)}
+                    </td>
+                    <td className="text-right py-3 px-2 text-muted-foreground">
+                      {integration.avgLatency}
+                    </td>
+                    <td className="text-right py-3 px-2">
+                      <span
+                        className={cn(
+                          'inline-flex px-2 py-1 rounded-md text-xs font-medium',
+                          integration.successRate >= 98
+                            ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                            : integration.successRate >= 95
+                            ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
+                            : 'bg-red-500/10 text-red-600 dark:text-red-400'
+                        )}
+                      >
+                        {integration.successRate}%
+                      </span>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
       {/* Bottlenecks */}
       <div className="bg-card border border-border rounded-lg p-6">
         <div className="flex items-center gap-3 mb-6">
