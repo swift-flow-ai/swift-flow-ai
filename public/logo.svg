@@ -1,38 +1,50 @@
-<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background circle with gradient -->
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main gradient definition -->
   <defs>
-    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#34d399;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
     </linearGradient>
-    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-      <feOffset dx="0" dy="2" result="offsetblur"/>
-      <feComponentTransfer>
-        <feFuncA type="linear" slope="0.3"/>
-      </feComponentTransfer>
-      <feMerge> 
-        <feMergeNode/>
-        <feMergeNode in="SourceGraphic"/> 
-      </feMerge>
-    </filter>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d946ef;stop-opacity:1" />
+    </linearGradient>
   </defs>
   
-  <!-- Main circle background -->
-  <circle cx="60" cy="60" r="54" fill="url(#logoGradient)" filter="url(#shadow)"/>
+  <!-- Background circle (optional) -->
+  <circle cx="100" cy="100" r="95" fill="url(#gradient1)" opacity="0.1"/>
   
-  <!-- Lightning bolt / Zap icon representing workflow automation -->
-  <path d="M 45 30 L 55 30 L 50 50 L 60 50 L 45 80 L 50 60 L 40 60 Z" 
-        fill="white" 
-        stroke="white" 
-        stroke-width="1.5" 
-        stroke-linejoin="round"/>
+  <!-- Flow nodes connected by lines -->
+  <!-- Top node -->
+  <circle cx="100" cy="40" r="16" fill="url(#gradient1)"/>
+  <circle cx="100" cy="40" r="10" fill="white" opacity="0.3"/>
   
-  <!-- Abstract flow nodes (circles connected) -->
-  <circle cx="75" cy="35" r="4" fill="white" opacity="0.8"/>
-  <circle cx="75" cy="50" r="4" fill="white" opacity="0.8"/>
-  <circle cx="75" cy="65" r="4" fill="white" opacity="0.8"/>
-  <line x1="75" y1="39" x2="75" y2="46" stroke="white" stroke-width="2" opacity="0.6"/>
-  <line x1="75" y1="54" x2="75" y2="61" stroke="white" stroke-width="2" opacity="0.6"/>
+  <!-- Middle left node -->
+  <circle cx="60" cy="100" r="16" fill="url(#gradient1)"/>
+  <circle cx="60" cy="100" r="10" fill="white" opacity="0.3"/>
+  
+  <!-- Middle right node -->
+  <circle cx="140" cy="100" r="16" fill="url(#gradient2)"/>
+  <circle cx="140" cy="100" r="10" fill="white" opacity="0.3"/>
+  
+  <!-- Bottom node -->
+  <circle cx="100" cy="160" r="16" fill="url(#gradient2)"/>
+  <circle cx="100" cy="160" r="10" fill="white" opacity="0.3"/>
+  
+  <!-- Connecting lines with gradient -->
+  <line x1="100" y1="56" x2="100" y2="84" stroke="url(#gradient1)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="92" y1="92" x2="68" y2="92" stroke="url(#gradient1)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="108" y1="92" x2="132" y2="92" stroke="url(#gradient1)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="68" y1="108" x2="92" y2="152" stroke="url(#gradient2)" stroke-width="3" stroke-linecap="round"/>
+  <line x1="132" y1="108" x2="108" y2="152" stroke="url(#gradient2)" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Center hub -->
+  <circle cx="100" cy="92" r="12" fill="url(#gradient1)"/>
+  <circle cx="100" cy="92" r="6" fill="white"/>
+  
+  <!-- Animated flow dots (optional - for web) -->
+  <circle cx="100" cy="40" r="3" fill="white" opacity="0.8">
+    <animate attributeName="cy" values="40;56;84;92" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.6;0.4;0" dur="2s" repeatCount="indefinite"/>
+  </circle>
 </svg>
-
