@@ -36,7 +36,7 @@ export const mockTemplates: WorkflowTemplate[] = [
             description: "Send welcome email with onboarding checklist",
             integrationId: "gmail",
             actionKey: "send_email",
-            installedAppId: "installed_gmail_1",
+            installedAppId: "inst_gmail_hr",
             config: {
               to: "{{trigger.email}}",
               subject: "Welcome to {{company_name}}!",
@@ -53,7 +53,7 @@ export const mockTemplates: WorkflowTemplate[] = [
             description: "Schedule first day orientation",
             integrationId: "google_calendar",
             actionKey: "create_event",
-            installedAppId: "installed_gcal_1",
+            installedAppId: "inst_google_calendar_main",
             config: {
               summary: "First Day Orientation - {{trigger.name}}",
               start_time: "{{trigger.start_date}}T09:00:00",
@@ -134,7 +134,7 @@ export const mockTemplates: WorkflowTemplate[] = [
             description: "AI extracts invoice details",
             integrationId: "openai",
             actionKey: "analyze_document",
-            installedAppId: "installed_openai_1",
+            installedAppId: "inst_openai_main",
             config: {
               prompt: "Extract invoice number, amount, vendor, and due date",
               model: "gpt-4-vision-preview",
@@ -227,7 +227,7 @@ export const mockTemplates: WorkflowTemplate[] = [
             description: "Classify ticket urgency and category",
             integrationId: "openai",
             actionKey: "chat_completion",
-            installedAppId: "installed_openai_1",
+            installedAppId: "inst_openai_main",
             config: {
               prompt: "Classify this support ticket: {{trigger.message}}",
               model: "gpt-4",
@@ -311,7 +311,7 @@ export const mockTemplates: WorkflowTemplate[] = [
             description: "AI scores lead quality",
             integrationId: "openai",
             actionKey: "chat_completion",
-            installedAppId: "installed_openai_1",
+            installedAppId: "inst_openai_main",
             config: {
               prompt:
                 "Score this lead based on company size, industry, and engagement: {{trigger.data}}",
@@ -388,7 +388,7 @@ export const mockTemplates: WorkflowTemplate[] = [
             description: "AI checks content for compliance",
             integrationId: "openai",
             actionKey: "chat_completion",
-            installedAppId: "installed_openai_1",
+            installedAppId: "inst_openai_main",
             config: {
               prompt:
                 "Review this content for compliance issues: {{trigger.content}}",
@@ -465,7 +465,7 @@ export const mockTemplates: WorkflowTemplate[] = [
             description: "AI extracts and validates receipt data",
             integrationId: "openai",
             actionKey: "analyze_document",
-            installedAppId: "installed_openai_1",
+            installedAppId: "inst_openai_main",
             config: {
               prompt:
                 "Extract date, amount, vendor, and category from this receipt",

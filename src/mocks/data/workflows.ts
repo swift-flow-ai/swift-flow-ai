@@ -44,7 +44,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Send welcome email with onboarding checklist",
             integrationId: "gmail",
             actionKey: "send_email",
-            installedAppId: "installed_gmail_1",
+            installedAppId: "inst_gmail_hr",
             config: {
               to: "{{trigger.email}}",
               subject: "Welcome to the Team!",
@@ -59,9 +59,9 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Create Calendar Event",
             description: "Schedule first day orientation",
-            integrationId: "google_calendar",
+            integrationId: "google-calendar",
             actionKey: "create_event",
-            installedAppId: "installed_gcal_1",
+            installedAppId: "inst_google_calendar_main",
             config: {
               summary: "{{trigger.name}} - First Day Orientation",
               start_time: "{{trigger.start_date}}T09:00:00",
@@ -88,7 +88,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Notify team about new hire",
             integrationId: "slack",
             actionKey: "send_message",
-            installedAppId: "installed_slack_1",
+            installedAppId: "inst_slack_engineering",
             config: {
               channel: "general",
               message: "Welcome {{trigger.name}} to the team! 🎉",
@@ -147,7 +147,7 @@ export const mockWorkflows: Workflow[] = [
             description: "AI extracts invoice details",
             integrationId: "openai",
             actionKey: "analyze_document",
-            installedAppId: "installed_openai_1",
+            installedAppId: "inst_openai_main",
             config: {
               prompt:
                 "Extract invoice number, amount, vendor, and due date from this document",
@@ -193,7 +193,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Notify finance team of approved invoice",
             integrationId: "slack",
             actionKey: "send_message",
-            installedAppId: "installed_slack_1",
+            installedAppId: "inst_slack_engineering",
             config: {
               channel: "finance",
               message:
@@ -254,7 +254,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Classify ticket urgency and category",
             integrationId: "openai",
             actionKey: "chat_completion",
-            installedAppId: "installed_openai_1",
+            installedAppId: "inst_openai_main",
             config: {
               prompt:
                 "Classify this support ticket: {{trigger.message}}. Determine urgency (low/medium/high) and category (technical/billing/general)",
@@ -280,7 +280,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Send to tech support channel",
             integrationId: "slack",
             actionKey: "send_message",
-            installedAppId: "installed_slack_1",
+            installedAppId: "inst_slack_engineering",
             config: {
               channel: "tech-support",
               message: "🔧 New technical ticket: {{trigger.subject}}",
@@ -296,7 +296,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Send to billing channel",
             integrationId: "slack",
             actionKey: "send_message",
-            installedAppId: "installed_slack_1",
+            installedAppId: "inst_slack_engineering",
             config: {
               channel: "billing",
               message: "💰 New billing inquiry: {{trigger.subject}}",
@@ -575,7 +575,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Email candidate with self-scheduling link",
             integrationId: "gmail",
             actionKey: "send_email",
-            installedAppId: "installed_gmail_1",
+            installedAppId: "inst_gmail_hr",
             config: {
               to: "{{candidateEmail}}",
               subject: "Interview Invitation - Please Select Your Availability",
@@ -650,7 +650,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Request interviewer to accept/reject the interview",
             integrationId: "gmail",
             actionKey: "send_email",
-            installedAppId: "installed_gmail_1",
+            installedAppId: "inst_gmail_hr",
             config: {
               to: "{{interviewerEmail}}",
               subject: "Interview Request - {{candidateName}} for {{position}}",
@@ -710,7 +710,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Create personalized interview plan and questions",
             integrationId: "openai",
             actionKey: "chat_completion",
-            installedAppId: "installed_openai_1",
+            installedAppId: "inst_openai_main",
             config: {
               model: "gpt-4",
               prompt:
@@ -728,7 +728,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Schedule interview with Google Meet link",
             integrationId: "google_calendar",
             actionKey: "create_event",
-            installedAppId: "installed_gcal_1",
+            installedAppId: "inst_google_calendar_main",
             config: {
               calendar: "primary",
               summary: "Interview - {{candidateName}} - {{position}}",
@@ -750,7 +750,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Email candidate with interview details",
             integrationId: "gmail",
             actionKey: "send_email",
-            installedAppId: "installed_gmail_1",
+            installedAppId: "inst_gmail_hr",
             config: {
               to: "{{candidateEmail}}",
               subject: "Interview Confirmed - {{position}} at {{company}}",
@@ -890,7 +890,7 @@ export const mockWorkflows: Workflow[] = [
             description: "Send interview completion notification",
             integrationId: "slack",
             actionKey: "send_message",
-            installedAppId: "installed_slack_1",
+            installedAppId: "inst_slack_engineering",
             config: {
               channel: "C007",
               message:

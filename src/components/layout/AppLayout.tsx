@@ -20,7 +20,6 @@ import {
   Activity,
   BarChart3,
   BookTemplate,
-  Plug,
   FileText
 } from 'lucide-react';
 import { useWorkspace } from '../../hooks/useWorkspace';
@@ -36,9 +35,8 @@ const navigation = [
   { name: 'Inbox', href: '/app/inbox', icon: Inbox },
   { name: 'Analytics', href: '/app/analytics', icon: BarChart3 },
   { name: 'Templates', href: '/app/templates', icon: BookTemplate },
-  { name: 'Integrations', href: '/app/integrations', icon: Plug },
-  { name: 'Audit Logs', href: '/app/audit', icon: FileText },
   { name: 'App Center', href: '/app/appcenter', icon: ShoppingBag },
+  { name: 'Audit Logs', href: '/app/audit', icon: FileText },
   { name: 'Team', href: '/app/team', icon: Users },
   { name: 'Workspace', href: '/app/workspace-settings', icon: Settings },
 ];

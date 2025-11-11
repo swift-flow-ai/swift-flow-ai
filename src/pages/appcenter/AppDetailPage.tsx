@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '../../components/common';
 import { integrationSystemService, IntegrationDefinition } from '../../services/integration-system.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
@@ -28,11 +28,7 @@ export function AppDetailPage() {
   const [isInstalling, setIsInstalling] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
-  useEffect(() => {
-    loadApp();
-  }, [appId]);
-
-  const loadApp = async () => {
+  const loadApp = useCallback(async () => {
     if (!appId) return;
     
     try {
@@ -50,7 +46,11 @@ export function AppDetailPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [appId, currentWorkspace?.id]);
+
+  useEffect(() => {
+    loadApp();
+  }, [loadApp]);
 
   if (loading) {
     return (

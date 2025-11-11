@@ -25,12 +25,14 @@ Authorization: Bearer <access_token>
 7. [AI Agents](#ai-agents)
 8. [Approvals](#approvals)
 9. [Integrations](#integrations)
-10. [Analytics](#analytics)
-11. [Team Management](#team-management)
-12. [Team Pools](#team-pools)
-13. [Notifications](#notifications)
-14. [Executions](#executions)
-15. [Audit Logs](#audit-logs)
+10. [Integration System API](#-integration-system-api)
+11. [MCP Servers](#mcp-servers-model-context-protocol)
+12. [Analytics](#analytics)
+13. [Team Management](#team-management)
+14. [Team Pools](#team-pools)
+15. [Notifications](#notifications)
+16. [Executions](#executions)
+17. [Audit Logs](#audit-logs)
 
 ---
 
@@ -1987,6 +1989,701 @@ Disconnect/delete integration.
 
 ---
 
+## 🔧 Integration System API
+
+The Integration System API provides a catalog-driven approach to integrations with support for dynamic options, action testing, and multi-instance configurations.
+
+### Key Concepts
+
+**Integration Catalog**: A backend-driven registry of all available integrations (Gmail, Slack, Google Calendar, etc.) with their actions, triggers, and property definitions.
+
+**Installed Apps**: Workspace-specific instances of integrations. A workspace can have multiple instances of the same integration (e.g., "Gmail - Support", "Gmail - Sales").
+
+**Actions**: Operations that can be performed with an integration (e.g., "Send Email", "Create Event", "Post Message").
+
+**Triggers**: Events that can start a workflow (e.g., "New Email", "New Message", "Scheduled").
+
+**Dynamic Options**: Properties that fetch their options from the integration's API (e.g., Slack channels, Gmail labels, Google Calendar calendars).
+
+**Property Definitions**: Schema for action/trigger configuration with support for:
+- Multiple field types (text, email, select, textarea, number, boolean, datetime, etc.)
+- Dynamic options with search and pagination
+- Conditional visibility (`showIf`)
+- Expression support for dynamic values
+- Dependent fields
+
+### Workflow
+
+1. **Browse Catalog** → GET `/integrations/catalog` to see available integrations
+2. **Install Integration** → POST `/workspaces/:id/integrations/installed` to connect an app
+3. **Configure Action** → GET `/integrations/catalog/:id/actions/:key` to get action schema
+4. **Fetch Dynamic Options** → POST `/integrations/:id/dynamic/:key` for dropdowns
+5. **Test Action** → POST `/workspaces/:id/integrations/test-action` before saving
+6. **Save to Workflow** → Include `integrationId`, `actionKey`, `installedAppId`, and `config` in workflow node
+
+---
+
+### GET /integrations/catalog
+
+Get the integration catalog with all available integrations, their actions, triggers, and property definitions.
+
+**Query Parameters:**
+
+- `category`: Filter by category (`communication|productivity|crm|database|ai|utilities`)
+- `search`: Search term for integration name or description
+- `page`: Page number (default: 1)
+- `limit`: Results per page (default: 50)
+- `offset`: Offset for pagination
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "integrations": [
+      {
+        "id": "gmail",
+        "name": "Gmail",
+        "displayName": "Gmail",
+        "description": "Send and manage emails with Gmail",
+        "category": "communication",
+        "icon": "https://logo.clearbit.com/gmail.com",
+        "logoUrl": "https://logo.clearbit.com/gmail.com",
+        "version": "1.0.0",
+        "verified": true,
+        "popular": true,
+        "new": false,
+        "auth": {
+          "type": "oauth2",
+          "authUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+          "tokenUrl": "https://oauth2.googleapis.com/token",
+          "scopes": ["https://www.googleapis.com/auth/gmail.send"],
+          "requiredFields": []
+        },
+        "triggers": [
+          {
+            "key": "new_email",
+            "name": "New Email",
+            "description": "Triggers when a new email is received",
+            "type": "polling",
+            "pollInterval": 300,
+            "properties": [
+              {
+                "key": "label",
+                "name": "Label",
+                "description": "Filter by Gmail label",
+                "type": "select",
+                "required": false,
+                "dynamicOptions": {
+                  "endpoint": "/integrations/gmail/dynamic/labels",
+                  "method": "GET"
+                }
+              }
+            ],
+            "sampleOutput": {
+              "id": "msg_123",
+              "from": "sender@example.com",
+              "subject": "Meeting Tomorrow",
+              "body": "Let's meet at 10 AM"
+            }
+          }
+        ],
+        "actions": [
+          {
+            "key": "send_email",
+            "name": "Send Email",
+            "description": "Send an email via Gmail",
+            "properties": [
+              {
+                "key": "to",
+                "name": "To",
+                "description": "Recipient email address",
+                "type": "email",
+                "required": true,
+                "placeholder": "recipient@example.com",
+                "supportsExpressions": true
+              },
+              {
+                "key": "subject",
+                "name": "Subject",
+                "description": "Email subject line",
+                "type": "text",
+                "required": true,
+                "supportsExpressions": true
+              },
+              {
+                "key": "body",
+                "name": "Body",
+                "description": "Email body content",
+                "type": "textarea",
+                "required": true,
+                "supportsExpressions": true
+              },
+              {
+                "key": "from",
+                "name": "From",
+                "description": "Sender email address",
+                "type": "email",
+                "required": false,
+                "supportsExpressions": true
+              }
+            ],
+            "sampleOutput": {
+              "messageId": "msg_abc123",
+              "threadId": "thread_xyz789",
+              "status": "sent"
+            }
+          }
+        ],
+        "docsUrl": "https://docs.swiftflow.ai/integrations/gmail",
+        "webhookUrl": null
+      }
+    ],
+    "total": 15,
+    "page": 1,
+    "limit": 50
+  }
+}
+```
+
+### GET /integrations/catalog/:integrationId
+
+Get detailed information about a specific integration.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "slack",
+    "name": "Slack",
+    "displayName": "Slack",
+    "description": "Send messages and manage channels in Slack",
+    "category": "communication",
+    "icon": "https://logo.clearbit.com/slack.com",
+    "version": "1.0.0",
+    "verified": true,
+    "popular": true,
+    "auth": {
+      "type": "oauth2",
+      "authUrl": "https://slack.com/oauth/v2/authorize",
+      "tokenUrl": "https://slack.com/api/oauth.v2.access",
+      "scopes": ["chat:write", "channels:read"],
+      "requiredFields": []
+    },
+    "triggers": [...],
+    "actions": [
+      {
+        "key": "send_message",
+        "name": "Send Message",
+        "description": "Send a message to a Slack channel",
+        "properties": [
+          {
+            "key": "channel",
+            "name": "Channel",
+            "description": "Select a Slack channel",
+            "type": "select",
+            "required": true,
+            "dynamicOptions": {
+              "endpoint": "/integrations/slack/dynamic/channels",
+              "method": "GET",
+              "dependsOn": []
+            }
+          },
+          {
+            "key": "message",
+            "name": "Message",
+            "description": "Message content",
+            "type": "textarea",
+            "required": true,
+            "supportsExpressions": true
+          }
+        ],
+        "sampleOutput": {
+          "ts": "1234567890.123456",
+          "channel": "C1234567890",
+          "message": {
+            "text": "Hello World"
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+### GET /integrations/catalog/:integrationId/actions/:actionKey
+
+Get detailed information about a specific action.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "key": "create_event",
+    "name": "Create Event",
+    "description": "Create a new calendar event",
+    "properties": [
+      {
+        "key": "calendar",
+        "name": "Calendar",
+        "description": "Select a calendar",
+        "type": "select",
+        "required": true,
+        "dynamicOptions": {
+          "endpoint": "/integrations/google-calendar/dynamic/calendars",
+          "method": "GET"
+        }
+      },
+      {
+        "key": "summary",
+        "name": "Summary",
+        "description": "Event title",
+        "type": "text",
+        "required": true,
+        "supportsExpressions": true
+      },
+      {
+        "key": "start_time",
+        "name": "Start Time",
+        "description": "Event start time (ISO 8601)",
+        "type": "datetime",
+        "required": true,
+        "supportsExpressions": true
+      },
+      {
+        "key": "duration",
+        "name": "Duration",
+        "description": "Duration in minutes",
+        "type": "number",
+        "required": true,
+        "default": 60
+      },
+      {
+        "key": "attendees",
+        "name": "Attendees",
+        "description": "Comma-separated email addresses",
+        "type": "text",
+        "required": false,
+        "supportsExpressions": true
+      },
+      {
+        "key": "send_notifications",
+        "name": "Send Notifications",
+        "description": "Send email notifications to attendees",
+        "type": "boolean",
+        "required": false,
+        "default": true
+      },
+      {
+        "key": "conference_solution",
+        "name": "Conference Solution",
+        "description": "Add video conferencing",
+        "type": "select",
+        "required": false,
+        "options": [
+          { "label": "None", "value": "none" },
+          { "label": "Google Meet", "value": "hangoutsMeet" },
+          { "label": "Zoom", "value": "zoom" }
+        ]
+      }
+    ],
+    "sampleOutput": {
+      "id": "event_abc123",
+      "htmlLink": "https://calendar.google.com/event?eid=...",
+      "status": "confirmed",
+      "hangoutLink": "https://meet.google.com/abc-defg-hij"
+    }
+  }
+}
+```
+
+### GET /integrations/catalog/:integrationId/triggers/:triggerKey
+
+Get detailed information about a specific trigger.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "key": "new_email",
+    "name": "New Email",
+    "description": "Triggers when a new email is received",
+    "type": "polling",
+    "pollInterval": 300,
+    "properties": [
+      {
+        "key": "label",
+        "name": "Label",
+        "description": "Filter by Gmail label",
+        "type": "select",
+        "required": false,
+        "dynamicOptions": {
+          "endpoint": "/integrations/gmail/dynamic/labels",
+          "method": "GET"
+        }
+      },
+      {
+        "key": "from",
+        "name": "From",
+        "description": "Filter by sender email",
+        "type": "email",
+        "required": false
+      }
+    ],
+    "sampleOutput": {
+      "id": "msg_123",
+      "from": "sender@example.com",
+      "subject": "Meeting Tomorrow",
+      "body": "Let's meet at 10 AM",
+      "receivedAt": "2025-01-15T10:30:00Z"
+    }
+  }
+}
+```
+
+### GET /workspaces/:workspaceId/integrations/installed
+
+Get all installed integrations (app instances) for a workspace.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "installed_gmail_1",
+      "integrationId": "gmail",
+      "workspaceId": "ws_acme",
+      "name": "Gmail - Support",
+      "credentials": {
+        "accessToken": "ya29.a0...",
+        "refreshToken": "1//...",
+        "expiresAt": "2025-01-15T11:30:00Z"
+      },
+      "status": "active",
+      "lastUsed": "2025-01-15T10:15:00Z",
+      "usageCount": 1250,
+      "createdBy": "usr_john",
+      "createdAt": "2024-08-01T09:00:00Z",
+      "updatedAt": "2025-01-15T10:15:00Z"
+    },
+    {
+      "id": "installed_slack_1",
+      "integrationId": "slack",
+      "workspaceId": "ws_acme",
+      "name": "Slack - Engineering",
+      "credentials": {
+        "accessToken": "xoxb-...",
+        "teamId": "T1234567890",
+        "teamName": "Acme Corp"
+      },
+      "status": "active",
+      "lastUsed": "2025-01-15T10:20:00Z",
+      "usageCount": 3420,
+      "createdBy": "usr_sarah",
+      "createdAt": "2024-07-15T14:00:00Z",
+      "updatedAt": "2025-01-15T10:20:00Z"
+    }
+  ]
+}
+```
+
+### POST /workspaces/:workspaceId/integrations/installed
+
+Install a new integration instance.
+
+**Request:**
+
+```json
+{
+  "integrationId": "slack",
+  "name": "Slack - Sales Team",
+  "credentials": {
+    "accessToken": "xoxb-...",
+    "teamId": "T9876543210",
+    "teamName": "Acme Sales"
+  }
+}
+```
+
+**Response:** `201 Created`
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "installed_slack_2",
+    "integrationId": "slack",
+    "workspaceId": "ws_acme",
+    "name": "Slack - Sales Team",
+    "status": "active",
+    "createdAt": "2025-01-15T11:00:00Z"
+  }
+}
+```
+
+### PATCH /workspaces/:workspaceId/integrations/installed/:installedAppId
+
+Update an installed integration instance.
+
+**Request:**
+
+```json
+{
+  "name": "Slack - Sales & Marketing",
+  "credentials": {
+    "accessToken": "xoxb-new-token..."
+  }
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "installed_slack_2",
+    "name": "Slack - Sales & Marketing",
+    "updatedAt": "2025-01-15T11:05:00Z"
+  }
+}
+```
+
+### DELETE /workspaces/:workspaceId/integrations/installed/:installedAppId
+
+Uninstall an integration instance.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Integration uninstalled successfully"
+  }
+}
+```
+
+### POST /workspaces/:workspaceId/integrations/installed/:installedAppId/test
+
+Test an installed integration connection.
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "success": true,
+    "message": "Connection successful"
+  }
+}
+```
+
+**Error Response:** `400 Bad Request`
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "CONNECTION_FAILED",
+    "message": "Failed to connect to Slack API",
+    "details": "Invalid access token"
+  }
+}
+```
+
+### POST /integrations/:integrationId/dynamic/:propertyKey
+
+Get dynamic options for a property (e.g., Slack channels, Gmail labels).
+
+**Request:**
+
+```json
+{
+  "searchTerm": "eng",
+  "limit": 50,
+  "offset": 0,
+  "dependentValues": {
+    "workspace": "acme-corp"
+  }
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "options": [
+      {
+        "label": "#engineering",
+        "value": "C001",
+        "description": "Engineering team discussions"
+      },
+      {
+        "label": "#eng-frontend",
+        "value": "C002",
+        "description": "Frontend engineering"
+      },
+      {
+        "label": "#eng-backend",
+        "value": "C003",
+        "description": "Backend engineering"
+      }
+    ],
+    "hasMore": false,
+    "total": 3
+  }
+}
+```
+
+### POST /workspaces/:workspaceId/integrations/test-action
+
+Test an action before saving it to a workflow.
+
+**Request:**
+
+```json
+{
+  "integrationId": "slack",
+  "actionKey": "send_message",
+  "installedAppId": "installed_slack_1",
+  "config": {
+    "channel": "C001",
+    "message": "Test message from Swift Flow"
+  }
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "success": true,
+    "output": {
+      "ts": "1234567890.123456",
+      "channel": "C001",
+      "message": {
+        "text": "Test message from Swift Flow"
+      }
+    }
+  }
+}
+```
+
+**Error Response:** `400 Bad Request`
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ACTION_FAILED",
+    "message": "Failed to send message",
+    "details": "Channel not found"
+  }
+}
+```
+
+### GET /integrations/:integrationId/oauth/authorize
+
+Initiate OAuth flow for an integration.
+
+**Query Parameters:**
+
+- `workspaceId`: Workspace ID
+- `redirectUri`: Callback URL (default: `https://app.swiftflow.ai/integrations/callback`)
+- `state`: Optional state parameter for security
+
+**Response:** `302 Redirect`
+
+Redirects to the integration's OAuth authorization page (e.g., Slack, Google, GitHub).
+
+### POST /integrations/:integrationId/oauth/callback
+
+Handle OAuth callback and exchange code for tokens.
+
+**Request:**
+
+```json
+{
+  "code": "oauth_authorization_code",
+  "state": "optional_state_parameter",
+  "workspaceId": "ws_acme"
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "installedAppId": "installed_slack_3",
+    "integrationId": "slack",
+    "name": "Slack - New Workspace",
+    "status": "active",
+    "credentials": {
+      "accessToken": "xoxb-...",
+      "teamId": "T1234567890",
+      "teamName": "Acme Corp"
+    }
+  }
+}
+```
+
+**Error Response:** `400 Bad Request`
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "OAUTH_FAILED",
+    "message": "Failed to exchange authorization code",
+    "details": "Invalid code or expired"
+  }
+}
+```
+
+### POST /integrations/:integrationId/oauth/refresh
+
+Refresh OAuth tokens for an installed integration.
+
+**Request:**
+
+```json
+{
+  "installedAppId": "installed_gmail_1",
+  "refreshToken": "1//..."
+}
+```
+
+**Response:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "ya29.a0...",
+    "expiresAt": "2025-01-15T12:30:00Z"
+  }
+}
+```
+
+---
+
 ## MCP Servers (Model Context Protocol)
 
 ### GET /appcenter/mcps
@@ -3417,6 +4114,257 @@ GET /workspaces/ws_123/workflows?
 ```
 X-API-Version: v1
 ```
+
+---
+
+## 🛠️ Implementation Notes
+
+### MSW (Mock Service Worker) Integration
+
+The frontend currently uses MSW to mock all API endpoints for development and testing. MSW handlers are located in:
+
+- `src/mocks/handlers/` - All API endpoint handlers
+- `src/mocks/data/` - Mock data for integrations, workflows, templates, etc.
+- `src/mocks/browser.ts` - MSW browser setup
+
+**Enable MSW:**
+
+```bash
+VITE_ENABLE_MSW=true npm run dev
+```
+
+**MSW Response Format:**
+
+All MSW handlers return responses wrapped in a success/error structure:
+
+```typescript
+// Success response
+{
+  "success": true,
+  "data": { /* actual data */ }
+}
+
+// Error response
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message",
+    "details": "Additional context"
+  }
+}
+```
+
+### Frontend Service Layer
+
+The frontend uses typed service clients to interact with the API:
+
+**Integration System Service** (`src/services/integration-system.service.ts`):
+
+```typescript
+import { integrationSystemService } from '@/services/integration-system.service';
+
+// Get catalog
+const catalog = await integrationSystemService.listCatalog({ category: 'communication' });
+
+// Get specific integration
+const integration = await integrationSystemService.getIntegration('slack');
+
+// Get action definition
+const action = await integrationSystemService.getAction('slack', 'send_message');
+
+// List installed apps
+const apps = await integrationSystemService.listInstalledIntegrations(workspaceId);
+
+// Get dynamic options
+const options = await integrationSystemService.getDynamicOptions('slack', 'channel', {
+  searchTerm: 'eng',
+  limit: 50
+});
+
+// Test action
+const result = await integrationSystemService.testAction(workspaceId, {
+  integrationId: 'slack',
+  actionKey: 'send_message',
+  installedAppId: 'installed_slack_1',
+  config: { channel: 'C001', message: 'Test' }
+});
+```
+
+### Workflow Node Structure
+
+Action nodes in workflows follow this structure:
+
+```typescript
+{
+  "id": "node_3",
+  "type": "action",
+  "position": { "x": 400, "y": 200 },
+  "data": {
+    "label": "Send Email",
+    "integrationId": "gmail",
+    "actionKey": "send_email",
+    "installedAppId": "installed_gmail_1",
+    "config": {
+      "to": "{{ trigger.email }}",
+      "subject": "Welcome!",
+      "body": "Hello {{ trigger.name }}"
+    }
+  }
+}
+```
+
+**Key Fields:**
+
+- `integrationId`: Reference to catalog integration
+- `actionKey`: Specific action from integration definition
+- `installedAppId`: Workspace-specific app instance
+- `config`: User-configured values for action properties
+
+### Dynamic Property Rendering
+
+The `DynamicPropertyField` component (`src/components/workflow/DynamicPropertyField.tsx`) handles:
+
+- **Field Types**: text, email, textarea, number, boolean, select, datetime, etc.
+- **Dynamic Options**: Fetches options from API with search and pagination
+- **Conditional Visibility**: Shows/hides fields based on `showIf` conditions
+- **Expression Mode**: Toggle between static values and expressions (e.g., `{{ trigger.email }}`)
+- **Dependent Fields**: Passes dependent values when fetching dynamic options
+
+### Best Practices
+
+#### 1. Error Handling
+
+Always handle API errors gracefully:
+
+```typescript
+try {
+  const result = await integrationSystemService.testAction(workspaceId, data);
+  if (result.success) {
+    // Handle success
+  } else {
+    // Handle failure
+    console.error(result.error);
+  }
+} catch (error) {
+  // Handle network/unexpected errors
+  console.error('API call failed:', error);
+}
+```
+
+#### 2. Authentication
+
+Include Bearer token in all authenticated requests:
+
+```typescript
+axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+```
+
+#### 3. Rate Limiting
+
+Respect rate limits:
+
+- Standard: 100 requests/minute
+- Burst: 1000 requests/hour
+- Dynamic Options: 50 requests/minute
+
+#### 4. Caching
+
+Cache catalog data and dynamic options:
+
+```typescript
+// Cache integration catalog (rarely changes)
+const catalog = await integrationSystemService.listCatalog();
+localStorage.setItem('integration-catalog', JSON.stringify(catalog));
+
+// Refresh every 24 hours or on demand
+```
+
+#### 5. Webhooks
+
+For webhook triggers, register webhook URLs:
+
+```typescript
+POST /workspaces/:workspaceId/workflows/:workflowId/webhooks
+{
+  "triggerKey": "webhook",
+  "config": {
+    "method": "POST",
+    "authentication": "bearer"
+  }
+}
+
+// Returns webhook URL
+{
+  "webhookUrl": "https://api.swiftflow.ai/webhooks/wh_abc123",
+  "secret": "whsec_..."
+}
+```
+
+#### 6. Testing Integrations
+
+Always test actions before saving to workflow:
+
+```typescript
+// 1. User configures action in UI
+// 2. Click "Test & Continue"
+// 3. Call test-action endpoint
+// 4. Show result to user
+// 5. If successful, save to workflow
+```
+
+#### 7. Multi-Instance Support
+
+Support multiple instances of the same integration:
+
+```typescript
+// User can install multiple Slack workspaces
+const slackApps = installedApps.filter(app => app.integrationId === 'slack');
+
+// Each has unique installedAppId
+// "Slack - Engineering" -> installed_slack_1
+// "Slack - Sales" -> installed_slack_2
+```
+
+#### 8. Expression Evaluation
+
+Expressions use `{{ }}` syntax:
+
+```typescript
+// Simple field reference
+"{{ trigger.email }}"
+
+// Nested fields
+"{{ trigger.candidate.name }}"
+
+// With text
+"Hello {{ trigger.name }}, welcome!"
+
+// Functions (future)
+"{{ uppercase(trigger.name) }}"
+```
+
+### Migration from MSW to Real Backend
+
+When replacing MSW with a real backend:
+
+1. **Remove MSW initialization** in `src/main.tsx`
+2. **Update API base URL** in `src/config/api.ts`
+3. **Verify response formats** match MSW structure
+4. **Test all endpoints** with real backend
+5. **Update authentication** flow with real OAuth
+6. **Configure CORS** on backend for frontend domain
+
+### Security Considerations
+
+1. **Never expose credentials** in frontend code
+2. **Store tokens securely** (httpOnly cookies preferred)
+3. **Validate all inputs** on backend
+4. **Use HTTPS** in production
+5. **Implement CSRF protection** for state-changing operations
+6. **Rate limit** all endpoints
+7. **Sanitize user inputs** to prevent XSS
+8. **Encrypt sensitive data** at rest
 
 ---
 

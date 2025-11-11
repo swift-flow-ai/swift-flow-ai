@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../../components/common';
@@ -33,11 +33,7 @@ export function IntegrationsTab() {
     { id: 'calendar', label: 'Calendar', icon: Users },
   ];
 
-  useEffect(() => {
-    loadIntegrations();
-  }, [selectedCategory, searchQuery]);
-
-  const loadIntegrations = async () => {
+  const loadIntegrations = useCallback(async () => {
     try {
       setLoading(true);
       const response = await integrationSystemService.listCatalog({
@@ -50,7 +46,11 @@ export function IntegrationsTab() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCategory, searchQuery]);
+
+  useEffect(() => {
+    loadIntegrations();
+  }, [loadIntegrations]);
 
   const filteredApps = integrations;
 

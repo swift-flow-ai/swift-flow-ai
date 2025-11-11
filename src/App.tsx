@@ -25,9 +25,7 @@ import { AppDetailPage } from './pages/appcenter/AppDetailPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import { TemplatesPage } from './pages/templates/TemplatesPage';
 import { TemplateDetail } from './pages/templates/TemplateDetail';
-import { IntegrationsList } from './pages/integrations/IntegrationsList';
-import { AddIntegration } from './pages/integrations/AddIntegration';
-import { IntegrationConfig } from './pages/integrations/IntegrationConfig';
+// Old integration pages removed - redirected to App Center
 import { AuditLogs } from './pages/audit/AuditLogs';
 import { AuditLogDetail } from './pages/audit/AuditLogDetail';
 import { ProfilePage } from './pages/profile/ProfilePage';
@@ -96,10 +94,9 @@ function App() {
                 <Route path="inbox/:approvalId" element={<InboxDetail />} />
                 <Route path="templates" element={<TemplatesPage />} />
                 <Route path="templates/:templateId" element={<TemplateDetail />} />
-                <Route path="integrations" element={<IntegrationsList />} />
-                <Route path="integrations/add" element={<AddIntegration />} />
-                <Route path="integrations/configure/:appId" element={<IntegrationConfig />} />
-                <Route path="integrations/:integrationId" element={<IntegrationConfig />} />
+                {/* Redirect old integration routes to App Center */}
+                <Route path="integrations" element={<Navigate to="/app/appcenter" replace />} />
+                <Route path="integrations/*" element={<Navigate to="/app/appcenter" replace />} />
                 <Route path="audit" element={<AuditLogs />} />
                 <Route path="audit/:logId" element={<AuditLogDetail />} />
                 <Route path="appcenter" element={<AppCenterPage />} />
