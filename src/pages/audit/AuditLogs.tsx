@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { auditService } from '../../services/audit.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
-import { AuditLog, AuditAction } from '../../types';
+import { AuditLog } from '../../types';
 import { Button } from '../../components/common';
 import { cn } from '../../utils';
 
@@ -34,13 +34,7 @@ export function AuditLogs() {
   const [showFilters, setShowFilters] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
 
-  useEffect(() => {
-    if (currentWorkspace) {
-      loadAuditLogs();
-    }
-  }, [currentWorkspace, actionFilter, resourceTypeFilter, severityFilter, startDate, endDate]);
-
-  const loadAuditLogs = async () => {
+  const loadAuditLogs = useCallback(async () => {
     if (!currentWorkspace) return;
 
     setIsLoading(true);
@@ -60,7 +54,13 @@ export function AuditLogs() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentWorkspace, actionFilter, resourceTypeFilter, severityFilter, startDate, endDate, search]);
+
+  useEffect(() => {
+    if (currentWorkspace) {
+      loadAuditLogs();
+    }
+  }, [currentWorkspace, loadAuditLogs]);
 
   const handleSearch = () => {
     loadAuditLogs();
@@ -96,7 +96,7 @@ export function AuditLogs() {
     }
   };
 
-  const getActionColor = (action: AuditAction) => {
+  const getActionColor = (action: string) => {
     const colors: Record<string, string> = {
       created: 'bg-green-500/10 text-green-600 dark:text-green-400',
       updated: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
@@ -131,7 +131,7 @@ export function AuditLogs() {
     }
   };
 
-  const actions: AuditAction[] = [
+  const actions: string[] = [
     'created',
     'updated',
     'deleted',
@@ -341,25 +341,25 @@ export function AuditLogs() {
                           {log.action.replace('_', ' ')}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {log.resourceType}
+                          {log.resource.type}
                         </span>
                       </div>
                       <p className="font-medium mb-1">
-                        {log.userName} {log.action} {log.resourceName}
+                        {log.actor.name} {log.action} {log.resource.name}
                       </p>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <User className="h-3 w-3" />
-                          <span>{log.userEmail}</span>
+                          <span>{log.actor.email}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           <span>{new Date(log.timestamp).toLocaleString()}</span>
                         </div>
-                        {log.ipAddress && (
+                        {log.actor.ipAddress && (
                           <div className="flex items-center gap-1">
                             <Activity className="h-3 w-3" />
-                            <span>{log.ipAddress}</span>
+                            <span>{log.actor.ipAddress}</span>
                           </div>
                         )}
                       </div>

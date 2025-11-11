@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useAuth } from '../../hooks/useAuth';
@@ -87,13 +87,7 @@ export function TeamPage() {
   const [showRemoveMemberDialog, setShowRemoveMemberDialog] = useState(false);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (currentWorkspace) {
-      fetchTeamData();
-    }
-  }, [currentWorkspace]);
-
-  const fetchTeamData = async () => {
+  const fetchTeamData = useCallback(async () => {
     try {
       const [membersRes, poolsRes] = await Promise.all([
         axios.get(`${config.apiBaseUrl}/workspaces/${currentWorkspace?.id}/members`),
@@ -104,7 +98,13 @@ export function TeamPage() {
     } catch (error) {
       console.error('Error fetching team data:', error);
     }
-  };
+  }, [currentWorkspace]);
+
+  useEffect(() => {
+    if (currentWorkspace) {
+      fetchTeamData();
+    }
+  }, [currentWorkspace, fetchTeamData]);
 
   const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||

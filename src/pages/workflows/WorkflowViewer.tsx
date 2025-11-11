@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -65,14 +65,7 @@ export function WorkflowViewer() {
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
 
-  useEffect(() => {
-    if (workflowId && currentWorkspace) {
-      loadWorkflow();
-      loadExecutions();
-    }
-  }, [workflowId, currentWorkspace]);
-
-  const loadWorkflow = async () => {
+  const loadWorkflow = useCallback(async () => {
     if (!workflowId || !currentWorkspace) return;
     
     setIsLoading(true);
@@ -90,9 +83,9 @@ export function WorkflowViewer() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [workflowId, currentWorkspace]);
 
-  const loadExecutions = async () => {
+  const loadExecutions = useCallback(async () => {
     if (!workflowId || !currentWorkspace) return;
     
     setIsLoadingExecutions(true);
@@ -107,7 +100,14 @@ export function WorkflowViewer() {
     } finally {
       setIsLoadingExecutions(false);
     }
-  };
+  }, [workflowId, currentWorkspace]);
+
+  useEffect(() => {
+    if (workflowId && currentWorkspace) {
+      loadWorkflow();
+      loadExecutions();
+    }
+  }, [workflowId, currentWorkspace, loadWorkflow, loadExecutions]);
 
   const handleEdit = () => {
     navigate(`/app/workflows/${workflowId}/edit`);
@@ -334,12 +334,31 @@ export function WorkflowViewer() {
       {/* Canvas */}
       <div className="flex-1 flex relative">
         <div className="flex-1 relative">
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            fitView
-            nodesDraggable={false}
+          {nodes.length === 0 && edges.length === 0 ? (
+            <div className="flex items-center justify-center h-full bg-muted/20">
+              <div className="text-center max-w-md px-6">
+                <div className="mb-4">
+                  <Activity className="h-16 w-16 mx-auto text-muted-foreground/50" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No Workflow Definition</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  This workflow doesn't have a visual definition yet. Click "Edit" to start building your workflow.
+                </p>
+                <PermissionGate permission="workflow:edit">
+                  <Button variant="primary" onClick={handleEdit}>
+                    <Edit className="h-4 w-4 mr-2" />
+                    Start Building
+                  </Button>
+                </PermissionGate>
+              </div>
+            </div>
+          ) : (
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              nodeTypes={nodeTypes}
+              fitView
+              nodesDraggable={false}
             nodesConnectable={false}
             elementsSelectable={true}
             onNodeClick={(_, node) => setSelectedNode(node)}
@@ -369,6 +388,7 @@ export function WorkflowViewer() {
               </div>
             </Panel>
           </ReactFlow>
+          )}
         </div>
 
         {/* Node Details Panel */}

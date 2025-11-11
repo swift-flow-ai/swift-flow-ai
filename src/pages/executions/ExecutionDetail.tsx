@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -30,13 +30,7 @@ export function ExecutionDetail() {
   const [isCancelling, setIsCancelling] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
 
-  useEffect(() => {
-    if (executionId && currentWorkspace) {
-      loadExecution();
-    }
-  }, [executionId, currentWorkspace]);
-
-  const loadExecution = async () => {
+  const loadExecution = useCallback(async () => {
     if (!executionId || !currentWorkspace) return;
 
     setIsLoading(true);
@@ -48,7 +42,13 @@ export function ExecutionDetail() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [executionId, currentWorkspace]);
+
+  useEffect(() => {
+    if (executionId && currentWorkspace) {
+      loadExecution();
+    }
+  }, [executionId, currentWorkspace, loadExecution]);
 
   const handleCancel = async () => {
     if (!executionId || !currentWorkspace || !execution) return;

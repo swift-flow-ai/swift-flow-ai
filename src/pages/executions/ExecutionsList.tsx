@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -23,13 +23,7 @@ export function ExecutionsList() {
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    if (currentWorkspace) {
-      loadExecutions();
-    }
-  }, [currentWorkspace, filter]);
-
-  const loadExecutions = async () => {
+  const loadExecutions = useCallback(async () => {
     if (!currentWorkspace) return;
 
     setIsLoading(true);
@@ -46,7 +40,13 @@ export function ExecutionsList() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentWorkspace, filter]);
+
+  useEffect(() => {
+    if (currentWorkspace) {
+      loadExecutions();
+    }
+  }, [currentWorkspace, loadExecutions]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {

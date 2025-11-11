@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -20,11 +20,7 @@ export function TemplatesPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
-  useEffect(() => {
-    loadTemplates();
-  }, [categoryFilter, showFeaturedOnly]);
-
-  const loadTemplates = async () => {
+  const loadTemplates = useCallback(async () => {
     setIsLoading(true);
     try {
       const params: Record<string, string | boolean> = {};
@@ -42,7 +38,11 @@ export function TemplatesPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [categoryFilter, showFeaturedOnly]);
+
+  useEffect(() => {
+    loadTemplates();
+  }, [loadTemplates]);
 
   const filteredTemplates = templates.filter((template) =>
     search

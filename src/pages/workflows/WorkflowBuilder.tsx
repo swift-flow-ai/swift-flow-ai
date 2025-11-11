@@ -88,13 +88,7 @@ export function WorkflowBuilder() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   // Load existing workflow if editing
-  useEffect(() => {
-    if (workflowId && currentWorkspace) {
-      loadWorkflow();
-    }
-  }, [workflowId, currentWorkspace]);
-
-  const loadWorkflow = async () => {
+  const loadWorkflow = useCallback(async () => {
     if (!workflowId || !currentWorkspace) return;
     
     setIsLoading(true);
@@ -112,7 +106,15 @@ export function WorkflowBuilder() {
     } finally {
       setIsLoading(false);
     }
-  };
+    // setNodes and setEdges are stable functions from useNodesState/useEdgesState
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workflowId, currentWorkspace]);
+
+  useEffect(() => {
+    if (workflowId && currentWorkspace) {
+      loadWorkflow();
+    }
+  }, [workflowId, currentWorkspace, loadWorkflow]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),

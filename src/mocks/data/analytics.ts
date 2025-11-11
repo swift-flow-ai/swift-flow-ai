@@ -102,7 +102,7 @@ const generateTimelineData = () => {
     let totalCost = 0;
 
     // Calculate executions for each workflow based on day of week
-    Object.entries(WORKFLOW_PATTERNS).forEach(([workflowId, pattern]) => {
+    Object.entries(WORKFLOW_PATTERNS).forEach(([, pattern]) => {
       // Weekend reduction (80% less traffic)
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       const weekendMultiplier = isWeekend ? 0.2 : 1.0;
@@ -193,7 +193,7 @@ const calculateMetrics = (
   let totalDurationHours = 0;
   let totalWeightedExecutions = 0;
 
-  Object.entries(WORKFLOW_PATTERNS).forEach(([_, pattern]) => {
+  Object.entries(WORKFLOW_PATTERNS).forEach(([, pattern]) => {
     const executions = pattern.avgExecutionsPerDay * 30;
     totalDurationHours += executions * pattern.avgDurationHours;
     totalWeightedExecutions += executions;

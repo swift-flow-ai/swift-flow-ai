@@ -51,7 +51,7 @@ export const mockTemplates: WorkflowTemplate[] = [
           data: {
             label: "Create Calendar Event",
             description: "Schedule first day orientation",
-            integrationId: "google_calendar",
+            integrationId: "google-calendar",
             actionKey: "create_event",
             installedAppId: "inst_google_calendar_main",
             config: {
@@ -133,11 +133,18 @@ export const mockTemplates: WorkflowTemplate[] = [
             label: "Extract Invoice Data",
             description: "AI extracts invoice details",
             integrationId: "openai",
-            actionKey: "analyze_document",
+            actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
             config: {
-              prompt: "Extract invoice number, amount, vendor, and due date",
               model: "gpt-4-vision-preview",
+              messages: [
+                {
+                  role: "user",
+                  content:
+                    "Extract invoice number, amount, vendor, and due date from this document: {{trigger.document}}",
+                },
+              ],
+              temperature: 0.3,
             },
           },
         },
@@ -464,12 +471,18 @@ export const mockTemplates: WorkflowTemplate[] = [
             label: "Validate Receipts",
             description: "AI extracts and validates receipt data",
             integrationId: "openai",
-            actionKey: "analyze_document",
+            actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
             config: {
-              prompt:
-                "Extract date, amount, vendor, and category from this receipt",
               model: "gpt-4-vision-preview",
+              messages: [
+                {
+                  role: "user",
+                  content:
+                    "Extract date, amount, vendor, and category from this receipt: {{trigger.receipt}}",
+                },
+              ],
+              temperature: 0.3,
             },
           },
         },

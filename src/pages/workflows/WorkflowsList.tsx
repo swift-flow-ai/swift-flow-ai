@@ -546,11 +546,7 @@ function FolderShareModal({ folderId, folderName, onClose }: FolderShareModalPro
   const [isLoading, setIsLoading] = useState(true);
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadShares();
-  }, [folderId]);
-
-  const loadShares = async () => {
+  const loadShares = useCallback(async () => {
     if (!currentWorkspace) return;
     setIsLoading(true);
     try {
@@ -561,7 +557,11 @@ function FolderShareModal({ folderId, folderName, onClose }: FolderShareModalPro
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentWorkspace]);
+
+  useEffect(() => {
+    loadShares();
+  }, [folderId, loadShares]);
 
   const handleGenerateLink = (permission: string) => {
     const token = Math.random().toString(36).substring(2, 15);

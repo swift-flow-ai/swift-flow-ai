@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -45,13 +45,7 @@ export function TemplateDetail() {
   const [variables, setVariables] = useState<Record<string, string>>({});
   const [isCreating, setIsCreating] = useState(false);
 
-  useEffect(() => {
-    if (templateId) {
-      loadTemplate();
-    }
-  }, [templateId]);
-
-  const loadTemplate = async () => {
+  const loadTemplate = useCallback(async () => {
     if (!templateId) return;
 
     setIsLoading(true);
@@ -73,7 +67,13 @@ export function TemplateDetail() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [templateId]);
+
+  useEffect(() => {
+    if (templateId) {
+      loadTemplate();
+    }
+  }, [templateId, loadTemplate]);
 
   const handleUseTemplate = async () => {
     if (!template || !currentWorkspace) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -145,13 +145,7 @@ export function WorkflowAnalytics() {
     ],
   });
 
-  useEffect(() => {
-    if (workflowId && currentWorkspace) {
-      loadWorkflow();
-    }
-  }, [workflowId, currentWorkspace]);
-
-  const loadWorkflow = async () => {
+  const loadWorkflow = useCallback(async () => {
     if (!workflowId || !currentWorkspace) return;
 
     setIsLoading(true);
@@ -163,7 +157,13 @@ export function WorkflowAnalytics() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [workflowId, currentWorkspace]);
+
+  useEffect(() => {
+    if (workflowId && currentWorkspace) {
+      loadWorkflow();
+    }
+  }, [workflowId, currentWorkspace, loadWorkflow]);
 
   if (isLoading || !workflow) {
     return (

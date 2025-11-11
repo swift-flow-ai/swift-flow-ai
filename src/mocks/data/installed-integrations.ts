@@ -211,6 +211,34 @@ export const installedIntegrations: InstalledApp[] = [
     updatedAt: '2025-11-10T12:45:00Z',
   },
 
+  // Utilities (no auth required, workspace-scoped)
+  {
+    id: 'inst_approval_acme',
+    integrationId: 'approval',
+    workspaceId: 'ws_acme',
+    name: 'Approval System',
+    credentials: {},
+    status: 'active',
+    lastUsed: '2025-11-10T14:00:00Z',
+    usageCount: 1234,
+    createdBy: 'system',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-11-10T14:00:00Z',
+  },
+  {
+    id: 'inst_wait_acme',
+    integrationId: 'wait',
+    workspaceId: 'ws_acme',
+    name: 'Wait / Delay',
+    credentials: {},
+    status: 'active',
+    lastUsed: '2025-11-10T13:45:00Z',
+    usageCount: 2345,
+    createdBy: 'system',
+    createdAt: '2025-01-01T00:00:00Z',
+    updatedAt: '2025-11-10T13:45:00Z',
+  },
+
   // Workspace: ws_techstart (TechStart Inc)
   {
     id: 'inst_slack_general_techstart',

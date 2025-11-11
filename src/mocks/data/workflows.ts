@@ -87,11 +87,11 @@ export const mockWorkflows: Workflow[] = [
             label: "Send Slack Message",
             description: "Notify team about new hire",
             integrationId: "slack",
-            actionKey: "send_message",
+            actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
             config: {
               channel: "general",
-              message: "Welcome {{trigger.name}} to the team! 🎉",
+              text: "Welcome {{trigger.name}} to the team! 🎉",
             },
           },
         },
@@ -146,12 +146,18 @@ export const mockWorkflows: Workflow[] = [
             label: "Extract Invoice Data",
             description: "AI extracts invoice details",
             integrationId: "openai",
-            actionKey: "analyze_document",
+            actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
             config: {
-              prompt:
-                "Extract invoice number, amount, vendor, and due date from this document",
               model: "gpt-4-vision-preview",
+              messages: [
+                {
+                  role: "user",
+                  content:
+                    "Extract invoice number, amount, vendor, and due date from this document: {{trigger.document}}",
+                },
+              ],
+              temperature: 0.3,
             },
           },
         },
@@ -192,12 +198,11 @@ export const mockWorkflows: Workflow[] = [
             label: "Send Notification",
             description: "Notify finance team of approved invoice",
             integrationId: "slack",
-            actionKey: "send_message",
+            actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
             config: {
               channel: "finance",
-              message:
-                "Invoice {{step_2.invoice_number}} approved for ${{step_2.amount}}",
+              text: "Invoice {{step_2.invoice_number}} approved for ${{step_2.amount}}",
             },
           },
         },
@@ -279,11 +284,11 @@ export const mockWorkflows: Workflow[] = [
             label: "Notify Tech Support",
             description: "Send to tech support channel",
             integrationId: "slack",
-            actionKey: "send_message",
+            actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
             config: {
               channel: "tech-support",
-              message: "🔧 New technical ticket: {{trigger.subject}}",
+              text: "🔧 New technical ticket: {{trigger.subject}}",
             },
           },
         },
@@ -295,11 +300,11 @@ export const mockWorkflows: Workflow[] = [
             label: "Notify Billing Team",
             description: "Send to billing channel",
             integrationId: "slack",
-            actionKey: "send_message",
+            actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
             config: {
               channel: "billing",
-              message: "💰 New billing inquiry: {{trigger.subject}}",
+              text: "💰 New billing inquiry: {{trigger.subject}}",
             },
           },
         },
@@ -661,17 +666,25 @@ export const mockWorkflows: Workflow[] = [
         },
         {
           id: "8",
-          type: "human_task",
+          type: "action",
           position: { x: 250, y: 1080 },
           data: {
             label: "Wait for Interviewer Response",
-            description: "Interviewer accepts or rejects the request",
-            app: "approval",
+            description: "Interviewer accepts or rejects the interview request",
+            integrationId: "approval",
+            actionKey: "request_approval",
+            installedAppId: "inst_approval_acme",
             config: {
+              title: "Interview Request - {{candidate.name}}",
+              description:
+                "{{interviewer.name}}, please confirm your availability for interviewing {{candidate.name}} for the {{position}} role on {{proposed_date}}",
+              assignees: ["{{interviewer.id}}"],
+              priority: "high",
               timeout: "24 hours",
               reminderAfter: "12 hours",
               allowDelegation: false,
-              actions: ["accept", "reject", "suggest_time"],
+              requireComment: true,
+              customActions: ["suggest_time"],
             },
           },
         },
@@ -726,7 +739,7 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Create Calendar Event",
             description: "Schedule interview with Google Meet link",
-            integrationId: "google_calendar",
+            integrationId: "google-calendar",
             actionKey: "create_event",
             installedAppId: "inst_google_calendar_main",
             config: {
@@ -889,12 +902,11 @@ export const mockWorkflows: Workflow[] = [
             label: "Notify HR Team",
             description: "Send interview completion notification",
             integrationId: "slack",
-            actionKey: "send_message",
+            actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
             config: {
               channel: "C007",
-              message:
-                "✅ Interview completed: {{candidateName}} with {{interviewerName}}.\n\nPosition: {{position}}\nRecommendation: {{overallRecommendation}}\n\nView full feedback in ATS.",
+              text: "✅ Interview completed: {{candidateName}} with {{interviewerName}}.\n\nPosition: {{position}}\nRecommendation: {{overallRecommendation}}\n\nView full feedback in ATS.",
             },
           },
         },
