@@ -22,10 +22,11 @@ export function WorkspaceSettings() {
   // General settings state
   const [workspaceName, setWorkspaceName] = useState(currentWorkspace?.name || '');
   const [workspaceSlug, setWorkspaceSlug] = useState(currentWorkspace?.slug || '');
+  const [workspaceColor, setWorkspaceColor] = useState(currentWorkspace?.color || '#f87855');
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const isAdmin = currentWorkspace?.role === 'admin';
+  const isAdmin = currentWorkspace?.role === 'admin' || currentWorkspace?.role === 'owner';
 
   const handleSaveGeneral = async (e: FormEvent) => {
     e.preventDefault();
@@ -189,6 +190,43 @@ export function WorkspaceSettings() {
                 <p className="text-xs text-muted-foreground mt-1">
                   Lowercase letters, numbers, and hyphens only
                 </p>
+              </div>
+
+              {/* Workspace Color */}
+              <div>
+                <label className="block text-sm font-medium mb-2">Workspace Color</label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="color"
+                    value={workspaceColor}
+                    onChange={(e) => setWorkspaceColor(e.target.value)}
+                    className="w-20 h-12 rounded-lg border border-border cursor-pointer"
+                  />
+                  <div className="flex-1">
+                    <Input
+                      type="text"
+                      value={workspaceColor}
+                      onChange={(e) => setWorkspaceColor(e.target.value)}
+                      placeholder="#3b82f6"
+                      pattern="^#[0-9A-Fa-f]{6}$"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Choose a theme color for your workspace
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    {['#f87855', '#f85c39', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'].map((color) => (
+                      <button
+                        key={color}
+                        type="button"
+                        onClick={() => setWorkspaceColor(color)}
+                        className="w-8 h-8 rounded-lg border-2 border-border hover:scale-110 transition-transform"
+                        style={{ backgroundColor: color }}
+                        title={color}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Description */}

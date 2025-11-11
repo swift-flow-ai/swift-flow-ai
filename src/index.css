@@ -1,69 +1,70 @@
+/* Tailwind CSS directives - processed by PostCSS */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Dark theme (default) */
+    /* Dark theme (default) - Coral/Orange Brand Colors */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 5% 15%;
     --card-foreground: 0 0% 98%;
-    --primary: 142 76% 36%;
-    --primary-foreground: 144 61% 20%;
+    --primary: 11 93% 61%; /* #f87855 - Primary coral */
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 15%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 142 76% 36%;
-    --accent-foreground: 144 61% 20%;
+    --accent: 11 95% 60%; /* #f85c39 - Accent coral/orange */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5% 25%;
     --input: 240 3.7% 15.9%;
-    --ring: 142 76% 36%;
+    --ring: 11 93% 61%; /* #f87855 */
   }
 
   .dark {
-    /* Dark theme (same as root default) */
+    /* Dark theme (same as root default) - Coral/Orange Brand Colors */
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 5% 15%;
     --card-foreground: 0 0% 98%;
-    --primary: 142 76% 36%;
-    --primary-foreground: 144 61% 20%;
+    --primary: 11 93% 61%; /* #f87855 - Primary coral */
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 15%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 142 76% 36%;
-    --accent-foreground: 144 61% 20%;
+    --accent: 11 95% 60%; /* #f85c39 - Accent coral/orange */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5% 25%;
     --input: 240 3.7% 15.9%;
-    --ring: 142 76% 36%;
+    --ring: 11 93% 61%; /* #f87855 */
   }
 
   .light {
-    /* Light theme */
+    /* Light theme - Coral/Orange Brand Colors */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 98%;
     --card-foreground: 240 10% 3.9%;
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 11 93% 61%; /* #f87855 - Primary coral */
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: 142 76% 36%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 11 95% 60%; /* #f85c39 - Accent coral/orange */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 142 76% 36%;
+    --ring: 11 93% 61%; /* #f87855 */
   }
   
   body {

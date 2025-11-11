@@ -6,6 +6,7 @@ export const mockWorkspaces: Workspace[] = [
     name: 'Acme Corp',
     slug: 'acme-corp',
     logo: 'https://api.dicebear.com/7.x/initials/svg?seed=Acme',
+    color: '#f87855', // Primary coral (brand color)
     role: 'owner',
     memberCount: 15,
     activeWorkflows: 12,
@@ -19,6 +20,7 @@ export const mockWorkspaces: Workspace[] = [
     name: 'TechStart Inc',
     slug: 'techstart',
     logo: 'https://api.dicebear.com/7.x/initials/svg?seed=TechStart',
+    color: '#f85c39', // Accent coral/orange (brand color)
     role: 'member',
     memberCount: 8,
     activeWorkflows: 5,
@@ -32,6 +34,7 @@ export const mockWorkspaces: Workspace[] = [
     name: 'Client Project',
     slug: 'client-project',
     logo: 'https://api.dicebear.com/7.x/initials/svg?seed=Client',
+    color: '#10b981', // Green (alternative)
     role: 'viewer',
     memberCount: 12,
     activeWorkflows: 8,

@@ -4,6 +4,7 @@ export interface Workspace {
   name: string;
   slug: string;
   logo?: string;
+  color?: string; // Workspace theme color (hex code)
   role: 'owner' | 'admin' | 'member' | 'viewer' | 'guest';
   memberCount: number;
   activeWorkflows: number;

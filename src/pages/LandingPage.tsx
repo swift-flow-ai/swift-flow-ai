@@ -108,7 +108,7 @@ export function LandingPage() {
           >
             <img src="/logo.svg" alt="Swift Flow AI" className="w-10 h-10" />
             <div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-[#f87855] via-[#f85c39] to-[#ff6b4a] bg-clip-text text-transparent">
                 Swift Flow
               </span>
               <div className="text-[10px] text-muted-foreground font-medium tracking-wider uppercase">
@@ -132,7 +132,7 @@ export function LandingPage() {
             <Button 
               variant="primary" 
               onClick={() => navigate('/signup')}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+              className="bg-gradient-to-r from-[#f87855] to-[#f85c39] hover:from-[#f96d45] hover:to-[#f94d29]"
             >
               <Rocket className="h-4 w-4 mr-2" />
               Start Free Trial
