@@ -14,7 +14,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../components/common';
 import {
   Save,
@@ -31,8 +31,12 @@ import { ConditionNode } from '../../components/workflow/nodes/ConditionNode';
 import { ApprovalNode } from '../../components/workflow/nodes/ApprovalNode';
 import { AppDrawer } from '../../components/workflow/AppDrawer';
 import { ConfigPanel } from '../../components/workflow/ConfigPanel';
+import { TriggerConfigPanel } from '../../components/workflow/TriggerConfigPanel';
+import { NodeContextMenu } from '../../components/workflow/NodeContextMenu';
+import { AddNodeButton } from '../../components/workflow/AddNodeButton';
 import { workflowService } from '../../services/workflow.service';
 import { templateService } from '../../services/template.service';
+import { integrationSystemService } from '../../services/integration-system.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { IntegrationDefinition, ActionDefinition, TriggerDefinition } from '../../services/integration-system.service';
 
@@ -74,8 +78,10 @@ export function WorkflowBuilder() {
   const [showSaveAsTemplate, setShowSaveAsTemplate] = useState(false);
   const [showAppDrawer, setShowAppDrawer] = useState(false);
   const [showConfigPanel, setShowConfigPanel] = useState(false);
+  const [showTriggerConfigPanel, setShowTriggerConfigPanel] = useState(false);
   const [selectedIntegration, setSelectedIntegration] = useState<IntegrationDefinition | null>(null);
   const [selectedAction, setSelectedAction] = useState<ActionDefinition | null>(null);
+  const [selectedTrigger, setSelectedTrigger] = useState<TriggerDefinition | null>(null);
   const [configNodeId, setConfigNodeId] = useState<string | undefined>(undefined);
   const [templateData, setTemplateData] = useState({
     name: '',
@@ -86,6 +92,22 @@ export function WorkflowBuilder() {
   });
   const [isSavingTemplate, setIsSavingTemplate] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  
+  // Helper function to show toast notifications
+  const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  }, []);
+  
+  // New state for context menu and add node button
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    nodeId: string;
+    nodeType: string;
+  } | null>(null);
+  const [addNodePosition, setAddNodePosition] = useState<{ x: number; y: number } | null>(null);
+  const [integrations, setIntegrations] = useState<IntegrationDefinition[]>([]);
 
   // Load existing workflow if editing
   const loadWorkflow = useCallback(async () => {
@@ -115,6 +137,19 @@ export function WorkflowBuilder() {
       loadWorkflow();
     }
   }, [workflowId, currentWorkspace, loadWorkflow]);
+
+  // Load integrations for AddNodeButton
+  useEffect(() => {
+    const loadIntegrations = async () => {
+      try {
+        const response = await integrationSystemService.listAvailableIntegrations();
+        setIntegrations(response.integrations);
+      } catch (error) {
+        console.error('Failed to load integrations:', error);
+      }
+    };
+    loadIntegrations();
+  }, []);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -219,6 +254,37 @@ export function WorkflowBuilder() {
     setShowAppDrawer(false);
   };
 
+  const handleSaveTriggerConfig = useCallback((config: {
+    integrationId: string;
+    triggerKey: string;
+    config: Record<string, unknown>;
+  }) => {
+    if (!configNodeId) return;
+
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === configNodeId) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              integrationId: config.integrationId,
+              triggerKey: config.triggerKey,
+              config: config.config,
+            },
+          };
+        }
+        return node;
+      })
+    );
+
+    setShowTriggerConfigPanel(false);
+    setSelectedIntegration(null);
+    setSelectedTrigger(null);
+    setConfigNodeId(undefined);
+    showToast('Trigger configuration saved', 'success');
+  }, [configNodeId, setNodes, showToast]);
+
   const handleSaveConfig = (config: {
     integrationId: string;
     actionKey: string;
@@ -252,6 +318,211 @@ export function WorkflowBuilder() {
     setSelectedIntegration(null);
     setSelectedAction(null);
   };
+
+  // Context menu handlers
+  const handleNodeContextMenu = useCallback((event: React.MouseEvent, node: Node) => {
+    event.preventDefault();
+    setContextMenu({
+      x: event.clientX,
+      y: event.clientY,
+      nodeId: node.id,
+      nodeType: node.type || 'action',
+    });
+  }, []);
+
+  const handleDeleteNode = useCallback((nodeId: string) => {
+    setNodes((nds) => nds.filter((n) => n.id !== nodeId));
+    setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
+    setToast({ message: 'Node deleted', type: 'success' });
+    setTimeout(() => setToast(null), 2000);
+  }, [setNodes, setEdges]);
+
+  const handleDuplicateNode = useCallback((nodeId: string) => {
+    const node = nodes.find((n) => n.id === nodeId);
+    if (!node) return;
+
+    const newNode: Node = {
+      ...node,
+      id: `${Date.now()}`,
+      position: {
+        x: node.position.x + 50,
+        y: node.position.y + 50,
+      },
+      data: { ...node.data },
+    };
+
+    setNodes((nds) => [...nds, newNode]);
+    setToast({ message: 'Node duplicated', type: 'success' });
+    setTimeout(() => setToast(null), 2000);
+  }, [nodes, setNodes]);
+
+  const handleEditNode = useCallback(async (nodeId: string) => {
+    const node = nodes.find((n) => n.id === nodeId);
+    if (!node) return;
+
+    if (node.type === 'action' && node.data.integrationId && node.data.actionKey) {
+      try {
+        const integration = await integrationSystemService.getIntegration(node.data.integrationId);
+        const action = await integrationSystemService.getAction(node.data.integrationId, node.data.actionKey);
+        
+        setSelectedIntegration(integration);
+        setSelectedAction(action);
+        setConfigNodeId(node.id);
+        setShowConfigPanel(true);
+      } catch (error) {
+        console.error('Failed to load integration/action:', error);
+        showToast('Failed to load action configuration', 'error');
+      }
+    } else if (node.type === 'trigger') {
+      // For triggers, open the trigger config panel
+      try {
+        // Get integration and trigger from node data or fetch from available integrations
+        const integrationId = node.data.integrationId || 'webhook'; // Default to webhook if not set
+        const triggerKey = node.data.triggerKey || node.data.triggerType || 'webhook';
+        
+        const integration = await integrationSystemService.getIntegration(integrationId);
+        const trigger = integration.triggers?.find(t => t.key === triggerKey) || integration.triggers?.[0];
+        
+        if (trigger) {
+          setSelectedIntegration(integration);
+          setSelectedTrigger(trigger);
+          setConfigNodeId(node.id);
+          setShowTriggerConfigPanel(true);
+        } else {
+          showToast('No trigger configuration available', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to load trigger configuration:', error);
+        showToast('Failed to load trigger configuration', 'error');
+      }
+    } else if (node.type === 'condition') {
+      showToast('Condition nodes are configured inline. Click the node to edit conditions.', 'info');
+    }
+  }, [nodes, showToast]);
+
+  const handleTestNode = useCallback(async (nodeId: string) => {
+    const node = nodes.find((n) => n.id === nodeId);
+    if (!node || node.type !== 'action') return;
+
+    if (!currentWorkspace) return;
+
+    try {
+      // Update node to show testing state
+      setNodes((nds) =>
+        nds.map((n) =>
+          n.id === nodeId
+            ? { ...n, data: { ...n.data, testResult: undefined } }
+            : n
+        )
+      );
+
+      const result = await integrationSystemService.testAction(currentWorkspace.id, {
+        integrationId: node.data.integrationId,
+        actionKey: node.data.actionKey,
+        installedAppId: node.data.installedAppId,
+        config: node.data.config || {},
+      });
+
+      // Update node with test result
+      setNodes((nds) =>
+        nds.map((n) =>
+          n.id === nodeId
+            ? {
+                ...n,
+                data: {
+                  ...n.data,
+                  testResult: {
+                    success: result.success,
+                    output: result.output,
+                    error: result.error,
+                    timestamp: new Date().toISOString(),
+                  },
+                },
+              }
+            : n
+        )
+      );
+
+      setToast({
+        message: result.success ? 'Test successful!' : 'Test failed',
+        type: result.success ? 'success' : 'error',
+      });
+      setTimeout(() => setToast(null), 3000);
+    } catch (error) {
+      console.error('Test failed:', error);
+      setToast({ message: 'Test failed', type: 'error' });
+      setTimeout(() => setToast(null), 3000);
+    }
+  }, [nodes, currentWorkspace, setNodes]);
+
+  const handleToggleSkipNode = useCallback((nodeId: string) => {
+    setNodes((nds) =>
+      nds.map((n) =>
+        n.id === nodeId
+          ? { ...n, data: { ...n.data, skipped: !n.data.skipped } }
+          : n
+      )
+    );
+  }, [setNodes]);
+
+  // Add node from AddNodeButton
+  const handleAddNode = useCallback((type: string, integration?: IntegrationDefinition) => {
+    const position = addNodePosition || { x: 250, y: 200 };
+    
+    if (type === 'action' && integration) {
+      // Open config panel for action
+      setSelectedIntegration(integration);
+      setShowConfigPanel(true);
+      setAddNodePosition(null);
+    } else {
+      // Add other node types directly
+      const newNode: Node = {
+        id: `${Date.now()}`,
+        type,
+        position,
+        data: {
+          label: type === 'condition' ? 'Condition' : type === 'approval' ? 'Approval' : 'Delay',
+          description: type === 'condition' ? 'Add branching logic' : type === 'approval' ? 'Request approval' : 'Wait before continuing',
+        },
+      };
+      setNodes((nds) => [...nds, newNode]);
+      setAddNodePosition(null);
+    }
+  }, [addNodePosition, setNodes]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Delete key - delete selected nodes
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        const selectedNodes = nodes.filter((n) => n.selected);
+        if (selectedNodes.length > 0) {
+          event.preventDefault();
+          selectedNodes.forEach((node) => {
+            if (node.type !== 'trigger') { // Can't delete trigger
+              handleDeleteNode(node.id);
+            }
+          });
+        }
+      }
+
+      // Cmd/Ctrl + D - duplicate selected nodes
+      if ((event.metaKey || event.ctrlKey) && event.key === 'd') {
+        event.preventDefault();
+        const selectedNodes = nodes.filter((n) => n.selected);
+        selectedNodes.forEach((node) => handleDuplicateNode(node.id));
+      }
+
+      // Escape - close context menu
+      if (event.key === 'Escape') {
+        setContextMenu(null);
+        setAddNodePosition(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [nodes, handleDeleteNode, handleDuplicateNode]);
 
   if (isLoading) {
     return (
@@ -334,6 +605,7 @@ export function WorkflowBuilder() {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onNodeClick={onNodeClick}
+            onNodeContextMenu={handleNodeContextMenu}
             nodeTypes={nodeTypes}
             fitView
             className="bg-background"
@@ -525,6 +797,56 @@ export function WorkflowBuilder() {
               : undefined
           }
           onSave={handleSaveConfig}
+        />
+      )}
+
+      {/* Trigger Config Panel */}
+      <AnimatePresence>
+        {showTriggerConfigPanel && selectedIntegration && selectedTrigger && (
+          <TriggerConfigPanel
+            integration={selectedIntegration}
+            trigger={selectedTrigger}
+            initialConfig={
+              configNodeId
+                ? nodes.find((n) => n.id === configNodeId)?.data.config
+                : undefined
+            }
+            onSave={handleSaveTriggerConfig}
+            onClose={() => {
+              setShowTriggerConfigPanel(false);
+              setSelectedIntegration(null);
+              setSelectedTrigger(null);
+              setConfigNodeId(undefined);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Context Menu */}
+      <AnimatePresence>
+        {contextMenu && (
+          <NodeContextMenu
+            x={contextMenu.x}
+            y={contextMenu.y}
+            nodeId={contextMenu.nodeId}
+            nodeType={contextMenu.nodeType}
+            onEdit={() => handleEditNode(contextMenu.nodeId)}
+            onDuplicate={() => handleDuplicateNode(contextMenu.nodeId)}
+            onDelete={() => handleDeleteNode(contextMenu.nodeId)}
+            onTest={contextMenu.nodeType === 'action' ? () => handleTestNode(contextMenu.nodeId) : undefined}
+            onToggleSkip={() => handleToggleSkipNode(contextMenu.nodeId)}
+            onClose={() => setContextMenu(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Add Node Button */}
+      {addNodePosition && (
+        <AddNodeButton
+          position={addNodePosition}
+          onAddNode={handleAddNode}
+          integrations={integrations}
+          visible={true}
         />
       )}
     </div>

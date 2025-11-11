@@ -31,6 +31,8 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "New Hire Webhook",
             description: "Triggered when HR adds a new employee",
+            integrationId: "webhook",
+            triggerKey: "webhook",
             triggerType: "webhook",
             config: { method: "POST", path: "/new-hire" },
           },
@@ -45,10 +47,21 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "gmail",
             actionKey: "send_email",
             installedAppId: "inst_gmail_hr",
+            icon: "https://logo.clearbit.com/gmail.com",
+            app: "Gmail",
             config: {
               to: "{{trigger.email}}",
               subject: "Welcome to the Team!",
               body: "Welcome {{trigger.name}}! Here's your onboarding checklist...",
+            },
+            testResult: {
+              success: true,
+              output: {
+                id: "18c1234567890abcd",
+                threadId: "18c1234567890abcd",
+                labelIds: ["SENT"],
+              },
+              timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
             },
           },
         },
@@ -62,21 +75,46 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "google-calendar",
             actionKey: "create_event",
             installedAppId: "inst_google_calendar_main",
+            icon: "https://logo.clearbit.com/google.com",
+            app: "Google Calendar",
             config: {
               summary: "{{trigger.name}} - First Day Orientation",
               start_time: "{{trigger.start_date}}T09:00:00",
               duration: 60,
             },
+            testResult: {
+              success: true,
+              output: {
+                id: "event123",
+                htmlLink: "https://calendar.google.com/event?eid=...",
+                hangoutLink: "https://meet.google.com/abc-defg-hij",
+              },
+              timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+            },
           },
         },
         {
           id: "4",
-          type: "approval",
+          type: "action",
           position: { x: 250, y: 500 },
           data: {
             label: "Manager Approval",
             description: "Manager approves equipment and access",
-            approvers: ["manager"],
+            integrationId: "approval",
+            actionKey: "request_approval",
+            installedAppId: "inst_approval_acme",
+            icon: "✅",
+            app: "Approval",
+            config: {
+              title: "Approve Equipment for New Hire",
+              description:
+                "Manager needs to approve equipment and access for {{trigger.name}}",
+              assignees: ["usr_manager"],
+              priority: "high",
+              timeout: "48 hours",
+              allowDelegation: true,
+              requireComment: true,
+            },
           },
         },
         {
@@ -89,9 +127,25 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "slack",
             actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
+            icon: "https://logo.clearbit.com/slack.com",
+            app: "Slack",
             config: {
               channel: "general",
               text: "Welcome {{trigger.name}} to the team! 🎉",
+            },
+            testResult: {
+              success: true,
+              output: {
+                ok: true,
+                channel: "C123456",
+                ts: "1234567890.123456",
+                message: {
+                  text: "Welcome {{trigger.name}} to the team! 🎉",
+                  user: "U789012",
+                  type: "message",
+                },
+              },
+              timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
             },
           },
         },
@@ -135,7 +189,10 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Invoice Received",
             description: "Triggered when invoice is uploaded",
+            integrationId: "webhook",
+            triggerKey: "webhook",
             triggerType: "webhook",
+            config: { method: "POST", path: "/invoice-received" },
           },
         },
         {
@@ -148,6 +205,8 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "openai",
             actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
+            icon: "https://logo.clearbit.com/openai.com",
+            app: "OpenAI",
             config: {
               model: "gpt-4-vision-preview",
               messages: [
@@ -159,6 +218,16 @@ export const mockWorkflows: Workflow[] = [
               ],
               temperature: 0.3,
             },
+            testResult: {
+              success: true,
+              output: {
+                invoice_number: "INV-2024-001",
+                amount: 4750.0,
+                vendor: "Acme Supplies Inc",
+                due_date: "2024-02-15",
+              },
+              timestamp: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+            },
           },
         },
         {
@@ -168,26 +237,54 @@ export const mockWorkflows: Workflow[] = [
           data: {
             label: "Check Amount",
             description: "Route based on invoice amount",
+            config: {
+              condition: "{{step_2.amount}} >= 5000",
+            },
           },
         },
         {
           id: "4",
-          type: "approval",
+          type: "action",
           position: { x: 300, y: 500 },
           data: {
             label: "Manager Approval",
             description: "For amounts < $5000",
-            approvers: ["manager"],
+            integrationId: "approval",
+            actionKey: "request_approval",
+            installedAppId: "inst_approval_acme",
+            icon: "✅",
+            app: "Approval",
+            config: {
+              title: "Invoice Approval - {{step_2.invoice_number}}",
+              description:
+                "Approve invoice for ${{step_2.amount}} from {{step_2.vendor}}",
+              assignees: ["usr_manager"],
+              priority: "medium",
+              timeout: "24 hours",
+            },
           },
         },
         {
           id: "5",
-          type: "approval",
+          type: "action",
           position: { x: -100, y: 500 },
           data: {
             label: "CFO Approval",
             description: "For amounts >= $5000",
-            approvers: ["cfo"],
+            integrationId: "approval",
+            actionKey: "request_approval",
+            installedAppId: "inst_approval_acme",
+            icon: "✅",
+            app: "Approval",
+            config: {
+              title: "High-Value Invoice Approval - {{step_2.invoice_number}}",
+              description:
+                "CFO approval required for invoice of ${{step_2.amount}} from {{step_2.vendor}}",
+              assignees: ["usr_cfo"],
+              priority: "high",
+              timeout: "48 hours",
+              requireComment: true,
+            },
           },
         },
         {
@@ -200,6 +297,8 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "slack",
             actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
+            icon: "https://logo.clearbit.com/slack.com",
+            app: "Slack",
             config: {
               channel: "finance",
               text: "Invoice {{step_2.invoice_number}} approved for ${{step_2.amount}}",
@@ -260,10 +359,21 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "openai",
             actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
+            icon: "https://logo.clearbit.com/openai.com",
+            app: "OpenAI",
             config: {
               prompt:
                 "Classify this support ticket: {{trigger.message}}. Determine urgency (low/medium/high) and category (technical/billing/general)",
               model: "gpt-4",
+            },
+            testResult: {
+              success: true,
+              output: {
+                urgency: "high",
+                category: "technical",
+                confidence: 0.95,
+              },
+              timestamp: new Date(Date.now() - 1000 * 60 * 10).toISOString(),
             },
           },
         },
@@ -286,9 +396,17 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "slack",
             actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
+            icon: "https://logo.clearbit.com/slack.com",
+            app: "Slack",
             config: {
               channel: "tech-support",
               text: "🔧 New technical ticket: {{trigger.subject}}",
+            },
+            testResult: {
+              success: false,
+              error:
+                "Channel not found: tech-support. Please check channel name or permissions.",
+              timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
             },
           },
         },
@@ -302,10 +420,13 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "slack",
             actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
+            icon: "https://logo.clearbit.com/slack.com",
+            app: "Slack",
             config: {
               channel: "billing",
               text: "💰 New billing inquiry: {{trigger.subject}}",
             },
+            skipped: true,
           },
         },
       ] as Node[],
@@ -581,6 +702,8 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "gmail",
             actionKey: "send_email",
             installedAppId: "inst_gmail_hr",
+            icon: "https://logo.clearbit.com/gmail.com",
+            app: "Gmail",
             config: {
               to: "{{candidateEmail}}",
               subject: "Interview Invitation - Please Select Your Availability",
@@ -742,6 +865,8 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "google-calendar",
             actionKey: "create_event",
             installedAppId: "inst_google_calendar_main",
+            icon: "https://logo.clearbit.com/google.com",
+            app: "Google Calendar",
             config: {
               calendar: "primary",
               summary: "Interview - {{candidateName}} - {{position}}",
@@ -904,6 +1029,8 @@ export const mockWorkflows: Workflow[] = [
             integrationId: "slack",
             actionKey: "send_channel_message",
             installedAppId: "inst_slack_engineering",
+            icon: "https://logo.clearbit.com/slack.com",
+            app: "Slack",
             config: {
               channel: "C007",
               text: "✅ Interview completed: {{candidateName}} with {{interviewerName}}.\n\nPosition: {{position}}\nRecommendation: {{overallRecommendation}}\n\nView full feedback in ATS.",

@@ -7,6 +7,163 @@ import { IntegrationDefinition } from "../../services/integration-system.service
 
 export const integrationDefinitions: IntegrationDefinition[] = [
   // ============================================================================
+  // TRIGGERS
+  // ============================================================================
+  {
+    id: "webhook",
+    name: "Webhook",
+    displayName: "Webhook",
+    description: "Receive data from external services via HTTP webhooks",
+    category: "triggers",
+    icon: "🔗",
+    logoUrl: "",
+    version: "1.0.0",
+    verified: true,
+    popular: true,
+    new: false,
+    auth: {
+      type: "none",
+      required: false,
+    },
+    triggers: [
+      {
+        key: "webhook",
+        name: "Webhook",
+        description: "Triggered when a webhook is received",
+        type: "webhook",
+        properties: [
+          {
+            key: "method",
+            label: "HTTP Method",
+            type: "dropdown",
+            required: true,
+            defaultValue: "POST",
+            options: [
+              { label: "POST", value: "POST" },
+              { label: "GET", value: "GET" },
+              { label: "PUT", value: "PUT" },
+              { label: "PATCH", value: "PATCH" },
+              { label: "DELETE", value: "DELETE" },
+            ],
+          },
+          {
+            key: "path",
+            label: "Webhook Path",
+            type: "string",
+            required: true,
+            description: "The path for your webhook URL",
+            placeholder: "/my-webhook",
+          },
+          {
+            key: "authentication",
+            label: "Authentication",
+            type: "dropdown",
+            required: false,
+            options: [
+              { label: "None", value: "none" },
+              { label: "API Key", value: "api_key" },
+              { label: "Bearer Token", value: "bearer" },
+              { label: "Basic Auth", value: "basic" },
+            ],
+            defaultValue: "none",
+          },
+        ],
+        sampleOutput: {
+          headers: {
+            "content-type": "application/json",
+            "user-agent": "External-Service/1.0",
+          },
+          body: {
+            event: "user.created",
+            data: {
+              id: "user_123",
+              email: "user@example.com",
+              name: "John Doe",
+            },
+          },
+          query: {},
+          timestamp: "2025-11-10T10:30:00Z",
+        },
+      },
+    ],
+    actions: [],
+    docsUrl: "https://docs.swiftflow.ai/triggers/webhook",
+    supportUrl: "https://support.swiftflow.ai",
+    author: "Swift Flow AI",
+    installCount: 25000,
+    rating: 4.9,
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-11-10T10:00:00Z",
+  },
+  {
+    id: "schedule",
+    name: "Schedule",
+    displayName: "Schedule",
+    description: "Trigger workflows on a schedule using cron expressions",
+    category: "triggers",
+    icon: "⏰",
+    logoUrl: "",
+    version: "1.0.0",
+    verified: true,
+    popular: true,
+    new: false,
+    auth: {
+      type: "none",
+      required: false,
+    },
+    triggers: [
+      {
+        key: "schedule",
+        name: "Schedule",
+        description: "Triggered on a schedule",
+        type: "polling",
+        polling: {
+          defaultInterval: 3600,
+          minInterval: 60,
+          maxInterval: 86400,
+        },
+        properties: [
+          {
+            key: "cron",
+            label: "Cron Expression",
+            type: "string",
+            required: true,
+            description: "Cron expression for the schedule",
+            placeholder: "0 9 * * 1-5",
+          },
+          {
+            key: "timezone",
+            label: "Timezone",
+            type: "dropdown",
+            required: false,
+            defaultValue: "UTC",
+            options: [
+              { label: "UTC", value: "UTC" },
+              { label: "America/New_York", value: "America/New_York" },
+              { label: "America/Los_Angeles", value: "America/Los_Angeles" },
+              { label: "Europe/London", value: "Europe/London" },
+              { label: "Asia/Tokyo", value: "Asia/Tokyo" },
+            ],
+          },
+        ],
+        sampleOutput: {
+          scheduledTime: "2025-11-10T09:00:00Z",
+          timezone: "UTC",
+          executionId: "exec_123",
+        },
+      },
+    ],
+    actions: [],
+    docsUrl: "https://docs.swiftflow.ai/triggers/schedule",
+    supportUrl: "https://support.swiftflow.ai",
+    author: "Swift Flow AI",
+    installCount: 20000,
+    rating: 4.8,
+    createdAt: "2025-01-01T00:00:00Z",
+    updatedAt: "2025-11-10T10:00:00Z",
+  },
+
+  // ============================================================================
   // COMMUNICATION
   // ============================================================================
   {

@@ -37,6 +37,8 @@ export const mockTemplates: WorkflowTemplate[] = [
             integrationId: "gmail",
             actionKey: "send_email",
             installedAppId: "inst_gmail_hr",
+            icon: "https://logo.clearbit.com/gmail.com",
+            app: "Gmail",
             config: {
               to: "{{trigger.email}}",
               subject: "Welcome to {{company_name}}!",
@@ -54,6 +56,8 @@ export const mockTemplates: WorkflowTemplate[] = [
             integrationId: "google-calendar",
             actionKey: "create_event",
             installedAppId: "inst_google_calendar_main",
+            icon: "https://logo.clearbit.com/google.com",
+            app: "Google Calendar",
             config: {
               summary: "First Day Orientation - {{trigger.name}}",
               start_time: "{{trigger.start_date}}T09:00:00",
@@ -63,11 +67,22 @@ export const mockTemplates: WorkflowTemplate[] = [
         },
         {
           id: "4",
-          type: "approval",
+          type: "action",
           position: { x: 250, y: 500 },
           data: {
             label: "Manager Approval",
             description: "Manager approves equipment and access",
+            integrationId: "approval",
+            actionKey: "request_approval",
+            installedAppId: "inst_approval_acme",
+            icon: "✅",
+            app: "Approval",
+            config: {
+              title: "Approve Equipment for New Hire",
+              description: "Manager needs to approve equipment and access",
+              assignees: ["{{manager_email}}"],
+              priority: "high",
+            },
           },
         },
       ] as Node[],
@@ -135,6 +150,8 @@ export const mockTemplates: WorkflowTemplate[] = [
             integrationId: "openai",
             actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
+            icon: "https://logo.clearbit.com/openai.com",
+            app: "OpenAI",
             config: {
               model: "gpt-4-vision-preview",
               messages: [
@@ -158,10 +175,22 @@ export const mockTemplates: WorkflowTemplate[] = [
         },
         {
           id: "4",
-          type: "approval",
+          type: "action",
           position: { x: 300, y: 500 },
           data: {
             label: "Manager Approval",
+            description: "Manager approves invoice",
+            integrationId: "approval",
+            actionKey: "request_approval",
+            installedAppId: "inst_approval_acme",
+            icon: "✅",
+            app: "Approval",
+            config: {
+              title: "Invoice Approval Required",
+              description: "Please review and approve this invoice",
+              assignees: ["{{manager_email}}"],
+              priority: "medium",
+            },
           },
         },
       ] as Node[],
@@ -235,6 +264,8 @@ export const mockTemplates: WorkflowTemplate[] = [
             integrationId: "openai",
             actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
+            icon: "https://logo.clearbit.com/openai.com",
+            app: "OpenAI",
             config: {
               prompt: "Classify this support ticket: {{trigger.message}}",
               model: "gpt-4",
@@ -319,6 +350,8 @@ export const mockTemplates: WorkflowTemplate[] = [
             integrationId: "openai",
             actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
+            icon: "https://logo.clearbit.com/openai.com",
+            app: "OpenAI",
             config: {
               prompt:
                 "Score this lead based on company size, industry, and engagement: {{trigger.data}}",
@@ -380,10 +413,22 @@ export const mockTemplates: WorkflowTemplate[] = [
         },
         {
           id: "2",
-          type: "approval",
+          type: "action",
           position: { x: 250, y: 200 },
           data: {
             label: "Editor Review",
+            description: "Editor reviews content before publishing",
+            integrationId: "approval",
+            actionKey: "request_approval",
+            installedAppId: "inst_approval_acme",
+            icon: "✅",
+            app: "Approval",
+            config: {
+              title: "Content Review Required",
+              description: "Please review this content before publishing",
+              assignees: ["{{editor_email}}"],
+              priority: "medium",
+            },
           },
         },
         {
@@ -396,6 +441,8 @@ export const mockTemplates: WorkflowTemplate[] = [
             integrationId: "openai",
             actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
+            icon: "https://logo.clearbit.com/openai.com",
+            app: "OpenAI",
             config: {
               prompt:
                 "Review this content for compliance issues: {{trigger.content}}",
@@ -473,6 +520,8 @@ export const mockTemplates: WorkflowTemplate[] = [
             integrationId: "openai",
             actionKey: "chat_completion",
             installedAppId: "inst_openai_main",
+            icon: "https://logo.clearbit.com/openai.com",
+            app: "OpenAI",
             config: {
               model: "gpt-4-vision-preview",
               messages: [
@@ -488,10 +537,22 @@ export const mockTemplates: WorkflowTemplate[] = [
         },
         {
           id: "3",
-          type: "approval",
+          type: "action",
           position: { x: 200, y: 350 },
           data: {
             label: "Manager Approval",
+            description: "Manager approves expense report",
+            integrationId: "approval",
+            actionKey: "request_approval",
+            installedAppId: "inst_approval_acme",
+            icon: "✅",
+            app: "Approval",
+            config: {
+              title: "Expense Report Approval",
+              description: "Please review and approve this expense report",
+              assignees: ["{{manager_email}}"],
+              priority: "medium",
+            },
           },
         },
       ] as Node[],
