@@ -39,7 +39,7 @@ export function ConfigPanel({
   onClose,
   integrationId,
   actionKey,
-  nodeId: _nodeId,
+  nodeId: _nodeId, // eslint-disable-line @typescript-eslint/no-unused-vars
   initialConfig,
   initialInstalledAppId,
   onSave,
