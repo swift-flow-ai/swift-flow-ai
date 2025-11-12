@@ -13,7 +13,9 @@
     "mock": "VITE_ENABLE_MSW=true vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-website": "vite build --config vite.config.website.ts --mode production",
+    "preview-website": "vite preview --config vite.config.website.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
