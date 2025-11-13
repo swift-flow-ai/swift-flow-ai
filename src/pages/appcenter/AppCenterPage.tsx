@@ -11,7 +11,7 @@ import { MCPsTab } from './MCPsTab';
 import { CustomLLMsTab } from './CustomLLMsTab';
 import { integrationSystemService } from '../../services/integration-system.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
-import { Container, StatCard } from '@/design-system/components';
+import { Container, StatCard } from '../../components/common';
 
 type Tab = 'integrations' | 'mcps' | 'custom-llms';
 

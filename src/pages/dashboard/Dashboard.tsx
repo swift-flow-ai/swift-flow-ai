@@ -5,7 +5,7 @@ import { workflowService } from '../../services/workflow.service';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Badge } from '../../components/common/Badge';
 import { Avatar } from '../../components/common/Avatar';
-import { StatCard, Container, QuickAction, EmptyState } from '@/design-system/components';
+import { StatCard, Container, QuickAction, EmptyState } from '../../components/common';
 import Card from '@/components/common/Card';
 import { 
   Zap, 

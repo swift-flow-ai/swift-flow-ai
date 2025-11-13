@@ -12,7 +12,7 @@ import { Avatar } from '../../components/common/Avatar';
 import { PermissionGate } from '../../components/common/PermissionGate';
 import { ConfirmDialog } from '../../components/common';
 import { FolderTree } from '../../components/workflows/FolderTree';
-import { Container, EmptyState } from '@/design-system/components';
+import { Container, EmptyState } from '../../components/common';
 import Card from '@/components/common/Card';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';

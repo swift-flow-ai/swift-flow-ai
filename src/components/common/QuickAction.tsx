@@ -1,7 +1,7 @@
 import { LucideIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../../utils';
-import { Badge } from '../../components/common/Badge';
+import { Badge } from './Badge';
 
 export interface QuickActionProps {
   label: string;

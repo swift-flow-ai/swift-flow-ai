@@ -11,7 +11,7 @@ import {
 import { templateService } from '../../services/template.service';
 import { WorkflowTemplate } from '../../types';
 import { cn } from '../../utils';
-import { Container, EmptyState } from '@/design-system/components';
+import { Container, EmptyState } from '../../components/common';
 import Card from '@/components/common/Card';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';

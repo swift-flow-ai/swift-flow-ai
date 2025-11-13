@@ -7,7 +7,7 @@ import { approvalService } from '../../services/approval.service';
 import { inboxService, InboxItem } from '../../services/inbox.service';
 import { Approval } from '../../types/workspace';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
-import { Container } from '@/design-system/components';
+import { Container } from '../../components/common';
 import Button from '@/components/common/Button';
 import { InboxDetailHeader } from './components/InboxDetailHeader';
 import { InboxDetailSidebar } from './components/InboxDetailSidebar';
