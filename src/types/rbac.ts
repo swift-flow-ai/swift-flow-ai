@@ -1,44 +1,52 @@
 // Role-Based Access Control Types
+import { roleBadgeColors } from "../components/common/tokens";
 
-export type Role = 'owner' | 'admin' | 'member' | 'viewer' | 'guest';
+export enum Role {
+  Owner = "owner",
+  Admin = "admin",
+  Member = "member",
+  Viewer = "viewer",
+  Guest = "guest",
+}
 
-export type Permission =
+export enum Permission {
   // Workflow permissions
-  | 'workflow:view'
-  | 'workflow:create'
-  | 'workflow:edit'
-  | 'workflow:delete'
-  | 'workflow:execute'
-  | 'workflow:publish'
+  WorkflowView = "workflow:view",
+  WorkflowCreate = "workflow:create",
+  WorkflowEdit = "workflow:edit",
+  WorkflowDelete = "workflow:delete",
+  WorkflowExecute = "workflow:execute",
+  WorkflowPublish = "workflow:publish",
   // Analytics permissions
-  | 'analytics:view'
-  | 'analytics:export'
+  AnalyticsView = "analytics:view",
+  AnalyticsExport = "analytics:export",
   // Execution permissions
-  | 'execution:view'
-  | 'execution:cancel'
-  | 'execution:retry'
+  ExecutionView = "execution:view",
+  ExecutionCancel = "execution:cancel",
+  ExecutionRetry = "execution:retry",
   // Approval permissions
-  | 'approval:view'
-  | 'approval:decide'
+  ApprovalView = "approval:view",
+  ApprovalDecide = "approval:decide",
   // Team permissions
-  | 'team:view'
-  | 'team:invite'
-  | 'team:remove'
-  | 'team:manage_roles'
+  TeamView = "team:view",
+  TeamInvite = "team:invite",
+  TeamRemove = "team:remove",
+  TeamManageRoles = "team:manage_roles",
   // Integration permissions
-  | 'integration:view'
-  | 'integration:install'
-  | 'integration:configure'
-  | 'integration:delete'
+  IntegrationView = "integration:view",
+  IntegrationInstall = "integration:install",
+  IntegrationConfigure = "integration:configure",
+  IntegrationDelete = "integration:delete",
   // Workspace permissions
-  | 'workspace:view'
-  | 'workspace:edit'
-  | 'workspace:delete'
-  | 'workspace:manage_billing'
+  WorkspaceView = "workspace:view",
+  WorkspaceEdit = "workspace:edit",
+  WorkspaceDelete = "workspace:delete",
+  WorkspaceManageBilling = "workspace:manage_billing",
   // Template permissions
-  | 'template:view'
-  | 'template:use'
-  | 'template:create';
+  TemplateView = "template:view",
+  TemplateUse = "template:use",
+  TemplateCreate = "template:create",
+}
 
 export interface RoleDefinition {
   name: Role;
@@ -50,123 +58,125 @@ export interface RoleDefinition {
 
 // Role definitions with their permissions
 export const ROLE_DEFINITIONS: Record<Role, RoleDefinition> = {
-  owner: {
-    name: 'owner',
-    label: 'Owner',
-    description: 'Full access to all workspace features including billing and deletion',
-    color: 'purple',
+  [Role.Owner]: {
+    name: Role.Owner,
+    label: "Owner",
+    description:
+      "Full access to all workspace features including billing and deletion",
+    color: "purple",
     permissions: [
-      'workflow:view',
-      'workflow:create',
-      'workflow:edit',
-      'workflow:delete',
-      'workflow:execute',
-      'workflow:publish',
-      'analytics:view',
-      'analytics:export',
-      'execution:view',
-      'execution:cancel',
-      'execution:retry',
-      'approval:view',
-      'approval:decide',
-      'team:view',
-      'team:invite',
-      'team:remove',
-      'team:manage_roles',
-      'integration:view',
-      'integration:install',
-      'integration:configure',
-      'integration:delete',
-      'workspace:view',
-      'workspace:edit',
-      'workspace:delete',
-      'workspace:manage_billing',
-      'template:view',
-      'template:use',
-      'template:create',
+      Permission.WorkflowView,
+      Permission.WorkflowCreate,
+      Permission.WorkflowEdit,
+      Permission.WorkflowDelete,
+      Permission.WorkflowExecute,
+      Permission.WorkflowPublish,
+      Permission.AnalyticsView,
+      Permission.AnalyticsExport,
+      Permission.ExecutionView,
+      Permission.ExecutionCancel,
+      Permission.ExecutionRetry,
+      Permission.ApprovalView,
+      Permission.ApprovalDecide,
+      Permission.TeamView,
+      Permission.TeamInvite,
+      Permission.TeamRemove,
+      Permission.TeamManageRoles,
+      Permission.IntegrationView,
+      Permission.IntegrationInstall,
+      Permission.IntegrationConfigure,
+      Permission.IntegrationDelete,
+      Permission.WorkspaceView,
+      Permission.WorkspaceEdit,
+      Permission.WorkspaceDelete,
+      Permission.WorkspaceManageBilling,
+      Permission.TemplateView,
+      Permission.TemplateUse,
+      Permission.TemplateCreate,
     ],
   },
-  admin: {
-    name: 'admin',
-    label: 'Admin',
-    description: 'Manage workflows, team, and integrations. Cannot delete workspace or manage billing.',
-    color: 'red',
+  [Role.Admin]: {
+    name: Role.Admin,
+    label: "Admin",
+    description:
+      "Manage workflows, team, and integrations. Cannot delete workspace or manage billing.",
+    color: "red",
     permissions: [
-      'workflow:view',
-      'workflow:create',
-      'workflow:edit',
-      'workflow:delete',
-      'workflow:execute',
-      'workflow:publish',
-      'analytics:view',
-      'analytics:export',
-      'execution:view',
-      'execution:cancel',
-      'execution:retry',
-      'approval:view',
-      'approval:decide',
-      'team:view',
-      'team:invite',
-      'team:remove',
-      'integration:view',
-      'integration:install',
-      'integration:configure',
-      'integration:delete',
-      'workspace:view',
-      'workspace:edit',
-      'template:view',
-      'template:use',
-      'template:create',
+      Permission.WorkflowView,
+      Permission.WorkflowCreate,
+      Permission.WorkflowEdit,
+      Permission.WorkflowDelete,
+      Permission.WorkflowExecute,
+      Permission.WorkflowPublish,
+      Permission.AnalyticsView,
+      Permission.AnalyticsExport,
+      Permission.ExecutionView,
+      Permission.ExecutionCancel,
+      Permission.ExecutionRetry,
+      Permission.ApprovalView,
+      Permission.ApprovalDecide,
+      Permission.TeamView,
+      Permission.TeamInvite,
+      Permission.TeamRemove,
+      Permission.IntegrationView,
+      Permission.IntegrationInstall,
+      Permission.IntegrationConfigure,
+      Permission.IntegrationDelete,
+      Permission.WorkspaceView,
+      Permission.WorkspaceEdit,
+      Permission.TemplateView,
+      Permission.TemplateUse,
+      Permission.TemplateCreate,
     ],
   },
-  member: {
-    name: 'member',
-    label: 'Member',
-    description: 'Create and execute workflows. Can view analytics and manage approvals.',
-    color: 'blue',
+  [Role.Member]: {
+    name: Role.Member,
+    label: "Member",
+    description:
+      "Create and execute workflows. Can view analytics and manage approvals.",
+    color: "blue",
     permissions: [
-      'workflow:view',
-      'workflow:create',
-      'workflow:edit',
-      'workflow:execute',
-      'analytics:view',
-      'execution:view',
-      'execution:cancel',
-      'execution:retry',
-      'approval:view',
-      'approval:decide',
-      'team:view',
-      'integration:view',
-      'workspace:view',
-      'template:view',
-      'template:use',
+      Permission.WorkflowView,
+      Permission.WorkflowCreate,
+      Permission.WorkflowEdit,
+      Permission.WorkflowExecute,
+      Permission.AnalyticsView,
+      Permission.ExecutionView,
+      Permission.ExecutionCancel,
+      Permission.ExecutionRetry,
+      Permission.ApprovalView,
+      Permission.ApprovalDecide,
+      Permission.TeamView,
+      Permission.IntegrationView,
+      Permission.WorkspaceView,
+      Permission.TemplateView,
+      Permission.TemplateUse,
     ],
   },
-  viewer: {
-    name: 'viewer',
-    label: 'Viewer',
-    description: 'Read-only access to workflows and executions. Can handle assigned approvals.',
-    color: 'green',
+  [Role.Viewer]: {
+    name: Role.Viewer,
+    label: "Viewer",
+    description:
+      "Read-only access to workflows and executions. Can handle assigned approvals.",
+    color: "green",
     permissions: [
-      'workflow:view',
-      'execution:view',
-      'approval:view',
-      'approval:decide',
-      'team:view',
-      'integration:view',
-      'workspace:view',
-      'template:view',
+      Permission.WorkflowView,
+      Permission.ExecutionView,
+      Permission.ApprovalView,
+      Permission.ApprovalDecide,
+      Permission.TeamView,
+      Permission.IntegrationView,
+      Permission.WorkspaceView,
+      Permission.TemplateView,
     ],
   },
-  guest: {
-    name: 'guest',
-    label: 'Guest',
-    description: 'Limited access to specific workflows only. Can handle assigned approvals.',
-    color: 'gray',
-    permissions: [
-      'approval:view',
-      'approval:decide',
-    ],
+  [Role.Guest]: {
+    name: Role.Guest,
+    label: "Guest",
+    description:
+      "Limited access to specific workflows only. Can handle assigned approvals.",
+    color: "gray",
+    permissions: [Permission.ApprovalView, Permission.ApprovalDecide],
   },
 };
 
@@ -186,24 +196,29 @@ export function hasPermission(role: Role, permission: Permission): boolean {
 }
 
 // Check if a role has any of the specified permissions
-export function hasAnyPermission(role: Role, permissions: Permission[]): boolean {
-  return permissions.some(permission => hasPermission(role, permission));
+export function hasAnyPermission(
+  role: Role,
+  permissions: Permission[]
+): boolean {
+  return permissions.some((permission) => hasPermission(role, permission));
 }
 
 // Check if a role has all of the specified permissions
-export function hasAllPermissions(role: Role, permissions: Permission[]): boolean {
-  return permissions.every(permission => hasPermission(role, permission));
+export function hasAllPermissions(
+  role: Role,
+  permissions: Permission[]
+): boolean {
+  return permissions.every((permission) => hasPermission(role, permission));
 }
 
 // Get role badge color
 export function getRoleBadgeColor(role: Role): string {
   const colors: Record<Role, string> = {
-    owner: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-    admin: 'bg-red-500/10 text-red-600 border-red-500/20',
-    member: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-    viewer: 'bg-green-500/10 text-green-600 border-green-500/20',
-    guest: 'bg-gray-500/10 text-gray-600 border-gray-500/20',
+    [Role.Owner]: roleBadgeColors.owner,
+    [Role.Admin]: roleBadgeColors.admin,
+    [Role.Member]: roleBadgeColors.member,
+    [Role.Viewer]: roleBadgeColors.viewer,
+    [Role.Guest]: roleBadgeColors.guest,
   };
-  return colors[role] || colors.guest;
+  return colors[role] || colors[Role.Guest];
 }
-

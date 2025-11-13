@@ -39,6 +39,7 @@ import { workflowService } from '../../services/workflow.service';
 import { executionService } from '../../services/execution.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { PermissionGate } from '../../components/common/PermissionGate';
+import { Permission } from '../../types/rbac';
 import { ShareModal } from '../../components/workflows/ShareModal';
 import { Workflow, WorkflowExecution } from '../../types';
 
@@ -252,13 +253,13 @@ export function WorkflowViewer() {
           </div>
 
           <div className="flex items-center gap-3">
-            <PermissionGate permission="workflow:execute">
+            <PermissionGate permission={Permission.WorkflowExecute}>
               <Button variant="primary" onClick={handleRun}>
                 <Play className="h-4 w-4 mr-2" />
                 Run Workflow
               </Button>
             </PermissionGate>
-            <PermissionGate permission="workflow:edit">
+            <PermissionGate permission={Permission.WorkflowEdit}>
               <Button variant="secondary" onClick={handleEdit}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
@@ -268,7 +269,7 @@ export function WorkflowViewer() {
               <Share2 className="h-4 w-4 mr-2" />
               Share
             </Button>
-            <PermissionGate permission="analytics:view">
+            <PermissionGate permission={Permission.AnalyticsView}>
               <Button variant="secondary" onClick={() => navigate(`/app/workflows/${workflowId}/analytics`)}>
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Analytics
@@ -295,7 +296,7 @@ export function WorkflowViewer() {
                     animate={{ opacity: 1, y: 0 }}
                     className="absolute right-0 top-full mt-2 w-48 bg-card border border-border rounded-lg shadow-xl py-2 z-50"
                   >
-                    <PermissionGate permission="workflow:create">
+                    <PermissionGate permission={Permission.WorkflowCreate}>
                       <button
                         onClick={handleDuplicate}
                         className="w-full flex items-center gap-3 px-4 py-2 hover:bg-muted transition-colors text-left"
@@ -311,7 +312,7 @@ export function WorkflowViewer() {
                       <Download className="h-4 w-4" />
                       <span className="text-sm">Export</span>
                     </button>
-                    <PermissionGate permission="workflow:delete">
+                    <PermissionGate permission={Permission.WorkflowDelete}>
                       <>
                         <div className="my-1 border-t border-border" />
                         <button
@@ -344,7 +345,7 @@ export function WorkflowViewer() {
                 <p className="text-sm text-muted-foreground mb-6">
                   This workflow doesn't have a visual definition yet. Click "Edit" to start building your workflow.
                 </p>
-                <PermissionGate permission="workflow:edit">
+                <PermissionGate permission={Permission.WorkflowEdit}>
                   <Button variant="primary" onClick={handleEdit}>
                     <Edit className="h-4 w-4 mr-2" />
                     Start Building

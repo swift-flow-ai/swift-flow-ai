@@ -1,6 +1,12 @@
-import { useAuth } from './useAuth';
-import { useWorkspace } from './useWorkspace';
-import { Permission, hasPermission, hasAnyPermission, hasAllPermissions, Role } from '../types/rbac';
+import { useAuth } from "./useAuth";
+import { useWorkspace } from "./useWorkspace";
+import {
+  Permission,
+  hasPermission,
+  hasAnyPermission,
+  hasAllPermissions,
+  Role,
+} from "../types/rbac";
 
 export function usePermissions() {
   const { user } = useAuth();
@@ -8,11 +14,11 @@ export function usePermissions() {
 
   // Get user's role in current workspace
   const getUserRole = (): Role => {
-    if (!user || !currentWorkspace) return 'guest';
-    
+    if (!user || !currentWorkspace) return Role.Guest;
+
     // Find user's membership in current workspace
-    const member = currentWorkspace.members?.find(m => m.id === user.id);
-    return (member?.role as Role) || 'guest';
+    const member = currentWorkspace.members?.find((m) => m.id === user.id);
+    return (member?.role as Role) || Role.Guest;
   };
 
   const userRole = getUserRole();
@@ -38,14 +44,14 @@ export function usePermissions() {
     // In production, this would also check workflow-level permissions
     // workflowId will be used when implementing granular workflow permissions
     void workflowId; // Suppress unused warning - will be used in future implementation
-    return can('workflow:view');
+    return can(Permission.WorkflowView);
   };
 
   // Check if user is owner
-  const isOwner = userRole === 'owner';
+  const isOwner = userRole === Role.Owner;
 
   // Check if user is admin or owner
-  const isAdminOrOwner = userRole === 'owner' || userRole === 'admin';
+  const isAdminOrOwner = userRole === Role.Owner || userRole === Role.Admin;
 
   return {
     userRole,
@@ -57,4 +63,3 @@ export function usePermissions() {
     isAdminOrOwner,
   };
 }
-

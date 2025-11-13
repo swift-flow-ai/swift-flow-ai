@@ -8,7 +8,7 @@ import Input from '../../components/common/Input';
 import { ConfirmDialog } from '../../components/common';
 import { Avatar } from '../../components/common/Avatar';
 import { Badge } from '../../components/common/Badge';
-import { getRoleBadgeColor } from '../../types/rbac';
+import { getRoleBadgeColor, Role } from '../../types/rbac';
 import { 
   Users, 
   UserPlus, 
@@ -573,7 +573,7 @@ function MembersTable({ members, user, isAdmin, openMenuId, setOpenMenuId, handl
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(member.role)}`}>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(member.role as Role)}`}>
                       <RoleIcon className="h-3 w-3" />
                       {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
                     </span>

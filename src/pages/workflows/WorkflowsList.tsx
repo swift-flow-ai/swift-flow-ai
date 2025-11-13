@@ -10,6 +10,7 @@ import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Badge } from '../../components/common/Badge';
 import { Avatar } from '../../components/common/Avatar';
 import { PermissionGate } from '../../components/common/PermissionGate';
+import { Permission } from '../../types/rbac';
 import { ConfirmDialog } from '../../components/common';
 import { FolderTree } from '../../components/workflows/FolderTree';
 import { Container, EmptyState } from '../../components/common';
@@ -166,7 +167,7 @@ export function WorkflowsList() {
               Manage and monitor your automation workflows
             </p>
           </div>
-          <PermissionGate permission="workflow:create">
+          <PermissionGate permission={Permission.WorkflowCreate}>
             <Button 
               onClick={() => navigate('/app/workflows/new')}
               variant="primary"
