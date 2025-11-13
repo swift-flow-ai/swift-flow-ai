@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw';
 import { mockTeamMembers } from '../data/team';
 import { mockTeamPools } from '../data/pools';
 import { config } from '../../config';
+import type { TeamPool, TeamMember } from '../../types/workspace';
 
 const apiUrl = config.apiBaseUrl;
 
@@ -33,12 +34,14 @@ interface UpdatePoolBody {
 
 interface AddMemberToPoolBody {
   userId: string;
+  memberIds?: string[];
 }
 
 interface InviteMemberBody {
   email: string;
   role: string;
   name?: string;
+  poolIds?: string[];
 }
 
 interface UpdateMemberBody {
@@ -98,11 +101,11 @@ export const teamHandlers = [
     const body = await request.json() as CreatePoolBody;
     console.log('🔷 MSW: POST /workspaces/:workspaceId/pools', { body });
     
-    const newPool = {
+    const newPool: TeamPool = {
       id: `pool_${Date.now()}`,
       name: body.name,
       description: body.description,
-      type: body.type || 'custom',
+      type: (body.type || 'custom') as 'functional' | 'approval' | 'project' | 'custom',
       color: body.color || '#6b7280',
       icon: body.icon || '👥',
       memberIds: body.memberIds || [],
@@ -148,9 +151,17 @@ export const teamHandlers = [
       );
     }
     
-    const updatedPool = {
-      ...mockTeamPools[poolIndex],
-      ...body,
+    const existingPool = mockTeamPools[poolIndex];
+    const updatedPool: TeamPool = {
+      ...existingPool,
+      ...(body.name && { name: body.name }),
+      ...(body.description && { description: body.description }),
+      settings: {
+        autoAssignment: body.settings?.autoAssignment ?? existingPool.settings.autoAssignment,
+        roundRobin: body.settings?.roundRobin ?? existingPool.settings.roundRobin,
+        loadBalancing: body.settings?.loadBalancing ?? existingPool.settings.loadBalancing,
+        notifyOnAssignment: body.settings?.notifyOnAssignment ?? existingPool.settings.notifyOnAssignment,
+      },
       updatedAt: new Date().toISOString(),
     };
     
@@ -249,13 +260,13 @@ export const teamHandlers = [
     const body = await request.json() as InviteMemberBody;
     console.log('🔷 MSW: POST /workspaces/:workspaceId/members/invite', { body });
     
-    const newMember = {
+    const newMember: TeamMember = {
       id: `usr_${Date.now()}`,
       name: body.name || body.email.split('@')[0],
       email: body.email,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${body.email}`,
-      role: body.role || 'viewer',
-      status: 'invited' as const,
+      role: (body.role || 'viewer') as 'owner' | 'admin' | 'member' | 'viewer' | 'guest',
+      status: 'invited',
       stats: {
         workflowsCreated: 0,
         approvalsHandled: 0,
@@ -289,9 +300,11 @@ export const teamHandlers = [
       );
     }
     
+    const existingMember = mockTeamMembers[memberIndex];
     mockTeamMembers[memberIndex] = {
-      ...mockTeamMembers[memberIndex],
-      ...body,
+      ...existingMember,
+      ...(body.role && { role: body.role as 'owner' | 'admin' | 'member' | 'viewer' | 'guest' }),
+      ...(body.status && { status: body.status as 'active' | 'inactive' | 'invited' }),
     };
     
     return HttpResponse.json({

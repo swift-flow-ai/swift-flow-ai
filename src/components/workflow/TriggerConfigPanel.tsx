@@ -146,8 +146,9 @@ export function TriggerConfigPanel({
                   property={property}
                   value={config[property.key]}
                   onChange={(value) => handleFieldChange(property.key, value)}
-                  error={errors[property.key]}
                   integrationId={integration.id}
+                  installedAppId={integration.id}
+                  allValues={config}
                 />
               ))}
             </div>

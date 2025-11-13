@@ -267,9 +267,10 @@ export const inboxHandlers = [
     const { itemId } = params;
     
     // Check if it's an approval ID (starts with 'apr_')
-    if (itemId && itemId.startsWith('apr_')) {
+    const itemIdStr = Array.isArray(itemId) ? itemId[0] : itemId;
+    if (itemIdStr && typeof itemIdStr === 'string' && itemIdStr.startsWith('apr_')) {
       const approvals = getApprovalsByWorkspace();
-      const approval = approvals.find(a => a.id === itemId);
+      const approval = approvals.find(a => a.id === itemIdStr);
       if (approval) {
         return HttpResponse.json(approvalToInboxItem(approval));
       }
@@ -277,7 +278,7 @@ export const inboxHandlers = [
     
     // Check mock items
     const mockItems = generateMockItems(200);
-    const mockItem = mockItems.find(item => item.id === itemId);
+    const mockItem = mockItems.find(item => item.id === itemIdStr);
     if (mockItem) {
       return HttpResponse.json(mockItem);
     }

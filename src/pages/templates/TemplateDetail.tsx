@@ -143,7 +143,9 @@ export function TemplateDetail() {
                 <div className="flex items-center gap-3">
                   <h1 className="text-3xl font-bold tracking-tight">{template.name}</h1>
                   {template.verified && (
-                    <CheckCircle className="h-6 w-6 text-primary" title="Verified template" />
+                    <div title="Verified template">
+                      <CheckCircle className="h-6 w-6 text-primary" />
+                    </div>
                   )}
                   {template.featured && (
                     <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary text-primary-foreground text-xs font-medium rounded-md">
@@ -201,8 +203,8 @@ export function TemplateDetail() {
         <h3 className="text-lg font-semibold mb-4">Workflow Preview</h3>
         <div className="h-96 bg-background rounded-lg border border-border">
           <ReactFlow
-            nodes={template.definition.nodes}
-            edges={template.definition.edges}
+            nodes={template.definition.nodes as any}
+            edges={template.definition.edges as any}
             nodeTypes={nodeTypes}
             fitView
             nodesDraggable={false}

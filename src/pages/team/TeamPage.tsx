@@ -429,7 +429,7 @@ export function TeamPage() {
           openMenuId={openMenuId}
           setOpenMenuId={setOpenMenuId}
           handleChangeRole={handleChangeRole}
-          handleRemoveMember={handleRemoveMemberClick}
+          handleRemoveMemberClick={handleRemoveMemberClick}
           getRoleIcon={getRoleIcon}
           getStatusBadgeClass={getStatusBadgeClass}
         />

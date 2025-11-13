@@ -11,14 +11,22 @@ export const auditHandlers = [
     const url = new URL(request.url);
     
     // Axios sends params as params[key]=value, so we need to check both formats
+    const userId = url.searchParams.get('userId') || url.searchParams.get('params[userId]');
+    const action = url.searchParams.get('action') || url.searchParams.get('params[action]');
+    const resourceType = url.searchParams.get('resourceType') || url.searchParams.get('params[resourceType]');
+    const severity = url.searchParams.get('severity') || url.searchParams.get('params[severity]');
+    const startDate = url.searchParams.get('startDate') || url.searchParams.get('params[startDate]');
+    const endDate = url.searchParams.get('endDate') || url.searchParams.get('params[endDate]');
+    const search = url.searchParams.get('search') || url.searchParams.get('params[search]');
+    
     const filters = {
-      userId: url.searchParams.get('userId') || url.searchParams.get('params[userId]'),
-      action: url.searchParams.get('action') || url.searchParams.get('params[action]'),
-      resourceType: url.searchParams.get('resourceType') || url.searchParams.get('params[resourceType]'),
-      severity: url.searchParams.get('severity') || url.searchParams.get('params[severity]'),
-      startDate: url.searchParams.get('startDate') || url.searchParams.get('params[startDate]'),
-      endDate: url.searchParams.get('endDate') || url.searchParams.get('params[endDate]'),
-      search: url.searchParams.get('search') || url.searchParams.get('params[search]'),
+      ...(userId && { userId }),
+      ...(action && { action }),
+      ...(resourceType && { resourceType }),
+      ...(severity && { severity }),
+      ...(startDate && { startDate }),
+      ...(endDate && { endDate }),
+      ...(search && { search }),
     };
 
     console.log('🔷 MSW: GET /workspaces/:workspaceId/audit-logs', {
@@ -72,12 +80,12 @@ export const auditHandlers = [
       const headers = ['Timestamp', 'User', 'Action', 'Resource Type', 'Resource Name', 'Severity', 'IP Address'];
       const rows = logs.map((log) => [
         log.timestamp,
-        log.userName,
+        log.actor.name,
         log.action,
-        log.resourceType,
-        log.resourceName,
+        log.resource.type,
+        log.resource.name,
         log.severity,
-        log.ipAddress || '',
+        log.actor.ipAddress || '',
       ]);
 
       const csv = [headers, ...rows].map((row) => row.join(',')).join('\n');
@@ -111,8 +119,8 @@ export const auditHandlers = [
     const url = new URL(request.url);
     
     const filters = {
-      startDate: url.searchParams.get('startDate'),
-      endDate: url.searchParams.get('endDate'),
+      startDate: url.searchParams.get('startDate') || undefined,
+      endDate: url.searchParams.get('endDate') || undefined,
     };
 
     console.log('🔷 MSW: GET /workspaces/:workspaceId/audit-logs/stats', {
@@ -133,20 +141,20 @@ export const auditHandlers = [
       byAction[log.action] = (byAction[log.action] || 0) + 1;
 
       // By resource type
-      byResourceType[log.resourceType] = (byResourceType[log.resourceType] || 0) + 1;
+      byResourceType[log.resource.type] = (byResourceType[log.resource.type] || 0) + 1;
 
       // By severity
       bySeverity[log.severity] = (bySeverity[log.severity] || 0) + 1;
 
       // By user
-      if (!userCounts[log.userId]) {
-        userCounts[log.userId] = {
-          userName: log.userName,
-          userEmail: log.userEmail,
+      if (!userCounts[log.actor.id]) {
+        userCounts[log.actor.id] = {
+          userName: log.actor.name,
+          userEmail: log.actor.email,
           count: 0,
         };
       }
-      userCounts[log.userId].count++;
+      userCounts[log.actor.id].count++;
     });
 
     const byUser = Object.entries(userCounts).map(([userId, data]) => ({

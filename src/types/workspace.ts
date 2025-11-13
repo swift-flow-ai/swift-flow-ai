@@ -185,7 +185,9 @@ export interface Approval {
   decidedBy?: {
     id: string;
     name: string;
+    avatar?: string;
   };
+  decisionComment?: string;
 }
 
 // Integration types

@@ -72,19 +72,19 @@ export function TestResultPanel({
               exit={{ height: 0, opacity: 0 }}
               className="mt-2 pt-2 border-t border-border/50"
             >
-              {result.error && (
+              {result.error ? (
                 <div className="text-xs text-red-600 dark:text-red-400 mb-2">
-                  {result.error}
+                  {String(result.error)}
                 </div>
-              )}
-              {result.output && (
+              ) : null}
+              {result.output ? (
                 <div className="text-xs text-muted-foreground">
                   <pre className="whitespace-pre-wrap break-all">
-                    {JSON.stringify(result.output, null, 2).slice(0, 200)}
-                    {JSON.stringify(result.output).length > 200 && '...'}
+                    {String(JSON.stringify(result.output, null, 2).slice(0, 200))}
+                    {String(JSON.stringify(result.output)).length > 200 && '...'}
                   </pre>
                 </div>
-              )}
+              ) : null}
             </motion.div>
           )}
         </AnimatePresence>
@@ -141,7 +141,7 @@ export function TestResultPanel({
       {/* Content */}
       <div className="p-4 max-h-[400px] overflow-y-auto">
         {/* Error Message */}
-        {result.error && (
+        {result.error ? (
           <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
             <div className="flex items-start gap-2">
               <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
@@ -150,15 +150,15 @@ export function TestResultPanel({
                   Error
                 </div>
                 <div className="text-sm text-red-600/80 dark:text-red-400/80">
-                  {result.error}
+                  {String(result.error)}
                 </div>
               </div>
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Output */}
-        {result.output && (
+        {result.output ? (
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold">Output</h4>
@@ -176,7 +176,7 @@ export function TestResultPanel({
               </pre>
             </div>
           </div>
-        )}
+        ) : null}
 
         {/* Success with no output */}
         {result.success && !result.output && (

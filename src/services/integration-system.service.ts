@@ -50,6 +50,7 @@ export type IntegrationCategory =
   | "ai"
   | "mcp"
   | "utilities"
+  | "triggers"
   | "other";
 
 export interface AuthConfig {

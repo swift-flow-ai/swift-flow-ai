@@ -35,7 +35,7 @@ export const auditService = {
         responseType: 'blob',
       }
     );
-    return response.data;
+    return response.data as Blob;
   },
 
   // Get audit log statistics
@@ -53,6 +53,12 @@ export const auditService = {
       `/workspaces/${workspaceId}/audit-logs/stats`,
       { params: filters }
     );
-    return response.data;
+    return response.data as {
+      totalLogs: number;
+      byAction: Record<string, number>;
+      byResourceType: Record<string, number>;
+      bySeverity: Record<string, number>;
+      byUser: Array<{ userId: string; userName: string; count: number }>;
+    };
   },
 };
