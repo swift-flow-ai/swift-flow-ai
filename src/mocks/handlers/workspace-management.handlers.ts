@@ -2,6 +2,7 @@ import { http, HttpResponse, delay } from 'msw';
 import { config } from '../../config';
 import { mockWorkspaces } from '../data/workspaces';
 import type { Workspace } from '../../types/workspace';
+import { Role } from '../../types/rbac';
 
 // In-memory workspace storage (extends mock data)
 const workspaces: Workspace[] = [...mockWorkspaces];
@@ -44,7 +45,7 @@ export const workspaceManagementHandlers = [
       name,
       slug,
       logo: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}`,
-      role: 'admin',
+      role: Role.Admin,
       memberCount: 1,
       activeWorkflows: 0,
       pendingApprovals: 0,

@@ -4,6 +4,7 @@ import {
   Activity,
   Task,
 } from "../../types/workspace";
+import { Role } from "../../types/rbac";
 
 // Helper function to generate random lastActiveAt time (between 5 minutes and 7 days ago)
 const getRandomLastActiveAt = (): string => {
@@ -18,7 +19,7 @@ export const mockWorkspaces: Workspace[] = [
     slug: "vercel",
     logo: "https://logo.clearbit.com/vercel.com",
     color: "#000000",
-    role: "owner",
+    role: Role.Owner,
     memberCount: 15,
     activeWorkflows: 0,
     pendingApprovals: 0,
@@ -32,7 +33,7 @@ export const mockWorkspaces: Workspace[] = [
     slug: "stripe",
     logo: "https://logo.clearbit.com/stripe.com",
     color: "#635bff",
-    role: "member",
+    role: Role.Member,
     memberCount: 8,
     activeWorkflows: 0,
     pendingApprovals: 0,
@@ -46,7 +47,7 @@ export const mockWorkspaces: Workspace[] = [
     slug: "linear",
     logo: "https://logo.clearbit.com/linear.app",
     color: "#5e6ad2",
-    role: "viewer",
+    role: Role.Viewer,
     memberCount: 12,
     activeWorkflows: 0,
     pendingApprovals: 0,

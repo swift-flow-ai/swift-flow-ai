@@ -82,7 +82,7 @@ export function TeamPage() {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [pools, setPools] = useState<TeamPool[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [roleFilter, setRoleFilter] = useState<'all' | 'owner' | 'admin' | 'member' | 'viewer' | 'guest'>('all');
+  const [roleFilter, setRoleFilter] = useState<'all' | Role>('all');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreatePoolModal, setShowCreatePoolModal] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -405,15 +405,15 @@ export function TeamPage() {
               <Filter className="h-4 w-4 text-muted-foreground" />
               <select
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value as 'all' | 'owner' | 'admin' | 'member' | 'viewer' | 'guest')}
+                onChange={(e) => setRoleFilter(e.target.value as 'all' | Role)}
                 className="px-3 py-2 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="all">All Roles</option>
-                <option value="owner">Owners</option>
-                <option value="admin">Admins</option>
-                <option value="member">Members</option>
-                <option value="viewer">Viewers</option>
-                <option value="guest">Guests</option>
+                <option value={Role.Owner}>Owners</option>
+                <option value={Role.Admin}>Admins</option>
+                <option value={Role.Member}>Members</option>
+                <option value={Role.Viewer}>Viewers</option>
+                <option value={Role.Guest}>Guests</option>
               </select>
             </div>
           )}

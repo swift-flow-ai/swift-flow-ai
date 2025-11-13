@@ -1,11 +1,13 @@
 // Workspace types
+import { Role } from "./rbac";
+
 export interface Workspace {
   id: string;
   name: string;
   slug: string;
   logo?: string;
   color?: string; // Workspace theme color (hex code)
-  role: "owner" | "admin" | "member" | "viewer" | "guest";
+  role: Role;
   memberCount: number;
   activeWorkflows: number;
   pendingApprovals: number;
