@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../hooks/useWorkspace';
@@ -6,18 +7,50 @@ import { workflowService } from '../../services/workflow.service';
 import { folderService } from '../../services/folder.service';
 import { Workflow } from '../../types/workspace';
 import { WorkflowFolder } from '../../types/collaboration';
-import { LoadingSpinner } from '../../components/common/LoadingSpinner';
-import { Badge } from '../../components/common/Badge';
-import { Avatar } from '../../components/common/Avatar';
-import { PermissionGate } from '../../components/common/PermissionGate';
+import {
+  Container,
+  Card,
+  Button,
+  Input,
+  Badge,
+  Avatar,
+  EmptyState,
+  LoadingSpinner,
+  PermissionGate,
+  ConfirmDialog,
+} from '../../components/common';
 import { Permission } from '../../types/rbac';
-import { ConfirmDialog } from '../../components/common';
 import { FolderTree } from '../../components/workflows/FolderTree';
-import { Container, EmptyState } from '../../components/common';
-import Card from '@/components/common/Card';
-import Button from '@/components/common/Button';
-import Input from '@/components/common/Input';
-import { Zap, Plus, Search, Play, Pause, Archive, FolderPlus, X, MessageSquare, Users2, FileText, Share2, Copy, Check, Link as LinkIcon } from 'lucide-react';
+import {
+  Zap,
+  Plus,
+  Search,
+  Play,
+  Pause,
+  Archive,
+  FolderPlus,
+  X,
+  MessageSquare,
+  Share2,
+  Copy,
+  Check,
+  Link as LinkIcon,
+  Grid3x3,
+  List,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Edit,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { useDebounce } from '../../hooks/useDebounce';
+
+const DEFAULT_ITEMS_PER_PAGE = 50;
+const ITEM_HEIGHT = 72; // Compact row height
+const DEBOUNCE_MS = 300;
+const ITEMS_PER_PAGE_OPTIONS = [25, 50, 100, 200];
+
+type ViewMode = 'list' | 'grid';
 
 export function WorkflowsList() {
   const navigate = useNavigate();
@@ -25,9 +58,15 @@ export function WorkflowsList() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [folders, setFolders] = useState<WorkflowFolder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const [filter, setFilter] = useState<string>('all');
   const [search, setSearch] = useState('');
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [itemsPerPage, setItemsPerPage] = useState<number>(DEFAULT_ITEMS_PER_PAGE);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [newFolderParentId, setNewFolderParentId] = useState<string | null>(null);
   const [showShareFolderModal, setShowShareFolderModal] = useState(false);
@@ -35,35 +74,60 @@ export function WorkflowsList() {
   const [showDeleteFolderDialog, setShowDeleteFolderDialog] = useState(false);
   const [deletingFolderId, setDeletingFolderId] = useState<string | null>(null);
 
-  const loadWorkflows = useCallback(async () => {
-    if (!currentWorkspace) return;
-    
-    try {
-      setIsLoading(true);
-      const params: Record<string, string> = {};
-      if (filter !== 'all') params.status = filter;
-      if (search) params.search = search;
-      
-      const data = await workflowService.getWorkflows(currentWorkspace.id, params);
-      setWorkflows(data.workflows);
-      
-      console.log('Loaded workflows:', {
-        filter,
-        search,
-        count: data.workflows.length,
-        total: data.total,
-        workflows: data.workflows.map(w => ({ id: w.id, name: w.name, status: w.status }))
-      });
-    } catch (error) {
-      console.error('Failed to load workflows:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentWorkspace, filter, search]);
+  const debouncedSearch = useDebounce(search, DEBOUNCE_MS);
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const virtualizer = useVirtualizer({
+    count: workflows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => ITEM_HEIGHT,
+    overscan: 10,
+  });
+
+  const loadWorkflows = useCallback(
+    async (page: number = 1, append: boolean = false) => {
+      if (!currentWorkspace) return;
+
+      try {
+        if (append) {
+          setIsLoadingMore(true);
+        } else {
+          setIsLoading(true);
+          setWorkflows([]);
+          setCurrentPage(1);
+        }
+
+        const params: Record<string, string | number> = {
+          page,
+          limit: itemsPerPage,
+        };
+        if (filter !== 'all') params.status = filter;
+        if (debouncedSearch) params.search = debouncedSearch;
+
+        const data = await workflowService.getWorkflows(currentWorkspace.id, params);
+        setTotal(data.total);
+
+        if (append) {
+          setWorkflows((prev) => [...prev, ...data.workflows]);
+        } else {
+          setWorkflows(data.workflows);
+        }
+
+        setHasMore(data.workflows.length === itemsPerPage && data.workflows.length < data.total);
+        setCurrentPage(page);
+      } catch (error) {
+        console.error('Failed to load workflows:', error);
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [currentWorkspace, filter, debouncedSearch, itemsPerPage]
+  );
 
   const loadFolders = useCallback(async () => {
     if (!currentWorkspace) return;
-    
+
     try {
       const data = await folderService.getFolders(currentWorkspace.id);
       setFolders(data);
@@ -74,14 +138,18 @@ export function WorkflowsList() {
 
   useEffect(() => {
     if (currentWorkspace) {
-      loadWorkflows();
+      loadWorkflows(1, false);
       loadFolders();
     }
   }, [currentWorkspace, loadWorkflows, loadFolders]);
 
+  useEffect(() => {
+    loadWorkflows(1, false);
+  }, [filter, debouncedSearch, itemsPerPage]);
+
   // Filter workflows by folder
-  const filteredWorkflows = workflows.filter(w => {
-    if (selectedFolderId === null) return true; // Show all when no folder selected
+  const filteredWorkflows = workflows.filter((w) => {
+    if (selectedFolderId === null) return true;
     return w.folderId === selectedFolderId;
   });
 
@@ -97,7 +165,7 @@ export function WorkflowsList() {
 
   const handleDeleteFolderConfirm = async () => {
     if (!currentWorkspace || !deletingFolderId) return;
-    
+
     try {
       await folderService.deleteFolder(currentWorkspace.id, deletingFolderId);
       await loadFolders();
@@ -113,7 +181,14 @@ export function WorkflowsList() {
     setShowShareFolderModal(true);
   };
 
-  const statusVariants = {
+  type StatusVariantsType = {
+    active: { variant: 'success'; icon: typeof Play };
+    draft: { variant: 'default'; icon: typeof Pause };
+    paused: { variant: 'warning'; icon: typeof Pause };
+    archived: { variant: 'default'; icon: typeof Archive };
+  };
+
+  const statusVariants: StatusVariantsType = {
     active: { variant: 'success' as const, icon: Play },
     draft: { variant: 'default' as const, icon: Pause },
     paused: { variant: 'warning' as const, icon: Pause },
@@ -129,8 +204,12 @@ export function WorkflowsList() {
     custom: 'bg-gray-500/10 text-gray-500',
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
+  if (isLoading && workflows.length === 0) {
+    return (
+      <Container size="xl" className="flex items-center justify-center min-h-[60vh]">
+        <LoadingSpinner />
+      </Container>
+    );
   }
 
   return (
@@ -158,195 +237,359 @@ export function WorkflowsList() {
       </motion.div>
 
       {/* Main Content */}
-      <div className="flex-1 space-y-6">
+      <div className="flex-1 space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Workflows</h1>
-            <p className="text-muted-foreground">
-              Manage and monitor your automation workflows
+            <h1 className="text-3xl font-bold mb-1">Workflows</h1>
+            <p className="text-muted-foreground text-sm">
+              {total > 0 ? `${total.toLocaleString()} workflow${total !== 1 ? 's' : ''}` : 'Manage and monitor your automation workflows'}
             </p>
           </div>
-          <PermissionGate permission={Permission.WorkflowCreate}>
-            <Button 
-              onClick={() => navigate('/app/workflows/new')}
-              variant="primary"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Workflow
-            </Button>
-          </PermissionGate>
-        </div>
-
-      {/* Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Input
-            type="text"
-            placeholder="Search workflows..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-          />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => setFilter('all')}
-            variant={filter === 'all' ? 'primary' : 'ghost'}
-            size="sm"
-          >
-            All
-            {filter === 'all' && (
-              <Badge variant="info" className="ml-2">
-                {workflows.length}
-              </Badge>
-            )}
-          </Button>
-          <Button
-            onClick={() => setFilter('active')}
-            variant={filter === 'active' ? 'primary' : 'ghost'}
-            size="sm"
-          >
-            Active
-            {filter === 'active' && (
-              <Badge variant="info" className="ml-2">
-                {workflows.length}
-              </Badge>
-            )}
-          </Button>
-          <Button
-            onClick={() => setFilter('draft')}
-            variant={filter === 'draft' ? 'primary' : 'ghost'}
-            size="sm"
-          >
-            Draft
-            {filter === 'draft' && (
-              <Badge variant="info" className="ml-2">
-                {workflows.length}
-              </Badge>
-            )}
-          </Button>
-          <Button
-            onClick={() => setFilter('paused')}
-            variant={filter === 'paused' ? 'primary' : 'ghost'}
-            size="sm"
-          >
-            Paused
-            {filter === 'paused' && (
-              <Badge variant="info" className="ml-2">
-                {workflows.length}
-              </Badge>
-            )}
-          </Button>
-        </div>
-      </div>
-
-      {/* Workflows Grid */}
-      {filteredWorkflows.length === 0 ? (
-        <EmptyState
-          icon={Zap}
-          title="No workflows found"
-          description={selectedFolderId ? "This folder is empty" : "Create your first workflow to automate your business processes"}
-          action={{
-            label: 'Create Workflow',
-            onClick: () => {},
-          }}
-        />
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredWorkflows.map((workflow, index) => {
-            const statusConfig = statusVariants[workflow.status];
-            const StatusIcon = statusConfig.icon;
-            
-            return (
-              <motion.div
-                key={workflow.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 border border-border rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded transition-colors ${
+                  viewMode === 'list'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-muted'
+                }`}
               >
-                <Card
-                  padding="lg"
-                  variant="default"
-                  hover
-                  onClick={() => navigate(`/app/workflows/${workflow.id}`)}
-                  className="group cursor-pointer"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
-                        {workflow.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-                        {workflow.description}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <Badge variant={statusConfig.variant} icon={StatusIcon}>
-                      {workflow.status}
-                    </Badge>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${categoryColors[workflow.category]}`}>
-                      {workflow.category}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Avatar 
-                        src={workflow.createdBy.avatar} 
-                        alt={workflow.createdBy.name}
-                        size="sm"
-                        className="h-5 w-5"
-                      />
-                      <span>{workflow.createdBy.name}</span>
-                    </div>
-                    <span>v{workflow.version}</span>
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4 text-xs">
-                    <div>
-                      <div className="text-muted-foreground mb-1">Runs</div>
-                      <div className="font-medium">{workflow.stats.totalRuns}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground mb-1">Success Rate</div>
-                      <div className="font-medium">{workflow.stats.successRate}%</div>
-                    </div>
-                  </div>
-
-                  {/* Collaboration Indicators */}
-                  {(workflow.commentCount || workflow.shares?.length || workflow.status === 'draft') && (
-                    <div className="mt-3 pt-3 border-t flex items-center gap-3 text-xs text-muted-foreground">
-                      {workflow.status === 'draft' && (
-                        <div className="flex items-center gap-1 text-yellow-600">
-                          <FileText className="h-3 w-3" />
-                          <span>Draft</span>
-                        </div>
-                      )}
-                      {workflow.commentCount && workflow.commentCount > 0 && (
-                        <div className="flex items-center gap-1">
-                          <MessageSquare className="h-3 w-3" />
-                          <span>{workflow.commentCount}</span>
-                        </div>
-                      )}
-                      {workflow.shares && workflow.shares.length > 0 && (
-                        <div className="flex items-center gap-1">
-                          <Users2 className="h-3 w-3" />
-                          <span>{workflow.shares.length}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Card>
-              </motion.div>
-            );
-          })}
+                <List className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'hover:bg-muted'
+                }`}
+              >
+                <Grid3x3 className="h-4 w-4" />
+              </button>
+            </div>
+            <PermissionGate permission={Permission.WorkflowCreate}>
+              <Button onClick={() => navigate('/app/workflows/new')} variant="primary">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Workflow
+              </Button>
+            </PermissionGate>
+          </div>
         </div>
-      )}
+
+        {/* Filters */}
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-md">
+            <Input
+              type="text"
+              placeholder="Search workflows..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          </div>
+
+          <div className="flex items-center gap-2">
+            {(['all', 'active', 'draft', 'paused'] as const).map((status) => (
+              <Button
+                key={status}
+                onClick={() => setFilter(status)}
+                variant={filter === status ? 'primary' : 'ghost'}
+                size="sm"
+              >
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Workflows List/Grid */}
+        {filteredWorkflows.length === 0 && !isLoading ? (
+          <EmptyState
+            icon={Zap}
+            title="No workflows found"
+            description={
+              selectedFolderId
+                ? 'This folder is empty'
+                : 'Create your first workflow to automate your business processes'
+            }
+            action={{
+              label: 'Create Workflow',
+              onClick: () => navigate('/app/workflows/new'),
+            }}
+          />
+        ) : viewMode === 'list' ? (
+          <Card padding="none" variant="default" className="overflow-hidden">
+            <div
+              ref={parentRef}
+              className="h-[calc(100vh-320px)] overflow-auto"
+              style={{ contain: 'strict' }}
+            >
+              <div
+                style={{
+                  height: `${virtualizer.getTotalSize()}px`,
+                  width: '100%',
+                  position: 'relative',
+                }}
+              >
+                {virtualizer.getVirtualItems().map((virtualRow) => {
+                  const workflow = filteredWorkflows[virtualRow.index];
+                  if (!workflow) return null;
+
+                  return (
+                    <div
+                      key={virtualRow.key}
+                      data-index={virtualRow.index}
+                      ref={virtualizer.measureElement}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      <WorkflowRow
+                        workflow={workflow}
+                        statusVariants={statusVariants}
+                        categoryColors={categoryColors}
+                        onNavigate={() => navigate(`/app/workflows/${workflow.id}`)}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Pagination Footer */}
+            {total > 0 && (
+              <div className="border-t border-border px-6 py-3 flex items-center justify-between bg-muted/30">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Items per page:</span>
+                  <select
+                    value={itemsPerPage}
+                    onChange={(e) => {
+                      setItemsPerPage(Number(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                    className="text-xs border border-border rounded px-2 py-1 bg-background"
+                  >
+                    {ITEMS_PER_PAGE_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => loadWorkflows(Math.max(1, currentPage - 1), false)}
+                    disabled={currentPage === 1}
+                    variant="ghost"
+                    size="sm"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-xs text-muted-foreground px-2">
+                    Page {currentPage} of {Math.ceil(total / itemsPerPage)}
+                  </span>
+                  <Button
+                    onClick={() => loadWorkflows(currentPage + 1, false)}
+                    disabled={!hasMore}
+                    variant="ghost"
+                    size="sm"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Loading More Indicator */}
+            {isLoadingMore && (
+              <div className="flex items-center justify-center py-3 border-t border-border">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground mr-2" />
+                <span className="text-xs text-muted-foreground">Loading more...</span>
+              </div>
+            )}
+          </Card>
+        ) : (
+          <>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filteredWorkflows.map((workflow, index) => {
+                const statusConfig = statusVariants[workflow.status];
+                const StatusIcon = statusConfig.icon;
+
+                return (
+                  <motion.div
+                    key={workflow.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.02 }}
+                  >
+                    <Card
+                      padding="none"
+                      variant="default"
+                      hover
+                      onClick={() => navigate(`/app/workflows/${workflow.id}`)}
+                      className="group cursor-pointer overflow-hidden h-full flex flex-col transition-all duration-200 hover:shadow-md hover:border-primary/30"
+                    >
+                      {/* Compact Header */}
+                      <div className={`px-4 py-3 border-b ${
+                        workflow.status === 'active' 
+                          ? 'border-green-500/20 bg-green-500/5' 
+                          : workflow.status === 'draft'
+                          ? 'border-gray-500/20 bg-gray-500/5'
+                          : workflow.status === 'paused'
+                          ? 'border-yellow-500/20 bg-yellow-500/5'
+                          : 'border-blue-500/20 bg-blue-500/5'
+                      }`}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
+                            <div className={`p-1.5 rounded ${
+                              workflow.status === 'active'
+                                ? 'bg-green-500/20 text-green-600 dark:text-green-400'
+                                : workflow.status === 'draft'
+                                ? 'bg-gray-500/20 text-gray-600 dark:text-gray-400'
+                                : workflow.status === 'paused'
+                                ? 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400'
+                                : 'bg-blue-500/20 text-blue-600 dark:text-blue-400'
+                            } flex-shrink-0`}>
+                              <Zap className="h-3.5 w-3.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-semibold text-sm mb-0.5 group-hover:text-primary transition-colors truncate">
+                                {workflow.name}
+                              </h3>
+                              <div className="flex items-center gap-1.5">
+                                <Badge variant={statusConfig.variant} icon={StatusIcon} className="text-xs px-1.5 py-0">
+                                  {workflow.status}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">v{workflow.version}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Compact Content */}
+                      <div className="p-4 flex-1 flex flex-col">
+                        <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+                          {workflow.description || 'No description'}
+                        </p>
+
+                        {/* Stats - Inline */}
+                        <div className="flex items-center gap-4 mb-3 pb-3 border-b border-border">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs text-muted-foreground">Runs:</span>
+                            <span className="text-sm font-semibold text-foreground">
+                              {workflow.stats.totalRuns.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs text-muted-foreground">Success:</span>
+                            <span className={`text-sm font-semibold ${
+                              workflow.stats.successRate >= 95 
+                                ? 'text-green-600 dark:text-green-400'
+                                : workflow.stats.successRate >= 80
+                                ? 'text-yellow-600 dark:text-yellow-400'
+                                : 'text-red-600 dark:text-red-400'
+                            }`}>
+                              {workflow.stats.successRate}%
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Footer - Compact */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Avatar
+                              src={workflow.createdBy.avatar}
+                              alt={workflow.createdBy.name}
+                              size="xs"
+                            />
+                            <span className="text-xs text-muted-foreground truncate">
+                              {workflow.createdBy.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span
+                              className={`px-2 py-0.5 rounded text-xs font-medium ${categoryColors[workflow.category]}`}
+                            >
+                              {workflow.category}
+                            </span>
+                            {workflow.commentCount && workflow.commentCount > 0 && (
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <MessageSquare className="h-3 w-3" />
+                                <span>{workflow.commentCount}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Pagination Footer for Grid View */}
+            {total > 0 && (
+              <Card padding="md" variant="default" className="mt-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">Items per page:</span>
+                    <select
+                      value={itemsPerPage}
+                      onChange={(e) => {
+                        setItemsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className="text-xs border border-border rounded px-2 py-1 bg-background"
+                    >
+                      {ITEMS_PER_PAGE_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={() => loadWorkflows(Math.max(1, currentPage - 1), false)}
+                      disabled={currentPage === 1}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-xs text-muted-foreground px-2">
+                      Page {currentPage} of {Math.ceil(total / itemsPerPage)}
+                    </span>
+                    <Button
+                      onClick={() => loadWorkflows(currentPage + 1, false)}
+                      disabled={!hasMore}
+                      variant="ghost"
+                      size="sm"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Loading More Indicator for Grid View */}
+            {isLoadingMore && (
+              <div className="flex items-center justify-center py-4 mt-4">
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground mr-2" />
+                <span className="text-xs text-muted-foreground">Loading more...</span>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Create Folder Modal */}
@@ -365,7 +608,7 @@ export function WorkflowsList() {
       {showShareFolderModal && shareFolderId && (
         <FolderShareModal
           folderId={shareFolderId}
-          folderName={folders.find(f => f.id === shareFolderId)?.name || ''}
+          folderName={folders.find((f) => f.id === shareFolderId)?.name || ''}
           onClose={() => {
             setShowShareFolderModal(false);
             setShareFolderId(null);
@@ -388,6 +631,102 @@ export function WorkflowsList() {
         variant="danger"
       />
     </Container>
+  );
+}
+
+// Compact Workflow Row Component
+type StatusVariantsType = {
+  active: { variant: 'success'; icon: typeof Play };
+  draft: { variant: 'default'; icon: typeof Pause };
+  paused: { variant: 'warning'; icon: typeof Pause };
+  archived: { variant: 'default'; icon: typeof Archive };
+};
+
+function WorkflowRow({
+  workflow,
+  statusVariants,
+  categoryColors,
+  onNavigate,
+}: {
+  workflow: Workflow;
+  statusVariants: StatusVariantsType;
+  categoryColors: Record<string, string>;
+  onNavigate: () => void;
+}) {
+  const statusConfig = statusVariants[workflow.status];
+  const StatusIcon = statusConfig.icon;
+
+  return (
+    <div
+      onClick={onNavigate}
+      className="px-6 py-4 border-b border-border last:border-b-0 hover:bg-muted/50 transition-colors cursor-pointer group"
+    >
+      <div className="flex items-center gap-4">
+        {/* Status Badge */}
+        <Badge variant={statusConfig.variant} icon={StatusIcon} className="flex-shrink-0">
+          {workflow.status}
+        </Badge>
+
+        {/* Workflow Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-3 mb-1">
+            <h3 className="font-semibold text-sm group-hover:text-primary transition-colors truncate">
+              {workflow.name}
+            </h3>
+            <span
+              className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${categoryColors[workflow.category]}`}
+            >
+              {workflow.category}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
+            {workflow.description}
+          </p>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <Avatar
+                src={workflow.createdBy.avatar}
+                alt={workflow.createdBy.name}
+                size="xs"
+              />
+              <span>{workflow.createdBy.name}</span>
+            </div>
+            <span>•</span>
+            <span>{workflow.stats.totalRuns} runs</span>
+            <span>•</span>
+            <span>{workflow.stats.successRate}% success</span>
+            {workflow.commentCount && workflow.commentCount > 0 && (
+              <>
+                <span>•</span>
+                <div className="flex items-center gap-1">
+                  <MessageSquare className="h-3 w-3" />
+                  <span>{workflow.commentCount}</span>
+                </div>
+              </>
+            )}
+            <span>•</span>
+            <span className="text-xs">
+              Updated {format(new Date(workflow.updatedAt), 'MMM d, yyyy')}
+            </span>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              onNavigate();
+            }}
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Edit className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -456,24 +795,19 @@ function CreateFolderModal({ parentId, onClose, onSuccess }: CreateFolderModalPr
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Folder Name *
-            </label>
-            <input
+            <label className="block text-sm font-medium mb-2">Folder Name *</label>
+            <Input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., HR Workflows"
-              className="w-full px-4 py-2 rounded-lg bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 transition-all"
               required
               autoFocus
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Description
-            </label>
+            <label className="block text-sm font-medium mb-2">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -484,9 +818,7 @@ function CreateFolderModal({ parentId, onClose, onSuccess }: CreateFolderModalPr
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Color
-            </label>
+            <label className="block text-sm font-medium mb-2">Color</label>
             <div className="flex gap-2">
               {colors.map((c) => (
                 <button
@@ -506,21 +838,12 @@ function CreateFolderModal({ parentId, onClose, onSuccess }: CreateFolderModalPr
           </div>
 
           <div className="flex gap-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-              disabled={isSubmitting}
-            >
+            <Button type="button" onClick={onClose} variant="ghost" disabled={isSubmitting}>
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
-              disabled={isSubmitting || !name.trim()}
-            >
+            </Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting || !name.trim()}>
               {isSubmitting ? 'Creating...' : 'Create Folder'}
-            </button>
+            </Button>
           </div>
         </form>
       </motion.div>
@@ -528,7 +851,7 @@ function CreateFolderModal({ parentId, onClose, onSuccess }: CreateFolderModalPr
   );
 }
 
-// Folder Share Modal Component  
+// Folder Share Modal Component
 interface FolderShareModalProps {
   folderId: string;
   folderName: string;
@@ -537,7 +860,15 @@ interface FolderShareModalProps {
 
 function FolderShareModal({ folderId, folderName, onClose }: FolderShareModalProps) {
   const { currentWorkspace } = useWorkspace();
-  const [shareLinks, setShareLinks] = useState<Array<{ id: string; token: string; permission: string; accessCount: number; createdAt: string }>>([]);
+  const [shareLinks, setShareLinks] = useState<
+    Array<{
+      id: string;
+      token: string;
+      permission: string;
+      accessCount: number;
+      createdAt: string;
+    }>
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
 
@@ -545,7 +876,6 @@ function FolderShareModal({ folderId, folderName, onClose }: FolderShareModalPro
     if (!currentWorkspace) return;
     setIsLoading(true);
     try {
-      // Mock data for now - in real app would call API
       setShareLinks([]);
     } catch (error) {
       console.error('Failed to load folder shares:', error);
@@ -590,7 +920,10 @@ function FolderShareModal({ folderId, folderName, onClose }: FolderShareModalPro
               <Share2 className="h-5 w-5 text-primary" />
               Share Folder
             </h2>
-            <button onClick={onClose} className="p-1 hover:bg-muted rounded transition-colors">
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-muted rounded transition-colors"
+            >
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -603,33 +936,33 @@ function FolderShareModal({ folderId, folderName, onClose }: FolderShareModalPro
         <div className="flex-1 overflow-y-auto p-6">
           {isLoading ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+              <LoadingSpinner />
             </div>
           ) : (
             <div className="space-y-4">
               <div className="flex gap-2">
-                <button
+                <Button
                   onClick={() => handleGenerateLink('viewer')}
-                  className="flex-1 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-medium"
+                  variant="secondary"
+                  className="flex-1"
                 >
                   Generate Viewer Link
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => handleGenerateLink('editor')}
-                  className="flex-1 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-medium"
+                  variant="secondary"
+                  className="flex-1"
                 >
                   Generate Editor Link
-                </button>
+                </Button>
               </div>
 
               {shareLinks.length === 0 ? (
-                <div className="text-center py-8">
-                  <LinkIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-                  <p className="text-muted-foreground">No share links created yet</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Generate a link to share this folder
-                  </p>
-                </div>
+                <EmptyState
+                  icon={LinkIcon}
+                  title="No share links created yet"
+                  description="Generate a link to share this folder"
+                />
               ) : (
                 <div className="space-y-3">
                   {shareLinks.map((link) => (
@@ -643,28 +976,29 @@ function FolderShareModal({ folderId, folderName, onClose }: FolderShareModalPro
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <input
+                        <Input
                           type="text"
                           value={`${window.location.origin}/shared/folder/${link.token}`}
                           readOnly
-                          className="flex-1 px-3 py-2 rounded-lg bg-background border border-border text-sm"
+                          className="flex-1"
                         />
-                        <button
+                        <Button
                           onClick={() => handleCopyLink(link)}
-                          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center gap-2"
+                          variant="primary"
+                          size="sm"
                         >
                           {copiedLinkId === link.id ? (
                             <>
-                              <Check className="h-4 w-4" />
+                              <Check className="h-4 w-4 mr-2" />
                               Copied
                             </>
                           ) : (
                             <>
-                              <Copy className="h-4 w-4" />
+                              <Copy className="h-4 w-4 mr-2" />
                               Copy
                             </>
                           )}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -677,4 +1011,3 @@ function FolderShareModal({ folderId, folderName, onClose }: FolderShareModalPro
     </div>
   );
 }
-
