@@ -11,6 +11,7 @@ import { auditHandlers } from "./handlers/audit.handlers";
 import { teamHandlers } from "./handlers/team.handlers";
 import { folderHandlers } from "./handlers/folder.handlers";
 import { shareHandlers } from "./handlers/share.handlers";
+import { inboxHandlers } from "./handlers/inbox.handlers";
 
 // Combine all handlers
 // NOTE: Order matters! More specific routes must come before generic ones.
@@ -28,4 +29,5 @@ export const handlers = [
   ...teamHandlers,
   ...folderHandlers,
   ...shareHandlers,
+  ...inboxHandlers,
 ];

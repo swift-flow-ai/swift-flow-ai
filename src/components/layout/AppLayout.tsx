@@ -1,6 +1,6 @@
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Zap, 
@@ -27,6 +27,7 @@ import { useTheme } from '../../hooks/useTheme';
 import { Avatar } from '../common/Avatar';
 import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../utils';
+import { approvalService } from '../../services/approval.service';
 
 const navigation = [
   { name: 'Dashboard', href: '/app/dashboard', icon: LayoutDashboard },
@@ -40,6 +41,45 @@ const navigation = [
   { name: 'Team', href: '/app/team', icon: Users },
   { name: 'Workspace', href: '/app/workspace-settings', icon: Settings },
 ];
+
+function InboxBadge({ collapsed }: { collapsed?: boolean }) {
+  const { currentWorkspace } = useWorkspace();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!currentWorkspace) return;
+    
+    const loadUnreadCount = async () => {
+      try {
+        const data = await approvalService.getApprovals(currentWorkspace.id, { status: 'pending' });
+        // Count unread items (for now, count all pending approvals as unread)
+        // TODO: Add read/unread tracking to approvals
+        setUnreadCount(data.approvals.length);
+      } catch (error) {
+        console.error('Failed to load inbox count:', error);
+      }
+    };
+
+    loadUnreadCount();
+    const interval = setInterval(loadUnreadCount, 30000); // Refresh every 30s
+    
+    return () => clearInterval(interval);
+  }, [currentWorkspace]);
+
+  if (unreadCount === 0) return null;
+
+  if (collapsed) {
+    return (
+      <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-900" />
+    );
+  }
+
+  return (
+    <span className="ml-auto px-2 py-0.5 rounded-full bg-red-500 text-white text-xs font-bold min-w-[20px] text-center">
+      {unreadCount > 99 ? '99+' : unreadCount}
+    </span>
+  );
+}
 
 export function AppLayout() {
   const location = useLocation();
@@ -206,11 +246,11 @@ export function AppLayout() {
                     </div>
                     <div className="px-3 py-2 border-t border-border mt-2">
                       <Link 
-                        to="/app/notifications"
+                        to="/app/inbox"
                         className="text-sm text-primary hover:underline block"
                         onClick={() => setShowNotifications(false)}
                       >
-                        View all notifications
+                        View inbox
                       </Link>
                     </div>
                   </motion.div>
@@ -286,12 +326,14 @@ export function AppLayout() {
           <nav className="space-y-1">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + '/');
+              const isInbox = item.name === 'Inbox';
+              
               return (
                 <Link
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all",
+                    "relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all",
                     isActive 
                       ? "bg-primary/10 text-primary" 
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -302,17 +344,11 @@ export function AppLayout() {
                   <item.icon className="h-5 w-5 flex-shrink-0" />
                   {!sidebarCollapsed && (
                     <>
-                      {item.name}
-                      {item.name === 'Approvals' && currentWorkspace && currentWorkspace.pendingApprovals > 0 && (
-                        <span className="ml-auto px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 text-xs font-medium">
-                          {currentWorkspace.pendingApprovals}
-                        </span>
-                      )}
+                      <span className="flex-1">{item.name}</span>
+                      {isInbox && <InboxBadge />}
                     </>
                   )}
-                  {sidebarCollapsed && item.name === 'Approvals' && currentWorkspace && currentWorkspace.pendingApprovals > 0 && (
-                    <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-yellow-500" />
-                  )}
+                  {sidebarCollapsed && isInbox && <InboxBadge collapsed />}
                 </Link>
               );
             })}

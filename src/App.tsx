@@ -22,7 +22,6 @@ import { InboxDetail } from './pages/inbox/InboxDetail';
 import { TeamPage } from './pages/team/TeamPage';
 import { AppCenterPage } from './pages/appcenter/AppCenterPage';
 import { AppDetailPage } from './pages/appcenter/AppDetailPage';
-import { NotificationsPage } from './pages/notifications/NotificationsPage';
 import { TemplatesPage } from './pages/templates/TemplatesPage';
 import { TemplateDetail } from './pages/templates/TemplateDetail';
 // Old integration pages removed - redirected to App Center
@@ -102,7 +101,7 @@ function App() {
                 <Route path="appcenter" element={<AppCenterPage />} />
                 <Route path="appcenter/integration/:appId" element={<AppDetailPage />} />
                 <Route path="team" element={<TeamPage />} />
-                <Route path="notifications" element={<NotificationsPage />} />
+                <Route path="notifications" element={<Navigate to="/app/inbox" replace />} />
                 <Route path="workspace-settings" element={<WorkspaceSettings />} />
                 <Route path="profile" element={<ProfilePage />} />
               </Route>

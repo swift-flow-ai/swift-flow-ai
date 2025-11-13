@@ -11,4 +11,5 @@ export * from './team.handlers';
 export * from './audit.handlers';
 export * from './folder.handlers';
 export * from './share.handlers';
+export * from './inbox.handlers';
 
