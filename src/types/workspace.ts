@@ -1,6 +1,197 @@
 // Workspace types
 import { Role } from "./rbac";
 
+// Enums for type-safe string literals
+export enum WorkflowRunStatus {
+  Success = "success",
+  Failure = "failure",
+  Running = "running",
+  Waiting = "waiting",
+}
+
+export enum PendingItemType {
+  Approval = "approval",
+  Review = "review",
+  Error = "error",
+  ActionRequired = "action_required",
+}
+
+export enum Priority {
+  Low = "low",
+  Medium = "medium",
+  High = "high",
+  Critical = "critical",
+}
+
+export enum ActivityType {
+  WorkflowCompleted = "workflow_completed",
+  WorkflowFailed = "workflow_failed",
+  ApprovalNeeded = "approval_needed",
+  MemberJoined = "member_joined",
+  WorkflowCreated = "workflow_created",
+}
+
+export enum WorkflowStatus {
+  Active = "active",
+  Draft = "draft",
+  Paused = "paused",
+  Archived = "archived",
+}
+
+export enum WorkflowCategory {
+  HR = "hr",
+  Sales = "sales",
+  Support = "support",
+  Operations = "operations",
+  Finance = "finance",
+  Custom = "custom",
+}
+
+export enum ExecutionStatus {
+  Queued = "queued",
+  Running = "running",
+  Waiting = "waiting",
+  Completed = "completed",
+  Failed = "failed",
+  Cancelled = "cancelled",
+}
+
+export enum TriggerType {
+  Manual = "manual",
+  Webhook = "webhook",
+  Schedule = "schedule",
+  Api = "api",
+}
+
+export enum TraceStatus {
+  Pending = "pending",
+  Running = "running",
+  Completed = "completed",
+  Failed = "failed",
+  Skipped = "skipped",
+}
+
+export enum LogLevel {
+  Info = "info",
+  Warn = "warn",
+  Error = "error",
+  Debug = "debug",
+}
+
+export enum ApprovalStatus {
+  Pending = "pending",
+  Approved = "approved",
+  Rejected = "rejected",
+  Expired = "expired",
+}
+
+export enum ApprovalDecision {
+  Approve = "approve",
+  Reject = "reject",
+}
+
+export enum IntegrationCategory {
+  CRM = "crm",
+  Communication = "communication",
+  Payment = "payment",
+  Database = "database",
+  AI = "ai",
+  MCP = "mcp",
+  Utilities = "utilities",
+}
+
+export enum PricingModel {
+  Free = "free",
+  Paid = "paid",
+  Freemium = "freemium",
+}
+
+export enum AuthType {
+  OAuth2 = "oauth2",
+  ApiKey = "api_key",
+  Basic = "basic",
+  Custom = "custom",
+}
+
+export enum IntegrationStatus {
+  Connected = "connected",
+  Disconnected = "disconnected",
+  Error = "error",
+  Configuring = "configuring",
+}
+
+export enum TestStatus {
+  Success = "success",
+  Failed = "failed",
+}
+
+export enum FieldType {
+  Text = "text",
+  Password = "password",
+  Url = "url",
+  Select = "select",
+  Number = "number",
+  Email = "email",
+}
+
+export enum TemplateCreatorType {
+  System = "system",
+  User = "user",
+  Community = "community",
+}
+
+export enum ImpactLevel {
+  High = "high",
+  Medium = "medium",
+  Low = "low",
+}
+
+export enum NodeHealthStatus {
+  Healthy = "healthy",
+  Warning = "warning",
+  Critical = "critical",
+}
+
+export enum WorkflowNodeType {
+  Trigger = "trigger",
+  AIAgent = "ai_agent",
+  HumanTask = "human_task",
+  Logic = "logic",
+  Integration = "integration",
+  MCP = "mcp",
+  DataOp = "data_op",
+  Action = "action",
+  SmartRouting = "smart_routing",
+}
+
+export enum RecommendationType {
+  CostOptimization = "cost_optimization",
+  SpeedImprovement = "speed_improvement",
+  QualityEnhancement = "quality_enhancement",
+}
+
+export enum NotificationType {
+  Approval = "approval",
+  Mention = "mention",
+  WorkflowComplete = "workflow_complete",
+  WorkflowFailed = "workflow_failed",
+  Error = "error",
+  System = "system",
+}
+
+export enum MemberStatus {
+  Active = "active",
+  Invited = "invited",
+  Inactive = "inactive",
+}
+
+export enum PoolType {
+  Functional = "functional",
+  Approval = "approval",
+  Project = "project",
+  Custom = "custom",
+}
+
 export interface Workspace {
   id: string;
   name: string;
@@ -49,7 +240,7 @@ export interface WorkflowRun {
   id: string;
   workflowId: string;
   workflowName: string;
-  status: "success" | "failure" | "running" | "waiting";
+  status: WorkflowRunStatus;
   startedAt: string;
   completedAt?: string;
   duration?: number; // milliseconds
@@ -66,12 +257,12 @@ export interface WorkflowRun {
 
 export interface PendingItem {
   id: string;
-  type: "approval" | "review" | "error" | "action_required";
+  type: PendingItemType;
   title: string;
   description?: string;
   workflowId?: string;
   workflowName?: string;
-  priority: "low" | "medium" | "high" | "critical";
+  priority: Priority;
   dueAt?: string;
   createdAt: string;
   assignedTo?: {
@@ -83,12 +274,7 @@ export interface PendingItem {
 
 export interface Activity {
   id: string;
-  type:
-    | "workflow_completed"
-    | "workflow_failed"
-    | "approval_needed"
-    | "member_joined"
-    | "workflow_created";
+  type: ActivityType;
   title: string;
   description?: string;
   workflow?: {
@@ -108,8 +294,8 @@ export interface Workflow {
   id: string;
   name: string;
   description: string;
-  status: "active" | "draft" | "paused" | "archived";
-  category: "hr" | "sales" | "support" | "operations" | "finance" | "custom";
+  status: WorkflowStatus;
+  category: WorkflowCategory;
   version: number;
   folderId?: string | null;
   createdBy: {
@@ -137,16 +323,7 @@ export interface WorkflowDefinition {
 
 export interface WorkflowNode {
   id: string;
-  type:
-    | "trigger"
-    | "ai_agent"
-    | "human_task"
-    | "logic"
-    | "integration"
-    | "mcp"
-    | "data_op"
-    | "action"
-    | "smart_routing";
+  type: WorkflowNodeType;
   subtype: string;
   position: { x: number; y: number };
   config: Record<string, unknown>;
@@ -166,13 +343,7 @@ export interface WorkflowExecution {
   id: string;
   workflowId: string;
   workflowName: string;
-  status:
-    | "queued"
-    | "running"
-    | "waiting"
-    | "completed"
-    | "failed"
-    | "cancelled";
+  status: ExecutionStatus;
   progress: number;
   currentNode?: string;
   input: Record<string, unknown>;
@@ -188,7 +359,7 @@ export interface WorkflowExecution {
   estimatedCompletion?: string;
   duration?: string;
   triggeredBy: {
-    type: "manual" | "webhook" | "schedule" | "api";
+    type: TriggerType;
     user?: { id: string; name: string };
   };
 }
@@ -196,7 +367,7 @@ export interface WorkflowExecution {
 export interface ExecutionTrace {
   nodeId: string;
   nodeName: string;
-  status: "pending" | "running" | "completed" | "failed" | "skipped";
+  status: TraceStatus;
   startedAt?: string;
   completedAt?: string;
   duration?: number;
@@ -208,7 +379,7 @@ export interface ExecutionTrace {
 
 export interface ExecutionLog {
   timestamp: string;
-  level: "info" | "warn" | "error" | "debug";
+  level: LogLevel;
   message: string;
   metadata?: Record<string, unknown>;
 }
@@ -220,11 +391,11 @@ export interface Approval {
   executionId: string;
   title: string;
   description: string;
-  priority: "low" | "medium" | "high" | "critical";
-  status: "pending" | "approved" | "rejected" | "expired";
+  priority: Priority;
+  status: ApprovalStatus;
   data: Record<string, unknown>;
   aiRecommendation?: {
-    decision: "approve" | "reject";
+    decision: ApprovalDecision;
     confidence: number;
     reasoning: string;
     similarCases?: number;
@@ -259,28 +430,21 @@ export interface Integration {
   id: string;
   name: string;
   description: string;
-  category:
-    | "crm"
-    | "communication"
-    | "payment"
-    | "database"
-    | "ai"
-    | "mcp"
-    | "utilities";
+  category: IntegrationCategory;
   icon: string;
   rating: number;
   installs: number;
   featured: boolean;
-  pricing: "free" | "paid" | "freemium";
+  pricing: PricingModel;
   capabilities: string[];
-  authType: "oauth2" | "api_key" | "basic" | "custom";
+  authType: AuthType;
 }
 
 export interface InstalledIntegration {
   id: string;
   integrationId: string;
   name: string;
-  status: "connected" | "disconnected" | "error";
+  status: IntegrationStatus;
   config: Record<string, unknown>;
   usage: {
     callsThisMonth: number;
@@ -301,8 +465,8 @@ export interface Integration {
   appName: string;
   appIcon?: string;
   workspaceId: string;
-  status: "connected" | "disconnected" | "error" | "configuring";
-  authType: "oauth2" | "api_key" | "basic" | "custom";
+  status: IntegrationStatus;
+  authType: AuthType;
   config: {
     clientId?: string;
     scopes?: string[];
@@ -321,7 +485,7 @@ export interface Integration {
     connectedBy: string;
     connectedAt: string;
     lastTestedAt?: string;
-    lastTestStatus?: "success" | "failed";
+    lastTestStatus?: TestStatus;
     lastError?: string;
   };
   settings: {
@@ -337,8 +501,8 @@ export interface IntegrationApp {
   name: string;
   description: string;
   icon: string;
-  category: string;
-  authType: "oauth2" | "api_key" | "basic" | "custom";
+  category: IntegrationCategory;
+  authType: AuthType;
   authConfig: {
     authUrl?: string;
     tokenUrl?: string;
@@ -346,7 +510,7 @@ export interface IntegrationApp {
     requiredFields?: Array<{
       key: string;
       label: string;
-      type: "text" | "password" | "url" | "select";
+      type: FieldType;
       required: boolean;
       placeholder?: string;
       options?: string[];
@@ -372,7 +536,7 @@ export interface WorkflowTemplate {
   id: string;
   name: string;
   description: string;
-  category: "hr" | "sales" | "support" | "operations" | "finance" | "custom";
+  category: WorkflowCategory;
   icon?: string;
   thumbnail?: string;
   featured: boolean;
@@ -383,7 +547,7 @@ export interface WorkflowTemplate {
   variables: Array<{
     key: string;
     label: string;
-    type: "text" | "number" | "email" | "select";
+    type: FieldType;
     required: boolean;
     defaultValue?: string;
     options?: string[];
@@ -391,7 +555,7 @@ export interface WorkflowTemplate {
   createdBy: {
     id: string;
     name: string;
-    type: "system" | "user" | "community";
+    type: TemplateCreatorType;
   };
   tags: string[];
   createdAt: string;
@@ -443,7 +607,7 @@ export interface WorkspaceAnalytics {
     nodeId: string;
     nodeName: string;
     avgDelay: string;
-    impact: "high" | "medium" | "low";
+    impact: ImpactLevel;
     recommendation: string;
   }>;
   integrationMetrics?: Array<{
@@ -485,10 +649,10 @@ export interface WorkflowAnalytics {
     nodeName: string;
     avgTime: number;
     successRate: number;
-    status: "healthy" | "warning" | "critical";
+    status: NodeHealthStatus;
   }>;
   aiRecommendations: Array<{
-    type: "cost_optimization" | "speed_improvement" | "quality_enhancement";
+    type: RecommendationType;
     title: string;
     impact: string;
     confidence: number;
@@ -498,13 +662,7 @@ export interface WorkflowAnalytics {
 // Notification types
 export interface Notification {
   id: string;
-  type:
-    | "approval"
-    | "mention"
-    | "workflow_complete"
-    | "workflow_failed"
-    | "error"
-    | "system";
+  type: NotificationType;
   title: string;
   message: string;
   workspace: {
@@ -512,7 +670,7 @@ export interface Notification {
     name: string;
   };
   data?: Record<string, unknown>;
-  priority: "low" | "medium" | "high" | "critical";
+  priority: Priority;
   read: boolean;
   createdAt: string;
 }
@@ -523,8 +681,8 @@ export interface TeamMember {
   name: string;
   email: string;
   avatar?: string;
-  role: "owner" | "admin" | "member" | "viewer" | "guest";
-  status: "active" | "invited" | "inactive";
+  role: Role;
+  status: MemberStatus;
   stats: {
     workflowsCreated: number;
     approvalsHandled: number;
@@ -540,7 +698,7 @@ export interface TeamPool {
   id: string;
   name: string;
   description: string;
-  type: "functional" | "approval" | "project" | "custom";
+  type: PoolType;
   color?: string;
   icon?: string;
   memberIds: string[];

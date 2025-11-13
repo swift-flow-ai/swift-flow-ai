@@ -3,6 +3,8 @@ import { mockTeamMembers } from '../data/team';
 import { mockTeamPools } from '../data/pools';
 import { config } from '../../config';
 import type { TeamPool, TeamMember } from '../../types/workspace';
+import { PoolType, MemberStatus } from '../../types/workspace';
+import { Role } from '../../types/rbac';
 
 const apiUrl = config.apiBaseUrl;
 
@@ -105,7 +107,7 @@ export const teamHandlers = [
       id: `pool_${Date.now()}`,
       name: body.name,
       description: body.description,
-      type: (body.type || 'custom') as 'functional' | 'approval' | 'project' | 'custom',
+      type: (body.type || PoolType.Custom) as PoolType,
       color: body.color || '#6b7280',
       icon: body.icon || '👥',
       memberIds: body.memberIds || [],
@@ -265,8 +267,8 @@ export const teamHandlers = [
       name: body.name || body.email.split('@')[0],
       email: body.email,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${body.email}`,
-      role: (body.role || 'viewer') as 'owner' | 'admin' | 'member' | 'viewer' | 'guest',
-      status: 'invited',
+      role: (body.role || Role.Viewer) as Role,
+      status: MemberStatus.Invited,
       stats: {
         workflowsCreated: 0,
         approvalsHandled: 0,
@@ -303,8 +305,8 @@ export const teamHandlers = [
     const existingMember = mockTeamMembers[memberIndex];
     mockTeamMembers[memberIndex] = {
       ...existingMember,
-      ...(body.role && { role: body.role as 'owner' | 'admin' | 'member' | 'viewer' | 'guest' }),
-      ...(body.status && { status: body.status as 'active' | 'inactive' | 'invited' }),
+      ...(body.role && { role: body.role as Role }),
+      ...(body.status && { status: body.status as MemberStatus }),
     };
     
     return HttpResponse.json({

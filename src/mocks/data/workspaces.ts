@@ -4,6 +4,10 @@ import {
   WorkflowRun,
   PendingItem,
   Activity,
+  WorkflowRunStatus,
+  PendingItemType,
+  Priority,
+  ActivityType,
 } from "../../types/workspace";
 import { Role } from "../../types/rbac";
 
@@ -66,7 +70,7 @@ export function getMockHome(): WorkspaceHome {
       id: "run_1",
       workflowId: "wf_1",
       workflowName: "Customer Onboarding",
-      status: "success",
+      status: WorkflowRunStatus.Success,
       startedAt: new Date(now - 15 * 60 * 1000).toISOString(),
       completedAt: new Date(now - 14 * 60 * 1000).toISOString(),
       duration: 60000,
@@ -83,7 +87,7 @@ export function getMockHome(): WorkspaceHome {
       id: "run_2",
       workflowId: "wf_2",
       workflowName: "Invoice Processing",
-      status: "running",
+      status: WorkflowRunStatus.Running,
       startedAt: new Date(now - 5 * 60 * 1000).toISOString(),
       triggeredBy: {
         id: "usr_2",
@@ -98,7 +102,7 @@ export function getMockHome(): WorkspaceHome {
       id: "run_3",
       workflowId: "wf_3",
       workflowName: "Lead Qualification",
-      status: "success",
+      status: WorkflowRunStatus.Success,
       startedAt: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
       completedAt: new Date(now - 2 * 60 * 60 * 1000 + 45000).toISOString(),
       duration: 45000,
@@ -116,12 +120,12 @@ export function getMockHome(): WorkspaceHome {
   const pendingItems: PendingItem[] = [
     {
       id: "pending_1",
-      type: "approval",
+      type: PendingItemType.Approval,
       title: "Approve equipment purchase",
       description: "MacBook Pro M3 + accessories for new hire",
       workflowId: "wf_1",
       workflowName: "Employee Onboarding",
-      priority: "high",
+      priority: Priority.High,
       dueAt: new Date(now + 4 * 60 * 60 * 1000).toISOString(),
       createdAt: new Date(now - 45 * 60 * 1000).toISOString(),
       assignedTo: {
@@ -132,12 +136,12 @@ export function getMockHome(): WorkspaceHome {
     },
     {
       id: "pending_2",
-      type: "review",
+      type: PendingItemType.Review,
       title: "Review contract terms",
       description: "Vendor contract renewal - $50k annual",
       workflowId: "wf_2",
       workflowName: "Procurement Approval",
-      priority: "critical",
+      priority: Priority.Critical,
       dueAt: new Date(now + 30 * 60 * 1000).toISOString(),
       createdAt: new Date(now - 2 * 60 * 60 * 1000).toISOString(),
     },
@@ -146,7 +150,7 @@ export function getMockHome(): WorkspaceHome {
   const activity: Activity[] = [
     {
       id: "act_1",
-      type: "member_joined",
+      type: ActivityType.MemberJoined,
       title: "New member joined",
       description: "Mike Brown joined the workspace",
       user: {
@@ -158,7 +162,7 @@ export function getMockHome(): WorkspaceHome {
     },
     {
       id: "act_2",
-      type: "workflow_created",
+      type: ActivityType.WorkflowCreated,
       title: "New workflow created",
       description: "Customer Support Automation",
       workflow: {

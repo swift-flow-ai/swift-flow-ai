@@ -1,11 +1,11 @@
-import { TeamPool } from '../../types/workspace';
+import { TeamPool, PoolType } from '../../types/workspace';
 
 export const mockTeamPools: TeamPool[] = [
   {
     id: 'pool_hr_ops',
     name: 'HR Operations',
     description: 'Handles all HR operational tasks including onboarding, offboarding, and employee lifecycle management',
-    type: 'functional',
+    type: PoolType.Functional,
     color: '#3b82f6',
     icon: '👥',
     memberIds: ['usr_sarah', 'usr_alice', 'usr_mike'],
@@ -32,7 +32,7 @@ export const mockTeamPools: TeamPool[] = [
     id: 'pool_hr_recruiters',
     name: 'HR Recruiters',
     description: 'Recruitment team responsible for candidate sourcing, screening, and interview coordination',
-    type: 'functional',
+    type: PoolType.Functional,
     color: '#10b981',
     icon: '🎯',
     memberIds: ['usr_lisa', 'usr_sarah'],
@@ -59,7 +59,7 @@ export const mockTeamPools: TeamPool[] = [
     id: 'pool_change_advisory',
     name: 'Change Advisory Board',
     description: 'Reviews and approves all production changes, code reviews, and infrastructure updates',
-    type: 'approval',
+    type: PoolType.Approval,
     color: '#f59e0b',
     icon: '🛡️',
     memberIds: ['usr_john', 'usr_alice', 'usr_bob', 'usr_mike'],
@@ -86,7 +86,7 @@ export const mockTeamPools: TeamPool[] = [
     id: 'pool_finance_approvers',
     name: 'Finance Approvers',
     description: 'Approves invoices, expenses, and procurement requests above threshold amounts',
-    type: 'approval',
+    type: PoolType.Approval,
     color: '#8b5cf6',
     icon: '💰',
     memberIds: ['usr_john', 'usr_bob'],
@@ -113,7 +113,7 @@ export const mockTeamPools: TeamPool[] = [
     id: 'pool_support_tier1',
     name: 'Support Tier 1',
     description: 'First line support handling initial customer inquiries and basic troubleshooting',
-    type: 'functional',
+    type: PoolType.Functional,
     color: '#06b6d4',
     icon: '🎫',
     memberIds: ['usr_mike', 'usr_alice', 'usr_lisa'],
@@ -140,7 +140,7 @@ export const mockTeamPools: TeamPool[] = [
     id: 'pool_content_reviewers',
     name: 'Content Reviewers',
     description: 'Reviews marketing content, blog posts, and external communications for compliance and quality',
-    type: 'approval',
+    type: PoolType.Approval,
     color: '#ec4899',
     icon: '📝',
     memberIds: ['usr_sarah', 'usr_lisa', 'usr_alice'],

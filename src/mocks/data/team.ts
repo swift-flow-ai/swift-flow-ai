@@ -1,4 +1,5 @@
-import { TeamMember } from '../../types/workspace';
+import { TeamMember, MemberStatus } from '../../types/workspace';
+import { Role } from '../../types/rbac';
 
 export const mockTeamMembers: TeamMember[] = [
   {
@@ -6,8 +7,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Admin User',
     email: 'admin@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
-    role: 'owner',
-    status: 'active',
+    role: Role.Owner,
+    status: MemberStatus.Active,
     stats: {
       workflowsCreated: 25,
       approvalsHandled: 150,
@@ -22,8 +23,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'John Smith',
     email: 'john@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-    role: 'admin',
-    status: 'active',
+    role: Role.Admin,
+    status: MemberStatus.Active,
     stats: {
       workflowsCreated: 12,
       approvalsHandled: 234,
@@ -38,8 +39,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Sarah Lee',
     email: 'sarah@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-    role: 'member',
-    status: 'active',
+    role: Role.Member,
+    status: MemberStatus.Active,
     stats: {
       workflowsCreated: 18,
       approvalsHandled: 156,
@@ -54,8 +55,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Mike Brown',
     email: 'mike@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
-    role: 'member',
-    status: 'active',
+    role: Role.Member,
+    status: MemberStatus.Active,
     stats: {
       workflowsCreated: 8,
       approvalsHandled: 89,
@@ -70,8 +71,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Lisa Chen',
     email: 'lisa@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa',
-    role: 'member',
-    status: 'active',
+    role: Role.Member,
+    status: MemberStatus.Active,
     stats: {
       workflowsCreated: 15,
       approvalsHandled: 203,
@@ -86,8 +87,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Alice Johnson',
     email: 'alice@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice',
-    role: 'viewer',
-    status: 'active',
+    role: Role.Viewer,
+    status: MemberStatus.Active,
     stats: {
       workflowsCreated: 0,
       approvalsHandled: 312,
@@ -102,8 +103,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Bob Williams',
     email: 'bob@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob',
-    role: 'viewer',
-    status: 'active',
+    role: Role.Viewer,
+    status: MemberStatus.Active,
     stats: {
       workflowsCreated: 0,
       approvalsHandled: 278,
@@ -118,8 +119,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'Emma Davis',
     email: 'emma@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
-    role: 'viewer',
-    status: 'active',
+    role: Role.Viewer,
+    status: MemberStatus.Active,
     stats: {
       workflowsCreated: 0,
       approvalsHandled: 0,
@@ -134,8 +135,8 @@ export const mockTeamMembers: TeamMember[] = [
     name: 'David Martinez',
     email: 'david@acme.com',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
-    role: 'guest',
-    status: 'invited',
+    role: Role.Guest,
+    status: MemberStatus.Invited,
     stats: {
       workflowsCreated: 0,
       approvalsHandled: 0,
