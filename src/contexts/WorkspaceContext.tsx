@@ -1,15 +1,15 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import { Workspace, WorkspaceDashboard } from '../types/workspace';
+import { Workspace, WorkspaceHome } from '../types/workspace';
 import { workspaceService } from '../services/workspace.service';
 
 interface WorkspaceContextType {
   workspaces: Workspace[];
   currentWorkspace: Workspace | null;
-  dashboard: WorkspaceDashboard | null;
+  home: WorkspaceHome | null;
   isLoading: boolean;
   error: string | null;
   selectWorkspace: (workspaceId: string) => Promise<void>;
-  refreshDashboard: () => Promise<void>;
+  refreshHome: () => Promise<void>;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -19,7 +19,7 @@ export { WorkspaceContext };
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
-  const [dashboard, setDashboard] = useState<WorkspaceDashboard | null>(null);
+  const [home, setHome] = useState<WorkspaceHome | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,10 +28,10 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     loadWorkspaces();
   }, []);
 
-  // Load dashboard when workspace changes
+  // Load home when workspace changes
   useEffect(() => {
     if (currentWorkspace) {
-      loadDashboard(currentWorkspace.id);
+      loadHome(currentWorkspace.id);
     }
   }, [currentWorkspace]);
 
@@ -67,12 +67,12 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const loadDashboard = async (workspaceId: string) => {
+  const loadHome = async (workspaceId: string) => {
     try {
-      const data = await workspaceService.getDashboard(workspaceId);
-      setDashboard(data);
+      const data = await workspaceService.getHome(workspaceId);
+      setHome(data);
     } catch (err) {
-      console.error('Failed to load dashboard:', err);
+      console.error('Failed to load home:', err);
     }
   };
 
@@ -93,9 +93,9 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const refreshDashboard = async () => {
+  const refreshHome = async () => {
     if (currentWorkspace) {
-      await loadDashboard(currentWorkspace.id);
+      await loadHome(currentWorkspace.id);
     }
   };
 
@@ -104,11 +104,11 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       value={{
         workspaces,
         currentWorkspace,
-        dashboard,
+        home,
         isLoading,
         error,
         selectWorkspace,
-        refreshDashboard,
+        refreshHome,
       }}
     >
       {children}

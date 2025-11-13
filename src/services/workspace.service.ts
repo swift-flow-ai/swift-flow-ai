@@ -1,5 +1,5 @@
 import { api } from './api';
-import { Workspace, WorkspaceDashboard } from '../types/workspace';
+import { Workspace, WorkspaceHome } from '../types/workspace';
 
 export const workspaceService = {
   async getWorkspaces(): Promise<Workspace[]> {
@@ -12,8 +12,8 @@ export const workspaceService = {
     return response.data;
   },
 
-  async getDashboard(workspaceId: string): Promise<WorkspaceDashboard> {
-    const response = await api.get<WorkspaceDashboard>(`/workspaces/${workspaceId}/dashboard`);
+  async getHome(workspaceId: string): Promise<WorkspaceHome> {
+    const response = await api.get<WorkspaceHome>(`/workspaces/${workspaceId}/home`);
     return response.data;
   },
 

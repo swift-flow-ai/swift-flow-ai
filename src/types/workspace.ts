@@ -17,15 +17,68 @@ export interface Workspace {
   members?: TeamMember[];
 }
 
-export interface WorkspaceDashboard {
-  stats: {
+// Home page data structure (inspired by Zapier)
+export interface WorkspaceHome {
+  // Recent workflow runs/executions (most prominent)
+  recentRuns: WorkflowRun[];
+
+  // Quick stats overview
+  overview: {
+    totalWorkflows: number;
     activeWorkflows: number;
-    pendingApprovals: number;
-    runningExecutions: number;
-    tasksCompletedToday: number;
+    totalRuns: number;
+    successRate: number;
   };
-  recentActivity: Activity[];
-  myTasks: Task[];
+
+  // Workflow status summary
+  workflowStatus: {
+    active: number;
+    paused: number;
+    draft: number;
+    error: number;
+  };
+
+  // Recent activity feed
+  activity: Activity[];
+
+  // Pending items requiring attention
+  pendingItems: PendingItem[];
+}
+
+export interface WorkflowRun {
+  id: string;
+  workflowId: string;
+  workflowName: string;
+  status: "success" | "failure" | "running" | "waiting";
+  startedAt: string;
+  completedAt?: string;
+  duration?: number; // milliseconds
+  triggeredBy?: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
+  error?: string;
+  taskCount?: number;
+  successCount?: number;
+  failureCount?: number;
+}
+
+export interface PendingItem {
+  id: string;
+  type: "approval" | "review" | "error" | "action_required";
+  title: string;
+  description?: string;
+  workflowId?: string;
+  workflowName?: string;
+  priority: "low" | "medium" | "high" | "critical";
+  dueAt?: string;
+  createdAt: string;
+  assignedTo?: {
+    id: string;
+    name: string;
+    avatar?: string;
+  };
 }
 
 export interface Activity {
@@ -48,17 +101,6 @@ export interface Activity {
     avatar?: string;
   };
   timestamp: string;
-}
-
-export interface Task {
-  id: string;
-  type: "approval" | "review" | "manual_task";
-  title: string;
-  description?: string;
-  workflow: string;
-  priority: "low" | "medium" | "high" | "critical";
-  dueAt?: string;
-  createdAt: string;
 }
 
 // Workflow types

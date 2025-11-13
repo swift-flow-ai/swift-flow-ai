@@ -29,7 +29,7 @@ import { cn } from '../../utils';
 import { approvalService } from '../../services/approval.service';
 
 const navigation = [
-  { name: 'Dashboard', href: '/app/dashboard', icon: LayoutDashboard },
+  { name: 'Home', href: '/app/home', icon: LayoutDashboard },
   { name: 'Workflows', href: '/app/workflows', icon: Zap },
   { name: 'Executions', href: '/app/executions', icon: Activity },
   { name: 'Inbox', href: '/app/inbox', icon: Inbox },

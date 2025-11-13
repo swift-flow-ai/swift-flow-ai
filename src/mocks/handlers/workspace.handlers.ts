@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import { mockWorkspaces, getMockDashboard } from "../data/workspaces";
+import { mockWorkspaces, getMockHome } from "../data/workspaces";
 import { mockTeamMembers } from "../data/team";
 
 const BASE_URL = "http://localhost:3000/api";
@@ -31,11 +31,11 @@ export const workspaceHandlers = [
     });
   }),
 
-  // GET /workspaces/:workspaceId/dashboard
-  http.get(`${BASE_URL}/workspaces/:workspaceId/dashboard`, () => {
-    const dashboard = getMockDashboard();
+  // GET /workspaces/:workspaceId/home
+  http.get(`${BASE_URL}/workspaces/:workspaceId/home`, () => {
+    const home = getMockHome();
 
-    return HttpResponse.json(dashboard);
+    return HttpResponse.json(home);
   }),
 
   // POST /workspaces

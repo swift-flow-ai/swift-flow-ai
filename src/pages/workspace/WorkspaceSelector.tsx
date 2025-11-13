@@ -13,7 +13,7 @@ export function WorkspaceSelector() {
 
   const handleSelectWorkspace = async (workspaceId: string) => {
     await selectWorkspace(workspaceId);
-    navigate('/app/dashboard');
+    navigate('/app/home');
   };
 
   const getInitials = (name: string) => {

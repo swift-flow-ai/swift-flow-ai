@@ -9,7 +9,7 @@ import { WorkspaceCreate } from './pages/workspace/WorkspaceCreate';
 import { WorkspaceSettings } from './pages/workspace/WorkspaceSettings';
 import { InviteTeam } from './pages/workspace/InviteTeam';
 import { AppLayout } from './components/layout/AppLayout';
-import { Dashboard } from './pages/dashboard/Dashboard';
+import { Home } from './pages/home/Home';
 import { WorkflowsList } from './pages/workflows/WorkflowsList';
 import { WorkflowBuilder } from './pages/workflows/WorkflowBuilder';
 import { WorkflowViewer } from './pages/workflows/WorkflowViewer';
@@ -77,8 +77,9 @@ function App() {
                   </ProtectedRoute>
                 }
               >
-                <Route index element={<Navigate to="/app/dashboard" replace />} />
-                <Route path="dashboard" element={<Dashboard />} />
+                <Route index element={<Navigate to="/app/home" replace />} />
+                <Route path="home" element={<Home />} />
+                <Route path="dashboard" element={<Navigate to="/app/home" replace />} />
                 <Route path="workflows" element={<WorkflowsList />} />
                 <Route path="workflows/new" element={<WorkflowBuilder />} />
                 <Route path="workflows/:workflowId" element={<WorkflowViewer />} />

@@ -28,7 +28,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { Workflow } from '../../types/workspace';
 
-export function Dashboard() {
+export function Home() {
   const { currentWorkspace, home, isLoading } = useWorkspace();
   const [recentWorkflows, setRecentWorkflows] = useState<Workflow[]>([]);
   const [loadingWorkflows, setLoadingWorkflows] = useState(false);
