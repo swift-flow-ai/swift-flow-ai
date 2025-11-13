@@ -51,9 +51,7 @@ const generateCostTimeline = () => {
 };
 
 // Calculate total metrics from timeline data
-const calculateMetrics = (
-  _timelineData: ReturnType<typeof generateTimelineData>
-) => {
+const calculateMetrics = () => {
   return {
     totalExecutions: 0,
     successRate: 0,
@@ -65,9 +63,7 @@ const calculateMetrics = (
 };
 
 // Calculate trends (comparing last 7 days vs previous 7 days)
-const calculateTrends = (
-  _timelineData: ReturnType<typeof generateTimelineData>
-) => {
+const calculateTrends = () => {
   return {
     executionsChange: 0,
     successRateChange: 0,
@@ -157,8 +153,8 @@ const generateIntegrationMetrics = () => {
 
 // Generate the complete analytics object
 const timelineData = generateTimelineData();
-const metrics = calculateMetrics(timelineData);
-const trends = calculateTrends(timelineData);
+const metrics = calculateMetrics();
+const trends = calculateTrends();
 
 export const mockWorkspaceAnalytics: WorkspaceAnalytics = {
   period: "30d",

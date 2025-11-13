@@ -15,6 +15,8 @@ import ReactFlow, {
   BackgroundVariant,
   Controls,
   MiniMap,
+  Node,
+  Edge,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { templateService } from '../../services/template.service';
@@ -203,8 +205,8 @@ export function TemplateDetail() {
         <h3 className="text-lg font-semibold mb-4">Workflow Preview</h3>
         <div className="h-96 bg-background rounded-lg border border-border">
           <ReactFlow
-            nodes={template.definition.nodes as any}
-            edges={template.definition.edges as any}
+            nodes={template.definition.nodes as Node[]}
+            edges={template.definition.edges as Edge[]}
             nodeTypes={nodeTypes}
             fitView
             nodesDraggable={false}

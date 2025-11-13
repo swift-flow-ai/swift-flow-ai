@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { WorkflowExecution } from "../../types/workspace";
 
 export const mockExecutions: WorkflowExecution[] = [];

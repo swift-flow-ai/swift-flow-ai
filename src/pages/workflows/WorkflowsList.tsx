@@ -145,7 +145,7 @@ export function WorkflowsList() {
 
   useEffect(() => {
     loadWorkflows(1, false);
-  }, [filter, debouncedSearch, itemsPerPage]);
+  }, [filter, debouncedSearch, itemsPerPage, loadWorkflows]);
 
   // Filter workflows by folder
   const filteredWorkflows = workflows.filter((w) => {

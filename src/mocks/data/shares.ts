@@ -68,9 +68,11 @@ export const mockFolderShares: FolderShare[] = [
   },
 ];
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export function getWorkflowShares(_workflowId: string): WorkflowShare[] {
   return [];
 }
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 export function getFolderShares(folderId: string): FolderShare[] {
   return mockFolderShares.filter((s) => s.folderId === folderId);
@@ -91,9 +93,11 @@ export function getShareLink(
   );
 }
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export function getUserWorkflowPermission(
   _workflowId: string,
   _userId: string
 ): "viewer" | "commenter" | "editor" | "owner" | null {
   return null;
 }
+/* eslint-enable @typescript-eslint/no-unused-vars */

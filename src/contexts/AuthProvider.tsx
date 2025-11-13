@@ -1,8 +1,7 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
-import type { AuthContextType, User, LoginCredentials, SignupData } from '../types';
+import { useState, useEffect, ReactNode } from 'react';
+import type { User, LoginCredentials, SignupData } from '../types';
 import { authService } from '../services';
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from './AuthContext';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -47,7 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
   };
 
-  const value: AuthContextType = {
+  const value = {
     user,
     isAuthenticated: !!user,
     isLoading,

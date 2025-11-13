@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   X,
@@ -23,7 +23,6 @@ interface ConfigPanelProps {
   onClose: () => void;
   integrationId: string;
   actionKey: string;
-  nodeId?: string;
   initialConfig?: Record<string, unknown>;
   initialInstalledAppId?: string;
   onSave: (config: {
@@ -39,7 +38,6 @@ export function ConfigPanel({
   onClose,
   integrationId,
   actionKey,
-  nodeId: _nodeId, // eslint-disable-line @typescript-eslint/no-unused-vars
   initialConfig,
   initialInstalledAppId,
   onSave,
@@ -59,6 +57,7 @@ export function ConfigPanel({
     success: boolean;
     message?: string;
   } | null>(null);
+  const prevIsOpenRef = useRef(false);
 
   const loadActionAndApps = useCallback(async () => {
     try {
@@ -97,12 +96,13 @@ export function ConfigPanel({
     }
   }, [isOpen, integrationId, actionKey, loadActionAndApps]);
 
-  // Reset config and selectedAppId when opening with new initial values
+  // Reset config and selectedAppId when opening the panel
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !prevIsOpenRef.current) {
       setConfig(initialConfig || {});
       setSelectedAppId(initialInstalledAppId || "");
     }
+    prevIsOpenRef.current = isOpen;
   }, [isOpen, initialConfig, initialInstalledAppId]);
 
   const handleConfigChange = (key: string, value: unknown) => {

@@ -784,7 +784,6 @@ export function WorkflowBuilder() {
           }}
           integrationId={selectedIntegration.id}
           actionKey={selectedAction.key}
-          nodeId={configNodeId}
           initialConfig={
             configNodeId
               ? nodes.find((n) => n.id === configNodeId)?.data.config
