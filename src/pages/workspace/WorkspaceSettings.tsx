@@ -295,149 +295,209 @@ export function WorkspaceSettings() {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          <div className="bg-card border border-border rounded-xl p-6">
-            <h2 className="text-xl font-semibold mb-6">Workspace Information</h2>
+          {/* Workspace Identity Section */}
+          <div className="bg-gradient-to-br from-card to-card/50 border border-border rounded-xl overflow-hidden">
+            <div className="border-b border-border bg-muted/30 px-6 py-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-primary" />
+                Workspace Identity
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Customize how your workspace appears to members
+              </p>
+            </div>
             
-            <form onSubmit={handleSaveGeneral} className="space-y-6">
-              {/* Workspace Logo */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Workspace Logo</label>
-                <div className="flex items-center gap-4">
-                  <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                    {currentWorkspace.logo ? (
-                      <img src={currentWorkspace.logo} alt="Logo" className="w-12 h-12" />
-                    ) : (
-                      <Building2 className="w-12 h-12 text-primary" />
-                    )}
+            <form onSubmit={handleSaveGeneral} className="p-6 space-y-6">
+              {/* Logo & Branding */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Logo Upload */}
+                <div>
+                  <label className="block text-sm font-semibold mb-3">Workspace Logo</label>
+                  <div className="flex items-start gap-4">
+                    <div className="relative group">
+                      <div 
+                        className="w-24 h-24 rounded-xl flex items-center justify-center border-2 border-dashed border-border hover:border-primary transition-colors"
+                        style={{ 
+                          background: currentWorkspace.logo 
+                            ? 'transparent' 
+                            : `linear-gradient(135deg, ${workspaceColor}20 0%, ${workspaceColor}05 100%)`
+                        }}
+                      >
+                        {currentWorkspace.logo ? (
+                          <img src={currentWorkspace.logo} alt="Logo" className="w-full h-full object-cover rounded-xl" />
+                        ) : (
+                          <Building2 className="w-12 h-12" style={{ color: workspaceColor }} />
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                      >
+                        <Upload className="w-6 h-6 text-white" />
+                      </button>
+                    </div>
+                    <div className="flex-1">
+                      <Button type="button" variant="secondary" size="sm" className="mb-2">
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload New Logo
+                      </Button>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        PNG, JPG, or SVG format<br />
+                        Max file size: 2MB<br />
+                        Recommended: 512x512px
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <Button type="button" variant="secondary" className="mb-2">
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload Logo
-                    </Button>
-                    <p className="text-xs text-muted-foreground">
-                      PNG, JPG or SVG. Max 2MB. Recommended 200x200px.
-                    </p>
+                </div>
+
+                {/* Color Palette */}
+                <div>
+                  <label className="block text-sm font-semibold mb-3">Brand Color</label>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={workspaceColor}
+                        onChange={(e) => setWorkspaceColor(e.target.value)}
+                        className="w-16 h-16 rounded-xl border-2 border-border cursor-pointer"
+                      />
+                      <div className="flex-1">
+                        <Input
+                          type="text"
+                          value={workspaceColor}
+                          onChange={(e) => setWorkspaceColor(e.target.value)}
+                          placeholder="#3b82f6"
+                          pattern="^#[0-9A-Fa-f]{6}$"
+                          className="font-mono"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-2">Quick Presets:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { color: '#f87855', name: 'Coral' },
+                          { color: '#f85c39', name: 'Tomato' },
+                          { color: '#10b981', name: 'Emerald' },
+                          { color: '#3b82f6', name: 'Blue' },
+                          { color: '#8b5cf6', name: 'Purple' },
+                          { color: '#ec4899', name: 'Pink' },
+                          { color: '#f59e0b', name: 'Amber' },
+                          { color: '#06b6d4', name: 'Cyan' }
+                        ].map(({ color, name }) => (
+                          <button
+                            key={color}
+                            type="button"
+                            onClick={() => setWorkspaceColor(color)}
+                            className={`w-10 h-10 rounded-lg border-2 transition-all hover:scale-110 ${
+                              workspaceColor === color ? 'border-foreground ring-2 ring-primary' : 'border-border'
+                            }`}
+                            style={{ backgroundColor: color }}
+                            title={name}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Workspace Name */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Workspace Name</label>
-                <Input
-                  type="text"
-                  value={workspaceName}
-                  onChange={(e) => setWorkspaceName(e.target.value)}
-                  placeholder="Acme Corp"
-                  required
-                />
-              </div>
-
-              {/* Workspace Slug */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Workspace Slug</label>
-                <div className="flex gap-2">
-                  <span className="px-3 py-2 bg-muted rounded-lg text-muted-foreground text-sm">
-                    swiftflow.ai/
-                  </span>
+              {/* Name & Slug */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Workspace Name */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2">
+                    Workspace Name
+                    <span className="text-destructive ml-1">*</span>
+                  </label>
                   <Input
                     type="text"
-                    value={workspaceSlug}
-                    onChange={(e) => setWorkspaceSlug(e.target.value)}
-                    placeholder="acme-corp"
-                    className="flex-1"
+                    value={workspaceName}
+                    onChange={(e) => setWorkspaceName(e.target.value)}
+                    placeholder="e.g., Acme Corporation"
                     required
+                    className="text-base"
                   />
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    This is how your workspace will be displayed
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Lowercase letters, numbers, and hyphens only
-                </p>
-              </div>
 
-              {/* Workspace Color */}
-              <div>
-                <label className="block text-sm font-medium mb-2">Workspace Color</label>
-                <div className="flex items-center gap-4">
-                  <input
-                    type="color"
-                    value={workspaceColor}
-                    onChange={(e) => setWorkspaceColor(e.target.value)}
-                    className="w-20 h-12 rounded-lg border border-border cursor-pointer"
-                  />
-                  <div className="flex-1">
+                {/* Workspace Slug */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2">
+                    Workspace URL
+                    <span className="text-destructive ml-1">*</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <span className="px-3 py-2.5 bg-muted rounded-lg text-muted-foreground text-sm font-medium border border-border">
+                      <Globe className="w-4 h-4 inline mr-1.5" />
+                      swiftflow.ai/
+                    </span>
                     <Input
                       type="text"
-                      value={workspaceColor}
-                      onChange={(e) => setWorkspaceColor(e.target.value)}
-                      placeholder="#3b82f6"
-                      pattern="^#[0-9A-Fa-f]{6}$"
+                      value={workspaceSlug}
+                      onChange={(e) => setWorkspaceSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                      placeholder="acme-corp"
+                      className="flex-1 font-mono"
+                      required
                     />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Choose a theme color for your workspace
-                    </p>
                   </div>
-                  <div className="flex gap-2">
-                    {['#f87855', '#f85c39', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'].map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        onClick={() => setWorkspaceColor(color)}
-                        className="w-8 h-8 rounded-lg border-2 border-border hover:scale-110 transition-transform"
-                        style={{ backgroundColor: color }}
-                        title={color}
-                      />
-                    ))}
-                  </div>
+                  <p className="text-xs text-muted-foreground mt-1.5">
+                    Only lowercase letters, numbers, and hyphens
+                  </p>
                 </div>
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium mb-2">Description</label>
+                <label className="block text-sm font-semibold mb-2">Description</label>
                 <textarea
-                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                  rows={3}
-                  placeholder="What is this workspace for?"
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-shadow"
+                  rows={4}
+                  placeholder="Describe what this workspace is used for. This helps members understand its purpose."
                   value={workspaceDescription}
                   onChange={(e) => setWorkspaceDescription(e.target.value)}
+                  maxLength={500}
                 />
+                <div className="flex justify-between items-center mt-1.5">
+                  <p className="text-xs text-muted-foreground">
+                    Optional workspace description
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {workspaceDescription.length}/500
+                  </p>
+                </div>
               </div>
 
-              <div className="flex justify-end">
-                <Button type="submit" variant="primary" isLoading={isSaving}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
-                </Button>
+              {/* Actions */}
+              <div className="flex items-center justify-between pt-4 border-t border-border">
+                <p className="text-sm text-muted-foreground">
+                  Changes will be visible to all workspace members
+                </p>
+                <div className="flex gap-3">
+                  <Button 
+                    type="button" 
+                    variant="secondary"
+                    onClick={() => {
+                      setWorkspaceName(currentWorkspace?.name || '');
+                      setWorkspaceSlug(currentWorkspace?.slug || '');
+                      setWorkspaceColor(currentWorkspace?.color || '#f87855');
+                      setWorkspaceDescription('');
+                    }}
+                  >
+                    Reset
+                  </Button>
+                  <Button type="submit" variant="primary" isLoading={isSaving}>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Changes
+                  </Button>
+                </div>
               </div>
             </form>
           </div>
 
-          {/* Workspace Stats */}
-          <div className="bg-card border border-border rounded-xl p-6">
-            <h2 className="text-xl font-semibold mb-6">Workspace Stats</h2>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Members</p>
-                <p className="text-2xl font-bold">{currentWorkspace.memberCount}</p>
-              </div>
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Active Workflows</p>
-                <p className="text-2xl font-bold">{currentWorkspace.activeWorkflows}</p>
-              </div>
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Pending Approvals</p>
-                <p className="text-2xl font-bold">{currentWorkspace.pendingApprovals}</p>
-              </div>
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <p className="text-sm text-muted-foreground mb-1">Created</p>
-                <p className="text-sm font-medium mt-1">
-                  {new Date(currentWorkspace.createdAt).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
-          </div>
+
         </motion.div>
       )}
 
