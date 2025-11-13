@@ -32,7 +32,7 @@ export interface InboxItem {
   };
   approval?: Approval;
   actionUrl?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export interface InboxQueryParams {
@@ -104,6 +104,16 @@ export const inboxService = {
       unread: number;
       actionable: number;
     }>(`/workspaces/${workspaceId}/inbox/stats`);
+    return response.data;
+  },
+
+  /**
+   * Get a single inbox item by ID
+   */
+  async getInboxItem(workspaceId: string, itemId: string): Promise<InboxItem> {
+    const response = await api.get<InboxItem>(
+      `/workspaces/${workspaceId}/inbox/${itemId}`
+    );
     return response.data;
   },
 };

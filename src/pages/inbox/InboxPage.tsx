@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { inboxService, InboxItem, InboxQueryParams } from '../../services/inbox.service';
 import { approvalService } from '../../services/approval.service';
@@ -9,14 +9,11 @@ import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Badge } from '../../components/common/Badge';
 import { 
   Inbox, 
-  Clock, 
   AlertTriangle, 
-  Sparkles, 
   CheckSquare,
   Square,
   Search,
   RefreshCw,
-  Eye,
   Mail,
   MessageSquare,
   ThumbsUp,
@@ -27,20 +24,13 @@ import {
   CheckCircle,
   UserPlus,
   Settings,
-  Timer,
-  Workflow,
   User,
   FileText,
-  ChevronDown,
   Loader2,
-  Star,
-  Archive,
-  Trash2,
-  MoreVertical,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { formatDistanceToNow, format } from 'date-fns';
+import { format } from 'date-fns';
 import { useDebounce } from '../../hooks/useDebounce';
 
 const DEFAULT_ITEMS_PER_PAGE = 50;
@@ -49,7 +39,6 @@ const DEBOUNCE_MS = 300;
 const ITEMS_PER_PAGE_OPTIONS = [25, 50, 100, 200];
 
 export function InboxPage() {
-  const navigate = useNavigate();
   const { currentWorkspace } = useWorkspace();
   
   // State
@@ -761,13 +750,13 @@ function InboxItemRow({
               {item.title}
             </span>
             {item.priority === 'critical' && (
-              <Badge variant="destructive" className="text-xs px-1.5 py-0 flex-shrink-0">Critical</Badge>
+              <Badge variant="danger" className="text-xs px-1.5 py-0 flex-shrink-0">Critical</Badge>
             )}
             {item.priority === 'high' && (
               <Badge className="text-xs px-1.5 py-0 bg-orange-500 flex-shrink-0">High</Badge>
             )}
             {isOverdue && (
-              <Badge variant="destructive" className="text-xs px-1.5 py-0 flex-shrink-0">Overdue</Badge>
+              <Badge variant="danger" className="text-xs px-1.5 py-0 flex-shrink-0">Overdue</Badge>
             )}
             {isUrgent && !isOverdue && (
               <Badge className="text-xs px-1.5 py-0 bg-orange-500 flex-shrink-0">Urgent</Badge>

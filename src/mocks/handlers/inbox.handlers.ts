@@ -1,11 +1,12 @@
 import { http, HttpResponse } from 'msw';
 import { getApprovalsByWorkspace } from '../data/approvals';
 import type { InboxItem, InboxResponse } from '../../services/inbox.service';
+import type { Approval } from '../../types/workspace';
 
 const BASE_URL = 'http://localhost:3000/api';
 
 // Transform approval to inbox item
-function approvalToInboxItem(approval: any): InboxItem {
+function approvalToInboxItem(approval: Approval): InboxItem {
   return {
     id: approval.id,
     type: 'approval',
@@ -24,9 +25,9 @@ function approvalToInboxItem(approval: any): InboxItem {
   };
 }
 
-// Mock additional inbox items
+// Mock additional inbox items with realistic metadata
 function generateMockItems(count: number): InboxItem[] {
-  const types: InboxItem['type'][] = ['task', 'notification', 'workflow_error', 'workflow_success', 'comment'];
+  const types: InboxItem['type'][] = ['task', 'notification', 'workflow_error', 'workflow_success', 'comment', 'alert'];
   const priorities: InboxItem['priority'][] = ['low', 'medium', 'high', 'critical'];
   
   // Use execution IDs that exist in mock data
@@ -37,29 +38,107 @@ function generateMockItems(count: number): InboxItem[] {
     const priority = priorities[i % priorities.length];
     const createdAt = new Date(Date.now() - i * 60 * 60 * 1000).toISOString();
     const executionId = validExecutionIds[i % validExecutionIds.length];
+    const workflowName = `Workflow ${i % 10}`;
+    const workflowId = `wf-${i % 10}`;
+    
+    // Generate type-specific metadata
+    let metadata: Record<string, unknown> = {};
+    
+    if (type === 'task') {
+      metadata = {
+        steps: [
+          { id: 'step-1', name: 'Review requirements', completed: i % 2 === 0 },
+          { id: 'step-2', name: 'Implement solution', completed: false },
+          { id: 'step-3', name: 'Test and verify', completed: false },
+        ],
+        category: ['Development', 'Design', 'Review', 'Testing'][i % 4],
+        estimatedTime: `${(i % 4 + 1) * 30} minutes`,
+        attachments: i % 3 === 0 ? [
+          { name: 'requirements.pdf', url: '#', type: 'PDF' },
+          { name: 'design-mockup.png', url: '#', type: 'Image' },
+        ] : undefined,
+      };
+    } else if (type === 'workflow_error') {
+      metadata = {
+        error: {
+          message: `Error occurred in step ${i % 5 + 1}: Connection timeout`,
+          type: 'ConnectionError',
+          code: 'ERR_TIMEOUT',
+          nodeId: `node-${i % 10}`,
+          nodeName: `Step ${i % 5 + 1}`,
+          stack: `Error: Connection timeout\n    at Step.execute (workflow.js:${i + 10}:5)\n    at Workflow.run (workflow.js:${i + 20}:10)`,
+        },
+        retryable: i % 2 === 0,
+        retryCount: i % 2 === 0 ? Math.floor(i / 2) : undefined,
+        maxRetries: i % 2 === 0 ? 3 : undefined,
+      };
+    } else if (type === 'workflow_success') {
+      metadata = {
+        duration: (i % 10 + 1) * 1000,
+        stepsExecuted: 5,
+        totalSteps: 5,
+        outputData: {
+          result: 'Success',
+          recordsProcessed: (i % 10 + 1) * 100,
+          timestamp: createdAt,
+        },
+        performance: {
+          avgStepTime: (i % 5 + 1) * 200,
+          slowestStep: `Step ${i % 5 + 1}`,
+        },
+      };
+    } else if (type === 'notification') {
+      metadata = {
+        category: ['System', 'Workflow', 'Team', 'Integration'][i % 4],
+        actionUrl: `/app/executions/${executionId}`,
+        actionLabel: 'View Details',
+        richContent: {
+          markdown: `This is a detailed notification about **${workflowName}**.\n\nIt contains important information that requires your attention.`,
+        },
+        relatedItems: [
+          { id: executionId, type: 'execution', title: `Execution ${executionId}` },
+        ],
+      };
+    } else if (type === 'alert') {
+      metadata = {
+        category: 'Security',
+        severity: ['low', 'medium', 'high'][i % 3],
+        actionUrl: `/app/workflows/${workflowId}`,
+        actionLabel: 'Review Workflow',
+      };
+    }
     
     return {
       id: `mock-${type}-${i}`,
       type,
-      title: `${type.charAt(0).toUpperCase() + type.slice(1)} ${i + 1}`,
-      description: `This is a ${type} item number ${i + 1}`,
+      title: `${type.charAt(0).toUpperCase() + type.slice(1).replace('_', ' ')} ${i + 1}`,
+      description: type === 'task' 
+        ? `Complete the task: ${metadata.steps ? (metadata.steps as Array<{name: string}>)[0].name : 'Task item'}`
+        : type === 'workflow_error'
+        ? `Workflow execution failed: ${(metadata.error as {message?: string})?.message || 'Unknown error'}`
+        : type === 'workflow_success'
+        ? `Workflow completed successfully in ${(metadata.duration as number) / 1000}s`
+        : `This is a ${type} item number ${i + 1}`,
       priority,
       read: i % 3 === 0,
       createdAt,
-      workflowName: `Workflow ${i % 10}`,
-      workflowId: `wf-${i % 10}`,
+      dueAt: type === 'task' || type === 'approval' 
+        ? new Date(Date.now() + (i % 5 + 1) * 60 * 60 * 1000).toISOString()
+        : undefined,
+      workflowName,
+      workflowId,
       executionId,
-      submittedBy: { name: `User ${i % 5}` },
-      actionUrl: `/app/executions/${executionId}`,
+      submittedBy: { name: `User ${i % 5}`, avatar: undefined },
+      actionUrl: `/app/inbox/mock-${type}-${i}`,
+      metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
     };
   });
 }
 
 export const inboxHandlers = [
   // GET /workspaces/:workspaceId/inbox
-  http.get(`${BASE_URL}/workspaces/:workspaceId/inbox`, ({ request, params }) => {
+  http.get(`${BASE_URL}/workspaces/:workspaceId/inbox`, ({ request }) => {
     const url = new URL(request.url);
-    const { workspaceId } = params;
     
     // Parse query params
     const page = parseInt(url.searchParams.get('page') || '1', 10);
@@ -181,6 +260,33 @@ export const inboxHandlers = [
         item.type === 'approval' || item.type === 'task' || item.type === 'workflow_error'
       ).length,
     });
+  }),
+
+  // GET /workspaces/:workspaceId/inbox/:itemId
+  http.get(`${BASE_URL}/workspaces/:workspaceId/inbox/:itemId`, ({ params }) => {
+    const { itemId } = params;
+    
+    // Check if it's an approval ID (starts with 'apr_')
+    if (itemId && itemId.startsWith('apr_')) {
+      const approvals = getApprovalsByWorkspace();
+      const approval = approvals.find(a => a.id === itemId);
+      if (approval) {
+        return HttpResponse.json(approvalToInboxItem(approval));
+      }
+    }
+    
+    // Check mock items
+    const mockItems = generateMockItems(200);
+    const mockItem = mockItems.find(item => item.id === itemId);
+    if (mockItem) {
+      return HttpResponse.json(mockItem);
+    }
+    
+    // Not found
+    return HttpResponse.json(
+      { error: 'Inbox item not found' },
+      { status: 404 }
+    );
   }),
 ];
 

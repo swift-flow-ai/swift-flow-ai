@@ -90,7 +90,7 @@ function App() {
                 <Route path="executions/:executionId" element={<ExecutionDetail />} />
                 <Route path="analytics" element={<AnalyticsDashboard />} />
                 <Route path="inbox" element={<InboxPage />} />
-                <Route path="inbox/:approvalId" element={<InboxDetail />} />
+                <Route path="inbox/:itemId" element={<InboxDetail />} />
                 <Route path="templates" element={<TemplatesPage />} />
                 <Route path="templates/:templateId" element={<TemplateDetail />} />
                 {/* Redirect old integration routes to App Center */}
