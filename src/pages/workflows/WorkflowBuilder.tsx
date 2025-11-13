@@ -129,8 +129,7 @@ export function WorkflowBuilder() {
       setIsLoading(false);
     }
     // setNodes and setEdges are stable functions from useNodesState/useEdgesState
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workflowId, currentWorkspace]);
+  }, [workflowId, currentWorkspace, setNodes, setEdges]);
 
   useEffect(() => {
     if (workflowId && currentWorkspace) {

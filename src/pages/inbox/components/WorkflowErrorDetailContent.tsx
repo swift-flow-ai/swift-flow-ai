@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { AlertTriangle, RefreshCw, FileText, Code, ExternalLink, Clock, XCircle } from 'lucide-react';
+import { AlertTriangle, RefreshCw, FileText, Code, Clock } from 'lucide-react';
 import { InboxItem } from '../../../services/inbox.service';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';

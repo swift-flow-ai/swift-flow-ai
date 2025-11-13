@@ -2,18 +2,16 @@ import { motion } from 'framer-motion';
 import { 
   Sparkles, 
   FileText, 
-  MessageSquare, 
   CheckCircle2, 
   XCircle, 
   ThumbsUp, 
   ThumbsDown, 
-  TrendingUp,
-  Clock,
-  User,
-  AlertCircle
+  TrendingUp
 } from 'lucide-react';
 import { Badge } from '../../../components/common/Badge';
 import { Avatar } from '../../../components/common/Avatar';
+import Card from '../../../components/common/Card';
+import Button from '../../../components/common/Button';
 import { InboxItem } from '../../../services/inbox.service';
 import { Approval } from '../../../types/workspace';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -34,7 +32,6 @@ interface ApprovalDetailContentProps {
 }
 
 export function ApprovalDetailContent({
-  item,
   approval,
   isSubmitting,
   comment,
@@ -44,8 +41,6 @@ export function ApprovalDetailContent({
   onSubmitDecision,
   approveLabel = 'Approve',
   rejectLabel = 'Reject',
-  approveDescription = 'Accept request',
-  rejectDescription = 'Decline request',
 }: ApprovalDetailContentProps) {
   const canApprove = approval.status === 'pending';
   const isResolved = approval.status !== 'pending';
@@ -61,9 +56,11 @@ export function ApprovalDetailContent({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
         >
-          <div className="p-4 space-y-4">
+          <Card
+            padding="md"
+            variant="default"
+          >
             {/* Minimal Header */}
             <div className="text-center">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">Your Decision</h3>
@@ -72,14 +69,15 @@ export function ApprovalDetailContent({
 
             {/* Elegant Decision Buttons */}
             <div className="flex items-center justify-center gap-3">
-              <button
+              <Button
                 onClick={() => onDecisionChange('approve')}
                 disabled={isSubmitting}
-                className={`group relative flex items-center gap-2.5 px-5 py-2.5 rounded-lg border transition-all duration-200 ${
+                variant={decision === 'approve' ? 'primary' : 'outline'}
+                className={`group relative ${
                   decision === 'approve'
-                    ? 'border-green-500 bg-green-50 dark:bg-green-950/30 shadow-sm'
-                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-green-300 dark:hover:border-green-700 hover:bg-green-50/50 dark:hover:bg-green-950/20'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    ? 'border-green-500 bg-green-50 dark:bg-green-950/30'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-700'
+                }`}
               >
                 <CheckCircle2 className={`h-4 w-4 transition-colors ${
                   decision === 'approve' 
@@ -96,18 +94,19 @@ export function ApprovalDetailContent({
                 {decision === 'approve' && (
                   <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-green-500 ring-2 ring-white dark:ring-gray-800"></div>
                 )}
-              </button>
+              </Button>
 
               <div className="h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 
-              <button
+              <Button
                 onClick={() => onDecisionChange('reject')}
                 disabled={isSubmitting}
-                className={`group relative flex items-center gap-2.5 px-5 py-2.5 rounded-lg border transition-all duration-200 ${
+                variant={decision === 'reject' ? 'danger' : 'outline'}
+                className={`group relative ${
                   decision === 'reject'
-                    ? 'border-red-500 bg-red-50 dark:bg-red-950/30 shadow-sm'
-                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-red-300 dark:hover:border-red-700 hover:bg-red-50/50 dark:hover:bg-red-950/20'
-                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    ? 'border-red-500 bg-red-50 dark:bg-red-950/30'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-700'
+                }`}
               >
                 <XCircle className={`h-4 w-4 transition-colors ${
                   decision === 'reject' 
@@ -124,7 +123,7 @@ export function ApprovalDetailContent({
                 {decision === 'reject' && (
                   <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></div>
                 )}
-              </button>
+              </Button>
             </div>
 
             {/* Comment Section - Elegant reveal */}
@@ -151,46 +150,35 @@ export function ApprovalDetailContent({
 
             {/* Submit Button - Elegant & Narrow */}
             <div className="flex justify-center">
-              <button
+              <Button
                 onClick={onSubmitDecision}
                 disabled={!decision || isSubmitting}
-                className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                  decision === 'approve'
-                    ? 'bg-green-600 hover:bg-green-700 text-white shadow-sm hover:shadow-md'
-                    : decision === 'reject'
-                    ? 'bg-red-600 hover:bg-red-700 text-white shadow-sm hover:shadow-md'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                }`}
+                variant={decision === 'approve' ? 'primary' : decision === 'reject' ? 'danger' : 'secondary'}
+                isLoading={isSubmitting}
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                    <span>Processing...</span>
-                  </>
-                ) : decision ? (
+                {decision ? (
                   <>
                     {decision === 'approve' ? (
-                      <CheckCircle2 className="h-4 w-4" />
+                      <CheckCircle2 className="h-4 w-4 mr-2" />
                     ) : (
-                      <XCircle className="h-4 w-4" />
+                      <XCircle className="h-4 w-4 mr-2" />
                     )}
                     <span>Submit {decision === 'approve' ? approveLabel : rejectLabel}</span>
                   </>
                 ) : (
                   <span>Select a decision above</span>
                 )}
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </motion.div>
       )}
 
       {/* Already Decided - At Top for Resolved */}
       {isResolved && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+        <Card
+          padding="md"
+          variant="default"
         >
           <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium ${
             approval.status === 'approved'
@@ -218,15 +206,15 @@ export function ApprovalDetailContent({
               </p>
             </div>
           )}
-        </motion.div>
+        </Card>
       )}
 
       {/* AI Recommendation */}
       {approval.aiRecommendation && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border border-primary/20 rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 p-3"
+        <Card
+          padding="md"
+          variant="outlined"
+          className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10"
         >
           <div className="flex items-start gap-2">
             <div className="p-1.5 rounded bg-primary/20 flex-shrink-0">
@@ -262,14 +250,13 @@ export function ApprovalDetailContent({
               )}
             </div>
           </div>
-        </motion.div>
+        </Card>
       )}
 
       {/* Request Summary - Key Info */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+      <Card
+        padding="md"
+        variant="default"
       >
         <div className="flex items-center gap-2 mb-2">
           <FileText className="h-3.5 w-3.5 text-primary" />
@@ -313,13 +300,12 @@ export function ApprovalDetailContent({
             </div>
           )}
         </div>
-      </motion.div>
+      </Card>
 
       {/* Request Data - Compact JSON */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+      <Card
+        padding="md"
+        variant="default"
       >
         <div className="flex items-center gap-2 mb-2">
           <FileText className="h-3.5 w-3.5 text-primary" />
@@ -330,7 +316,7 @@ export function ApprovalDetailContent({
             {JSON.stringify(approval.data, null, 2)}
           </pre>
         </div>
-      </motion.div>
+      </Card>
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Search,
@@ -12,6 +11,12 @@ import {
 import { templateService } from '../../services/template.service';
 import { WorkflowTemplate } from '../../types';
 import { cn } from '../../utils';
+import { Container, EmptyState } from '@/design-system/components';
+import Card from '@/components/common/Card';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import { Badge } from '@/components/common/Badge';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 
 export function TemplatesPage() {
   const [templates, setTemplates] = useState<WorkflowTemplate[]>([]);
@@ -74,17 +79,16 @@ export function TemplatesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading templates...</p>
+      <Container size="lg">
+        <div className="flex items-center justify-center h-96">
+          <LoadingSpinner size="lg" />
         </div>
-      </div>
+      </Container>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <Container size="lg" className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Workflow Templates</h1>
@@ -96,63 +100,53 @@ export function TemplatesPage() {
       {/* Search & Filters */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Input
             type="text"
             placeholder="Search templates by name, description, or tags..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-muted border-0 focus:ring-2 focus:ring-primary/20 transition-all"
+            className="pl-10"
           />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         </div>
 
-        <button
+        <Button
           onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
-          className={cn(
-            'px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2',
-            showFeaturedOnly
-              ? 'bg-primary text-primary-foreground shadow-md'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80'
-          )}
+          variant={showFeaturedOnly ? 'primary' : 'ghost'}
         >
-          <Sparkles className="h-4 w-4" />
+          <Sparkles className="h-4 w-4 mr-2" />
           Featured Only
-        </button>
+        </Button>
       </div>
 
       {/* Category Filters */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2">
         <Filter className="h-5 w-5 text-muted-foreground flex-shrink-0" />
         {categories.map((cat) => (
-          <button
+          <Button
             key={cat.value}
             onClick={() => setCategoryFilter(cat.value)}
-            className={cn(
-              'px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
-              categoryFilter === cat.value
-                ? 'bg-primary text-primary-foreground shadow-md'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            )}
+            variant={categoryFilter === cat.value ? 'primary' : 'ghost'}
+            size="sm"
+            className="whitespace-nowrap"
           >
             {cat.label}
             {categoryFilter === cat.value && cat.count > 0 && (
-              <span className="ml-2 px-2 py-0.5 rounded-full bg-primary-foreground/20 text-xs">
+              <Badge variant="info" className="ml-2">
                 {cat.count}
-              </span>
+              </Badge>
             )}
-          </button>
+          </Button>
         ))}
       </div>
 
       {/* Templates Grid */}
       {filteredTemplates.length === 0 ? (
-        <div className="text-center py-12">
-          <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No templates found</h3>
-          <p className="text-muted-foreground">
-            Try adjusting your search or filters
-          </p>
-        </div>
+        <EmptyState
+          icon={Search}
+          title="No templates found"
+          description="Try adjusting your search or filters"
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTemplates.map((template, index) => (
@@ -162,9 +156,12 @@ export function TemplatesPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Link
-                to={`/app/templates/${template.id}`}
-                className="block bg-card border border-border rounded-lg overflow-hidden hover:border-primary/50 hover:shadow-lg transition-all group"
+              <Card
+                padding="none"
+                variant="default"
+                hover
+                onClick={() => window.location.href = `/app/templates/${template.id}`}
+                className="overflow-hidden group cursor-pointer"
               >
                 {/* Thumbnail */}
                 {template.thumbnail ? (
@@ -243,12 +240,12 @@ export function TemplatesPage() {
                     </div>
                   )}
                 </div>
-              </Link>
+              </Card>
             </motion.div>
           ))}
         </div>
       )}
-    </div>
+    </Container>
   );
 }
 

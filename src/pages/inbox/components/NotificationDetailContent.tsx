@@ -3,7 +3,6 @@ import { Bell, Info, ExternalLink, FileText, Clock, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { InboxItem } from '../../../services/inbox.service';
 import { formatDistanceToNow } from 'date-fns';
-import { Avatar } from '../../../components/common/Avatar';
 import { Badge } from '../../../components/common/Badge';
 
 interface NotificationDetailContentProps {

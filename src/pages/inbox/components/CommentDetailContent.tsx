@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { MessageSquare, User, Reply, ThumbsUp, ThumbsDown, Clock } from 'lucide-react';
+import { MessageSquare, Reply, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Avatar } from '../../../components/common/Avatar';
 import { InboxItem } from '../../../services/inbox.service';
 import { formatDistanceToNow } from 'date-fns';

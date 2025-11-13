@@ -1,9 +1,8 @@
 import { motion } from 'framer-motion';
-import { UserPlus, CheckCircle2, Clock, Users, Calendar, User } from 'lucide-react';
+import { UserPlus, CheckCircle2, Users } from 'lucide-react';
 import { Avatar } from '../../../components/common/Avatar';
 import { InboxItem } from '../../../services/inbox.service';
-import { format, formatDistanceToNow } from 'date-fns';
-import { Badge } from '../../../components/common/Badge';
+import { format } from 'date-fns';
 
 interface AssignmentDetailContentProps {
   item: InboxItem;

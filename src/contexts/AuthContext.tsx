@@ -1,9 +1,7 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
-import type { AuthContextType, User, LoginCredentials, SignupData } from '../types';
+import { useState, useEffect, ReactNode } from 'react';
+import type { User, LoginCredentials, SignupData } from '../types';
 import { authService } from '../services';
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from './AuthContext';
 
 interface AuthProviderProps {
   children: ReactNode;

@@ -1,7 +1,8 @@
 import { memo } from 'react';
 import { Handle, Position } from 'reactflow';
 import { Zap, MoreVertical } from 'lucide-react';
-import { NodeStatusBadge, getNodeStatus } from '../NodeStatusBadge';
+import { NodeStatusBadge } from '../NodeStatusBadge';
+import { getNodeStatus } from '../nodeStatusUtils';
 import { NodeTestResult } from '../TestResultPanel';
 
 interface TriggerNodeProps {

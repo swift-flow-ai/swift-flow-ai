@@ -7,6 +7,8 @@ import { approvalService } from '../../services/approval.service';
 import { inboxService, InboxItem } from '../../services/inbox.service';
 import { Approval } from '../../types/workspace';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { Container } from '@/design-system/components';
+import Button from '@/components/common/Button';
 import { InboxDetailHeader } from './components/InboxDetailHeader';
 import { InboxDetailSidebar } from './components/InboxDetailSidebar';
 import { ApprovalDetailContent } from './components/ApprovalDetailContent';
@@ -145,7 +147,7 @@ export function InboxDetail() {
   // Render type-specific content
   const renderContent = () => {
     switch (inboxItem.type) {
-      case 'approval':
+      case 'approval': {
         if (!displayApproval) {
           return <GenericDetailContent item={inboxItem} />;
         }
@@ -172,6 +174,7 @@ export function InboxDetail() {
             rejectDescription={approvalData?.rejectDescription}
           />
         );
+      }
       
       case 'task':
         return (
@@ -215,7 +218,7 @@ export function InboxDetail() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-2">
+    <Container size="lg" className="py-2">
       {/* Notification */}
       {notification && (
         <motion.div
@@ -234,13 +237,15 @@ export function InboxDetail() {
 
       {/* Header */}
       <div className="mb-2">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => navigate('/app/inbox')}
-          className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors mb-1"
+          className="mb-1"
         >
-          <ArrowLeft className="h-3.5 w-3.5" />
+          <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
           Back to Inbox
-        </button>
+        </Button>
         
         <InboxDetailHeader item={inboxItem} />
       </div>
@@ -258,6 +263,6 @@ export function InboxDetail() {
           onCopyExecutionId={copyExecutionId}
         />
       </div>
-    </div>
+    </Container>
   );
 }

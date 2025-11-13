@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { PlayCircle, CheckCircle2, Clock, FileText, Link as LinkIcon, Calendar, User } from 'lucide-react';
+import { PlayCircle, CheckCircle2, FileText, Link as LinkIcon, User } from 'lucide-react';
 import { InboxItem } from '../../../services/inbox.service';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
+import Card from '../../../components/common/Card';
+import Button from '../../../components/common/Button';
 
 interface TaskDetailContentProps {
   item: InboxItem;
@@ -40,51 +41,42 @@ export function TaskDetailContent({ item, onComplete, onViewDetails }: TaskDetai
   return (
     <div className="space-y-3">
       {/* Actions - At Top */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+      <Card
+        padding="md"
+        variant="default"
       >
         <div className="flex items-center gap-2 mb-2">
           <PlayCircle className="h-3.5 w-3.5 text-primary" />
           <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Actions</h3>
         </div>
         <div className="flex gap-2">
-          <button
+          <Button
             onClick={handleComplete}
             disabled={isCompleting}
-            className="flex-1 px-5 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] shadow-md shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none flex items-center justify-center gap-2 text-sm font-semibold"
+            variant="primary"
+            isLoading={isCompleting}
+            className="flex-1"
           >
-            {isCompleting ? (
-              <>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                Completing...
-              </>
-            ) : (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                Complete Task
-              </>
-            )}
-          </button>
+            <CheckCircle2 className="h-4 w-4 mr-2" />
+            Complete Task
+          </Button>
           {onViewDetails && (
-            <button
+            <Button
               onClick={() => onViewDetails(item.id)}
-              className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all duration-200 transform hover:scale-[1.01] active:scale-[0.99] flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary"
+              variant="outline"
             >
-              <FileText className="h-4 w-4" />
+              <FileText className="h-4 w-4 mr-2" />
               Details
-            </button>
+            </Button>
           )}
         </div>
-      </motion.div>
+      </Card>
 
       {/* Task Overview - Compact */}
       {(taskMetadata?.category || taskMetadata?.estimatedTime || progress > 0) && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+        <Card
+          padding="md"
+          variant="default"
         >
           <div className="grid grid-cols-3 gap-3 text-sm">
             {taskMetadata?.category && (
@@ -114,15 +106,14 @@ export function TaskDetailContent({ item, onComplete, onViewDetails }: TaskDetai
               />
             </div>
           )}
-        </motion.div>
+        </Card>
       )}
 
       {/* Task Steps/Checklist - Compact */}
       {taskMetadata?.steps && taskMetadata.steps.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+        <Card
+          padding="md"
+          variant="default"
         >
           <div className="flex items-center gap-2 mb-2">
             <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
@@ -166,15 +157,14 @@ export function TaskDetailContent({ item, onComplete, onViewDetails }: TaskDetai
               </div>
             ))}
           </div>
-        </motion.div>
+        </Card>
       )}
 
       {/* Attachments - Compact */}
       {taskMetadata?.attachments && taskMetadata.attachments.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+        <Card
+          padding="md"
+          variant="default"
         >
           <div className="flex items-center gap-2 mb-2">
             <FileText className="h-3.5 w-3.5 text-primary" />
@@ -205,15 +195,14 @@ export function TaskDetailContent({ item, onComplete, onViewDetails }: TaskDetai
               </a>
             ))}
           </div>
-        </motion.div>
+        </Card>
       )}
 
       {/* Related Items - Compact */}
       {taskMetadata?.relatedItems && taskMetadata.relatedItems.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+        <Card
+          padding="md"
+          variant="default"
         >
           <div className="flex items-center gap-2 mb-2">
             <LinkIcon className="h-3.5 w-3.5 text-primary" />
@@ -236,15 +225,14 @@ export function TaskDetailContent({ item, onComplete, onViewDetails }: TaskDetai
               </div>
             ))}
           </div>
-        </motion.div>
+        </Card>
       )}
 
       {/* Assignee Info */}
       {taskMetadata?.assignee && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 p-3"
+        <Card
+          padding="md"
+          variant="default"
         >
           <div className="flex items-center gap-2">
             <User className="h-3.5 w-3.5 text-primary" />
@@ -253,7 +241,7 @@ export function TaskDetailContent({ item, onComplete, onViewDetails }: TaskDetai
               <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{taskMetadata.assignee.name}</p>
             </div>
           </div>
-        </motion.div>
+        </Card>
       )}
     </div>
   );

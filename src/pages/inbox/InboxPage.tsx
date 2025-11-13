@@ -155,14 +155,14 @@ export function InboxPage() {
     if (currentWorkspace) {
       loadInboxItems(1, false);
     }
-  }, [currentWorkspace]);
+  }, [currentWorkspace, loadInboxItems]);
 
   // Reload when filters/search/itemsPerPage change
   useEffect(() => {
     if (currentWorkspace) {
       loadInboxItems(1, false);
     }
-  }, [debouncedSearch, filter, sortBy, itemsPerPage]);
+  }, [currentWorkspace, debouncedSearch, filter, sortBy, itemsPerPage, loadInboxItems]);
 
   // Infinite scroll handler
   const handleScroll = useCallback(() => {

@@ -5,6 +5,8 @@ import { workflowService } from '../../services/workflow.service';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Badge } from '../../components/common/Badge';
 import { Avatar } from '../../components/common/Avatar';
+import { StatCard, Container, QuickAction, EmptyState } from '@/design-system/components';
+import Card from '@/components/common/Card';
 import { 
   Zap, 
   CheckSquare, 
@@ -16,7 +18,6 @@ import {
   FileText,
   Plus,
   ArrowRight,
-  TrendingUp,
   Inbox,
   BookOpen,
   Activity,
@@ -32,13 +33,7 @@ export function Dashboard() {
   const [recentWorkflows, setRecentWorkflows] = useState<Workflow[]>([]);
   const [loadingWorkflows, setLoadingWorkflows] = useState(false);
 
-  useEffect(() => {
-    if (currentWorkspace) {
-      loadRecentWorkflows();
-    }
-  }, [currentWorkspace]);
-
-  const loadRecentWorkflows = async () => {
+  const loadRecentWorkflows = useCallback(async () => {
     if (!currentWorkspace) return;
     try {
       setLoadingWorkflows(true);
@@ -53,7 +48,13 @@ export function Dashboard() {
     } finally {
       setLoadingWorkflows(false);
     }
-  };
+  }, [currentWorkspace]);
+
+  useEffect(() => {
+    if (currentWorkspace) {
+      loadRecentWorkflows();
+    }
+  }, [currentWorkspace, loadRecentWorkflows]);
 
   if (isLoading || !dashboard) {
     return (
@@ -157,7 +158,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <Container size="xl" className="space-y-6">
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -187,70 +188,46 @@ export function Dashboard() {
           {/* Quick Actions */}
           <div className="flex flex-wrap gap-3 mt-6">
             {quickActions.map((action, index) => (
-              <Link
+              <motion.div
                 key={action.label}
-                to={action.link}
-                className="group relative"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1 }}
               >
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`flex items-center gap-3 px-5 py-3 rounded-xl ${action.color} text-white shadow-lg hover:shadow-xl transition-all duration-200 group-hover:scale-105`}
-                >
-                  <action.icon className="h-5 w-5" />
-                  <div>
-                    <div className="font-semibold text-sm">{action.label}</div>
-                    <div className="text-xs opacity-90">{action.description}</div>
-                  </div>
-                  {action.badge && (
-                    <Badge variant="danger" className="ml-2 bg-white/20 text-white border-white/30">
-                      {action.badge}
-                    </Badge>
-                  )}
-                  <ArrowRight className="h-4 w-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </motion.div>
-              </Link>
+                <QuickAction
+                  label={action.label}
+                  description={action.description}
+                  icon={action.icon}
+                  href={action.link}
+                  color={action.color}
+                  badge={action.badge}
+                />
+              </motion.div>
             ))}
           </div>
         </div>
       </motion.div>
 
-      {/* Stats Grid - Modern Cards */}
+      {/* Stats Grid - Using StatCard Component */}
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (
-          <Link key={stat.label} to={stat.link}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className={`group relative overflow-hidden rounded-lg border ${stat.borderColor} bg-white dark:bg-gray-800 p-4 hover:shadow-md transition-all duration-200 cursor-pointer`}
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div className={`p-1.5 rounded-md ${stat.bg}`}>
-                  <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                </div>
-                {stat.trend && (
-                  <div className={`flex items-center gap-1 text-xs font-medium ${
-                    stat.trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                  }`}>
-                    <TrendingUp className={`h-3 w-3 ${stat.trendUp ? '' : 'rotate-180'}`} />
-                    {stat.trend}
-                  </div>
-                )}
-                {stat.urgent && (
-                  <div className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                )}
-              </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-0.5">
-                {stat.value}
-              </div>
-              <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                {stat.label}
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            </motion.div>
-          </Link>
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+          >
+            <StatCard
+              label={stat.label}
+              value={stat.value}
+              icon={stat.icon}
+              iconColor={stat.color}
+              iconBg={stat.bg}
+              trend={stat.trend ? { value: stat.trend, isPositive: stat.trendUp } : undefined}
+              urgent={stat.urgent}
+              link={stat.link}
+            />
+          </motion.div>
         ))}
       </div>
 
@@ -299,38 +276,37 @@ export function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="lg:col-span-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
+          className="lg:col-span-2"
         >
-          <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Workflows</h2>
-            </div>
-            <Link
-              to="/app/workflows"
-              className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1"
-            >
-              View all
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-          <div className="p-5">
+          <Card
+            title="Recent Workflows"
+            headerAction={
+              <Link
+                to="/app/workflows"
+                className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1"
+              >
+                View all
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            }
+            padding="lg"
+            variant="default"
+          >
             {loadingWorkflows ? (
               <div className="flex items-center justify-center py-8">
                 <LoadingSpinner size="sm" />
               </div>
             ) : recentWorkflows.length === 0 ? (
-              <div className="text-center py-8">
-                <Zap className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">No workflows yet</p>
-                <Link
-                  to="/app/workflows/new"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create Your First Workflow
-                </Link>
-              </div>
+              <EmptyState
+                icon={Zap}
+                title="No workflows yet"
+                description="Create your first workflow to automate your work"
+                action={{
+                  label: "Create Your First Workflow",
+                  onClick: () => window.location.href = '/app/workflows/new',
+                  variant: "primary"
+                }}
+              />
             ) : (
               <div className="space-y-3">
                 {recentWorkflows.map((workflow) => (
@@ -380,7 +356,7 @@ export function Dashboard() {
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </motion.div>
 
         {/* My Tasks - Compact */}
@@ -388,29 +364,29 @@ export function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
         >
-          <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckSquare className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">My Tasks</h2>
-            </div>
-            {dashboard.myTasks.length > 0 && (
-              <Link
-                to="/app/inbox"
-                className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1"
-              >
-                View all
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            )}
-          </div>
-          <div className="p-5">
+          <Card
+            title="My Tasks"
+            headerAction={
+              dashboard.myTasks.length > 0 ? (
+                <Link
+                  to="/app/inbox"
+                  className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1"
+                >
+                  View all
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              ) : undefined
+            }
+            padding="lg"
+            variant="default"
+          >
             {dashboard.myTasks.length === 0 ? (
-              <div className="text-center py-6">
-                <CheckSquare className="h-10 w-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-                <p className="text-sm text-gray-500 dark:text-gray-400">No pending tasks</p>
-              </div>
+              <EmptyState
+                icon={CheckSquare}
+                title="No pending tasks"
+                description="You're all caught up!"
+              />
             ) : (
               <div className="space-y-3">
                 {dashboard.myTasks.slice(0, 5).map((task) => (
@@ -451,7 +427,7 @@ export function Dashboard() {
                 ))}
               </div>
             )}
-          </div>
+          </Card>
         </motion.div>
       </div>
 
@@ -460,20 +436,18 @@ export function Dashboard() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25 }}
-        className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
       >
-        <div className="p-5 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Activity</h2>
-          </div>
-        </div>
-        <div className="p-5">
+        <Card
+          title="Recent Activity"
+          padding="lg"
+          variant="default"
+        >
           {dashboard.recentActivity.length === 0 ? (
-            <div className="text-center py-6">
-              <Activity className="h-10 w-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
-              <p className="text-sm text-gray-500 dark:text-gray-400">No recent activity</p>
-            </div>
+            <EmptyState
+              icon={Activity}
+              title="No recent activity"
+              description="Activity will appear here as it happens"
+            />
           ) : (
             <div className="space-y-4">
               {dashboard.recentActivity.map((activity) => {
@@ -512,8 +486,8 @@ export function Dashboard() {
               })}
             </div>
           )}
-        </div>
+        </Card>
       </motion.div>
-    </div>
+    </Container>
   );
 }

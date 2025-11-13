@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { workflowService } from '../../services/workflow.service';
 import { folderService } from '../../services/folder.service';
@@ -9,10 +9,13 @@ import { WorkflowFolder } from '../../types/collaboration';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Badge } from '../../components/common/Badge';
 import { Avatar } from '../../components/common/Avatar';
-import { EmptyState } from '../../components/common/EmptyState';
 import { PermissionGate } from '../../components/common/PermissionGate';
 import { ConfirmDialog } from '../../components/common';
 import { FolderTree } from '../../components/workflows/FolderTree';
+import { Container, EmptyState } from '@/design-system/components';
+import Card from '@/components/common/Card';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
 import { Zap, Plus, Search, Play, Pause, Archive, FolderPlus, X, MessageSquare, Users2, FileText, Share2, Copy, Check, Link as LinkIcon } from 'lucide-react';
 
 export function WorkflowsList() {
@@ -130,14 +133,14 @@ export function WorkflowsList() {
   }
 
   return (
-    <div className="flex gap-6">
+    <Container size="xl" className="flex gap-6">
       {/* Folder Sidebar */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         className="w-64 flex-shrink-0"
       >
-        <div className="bg-card border border-border rounded-xl p-4 sticky top-6">
+        <Card padding="md" variant="default" className="sticky top-6">
           <h3 className="text-sm font-semibold mb-4 text-muted-foreground uppercase tracking-wide">
             Folders
           </h3>
@@ -150,7 +153,7 @@ export function WorkflowsList() {
             onShareFolder={handleShareFolder}
             showActions={true}
           />
-        </div>
+        </Card>
       </motion.div>
 
       {/* Main Content */}
@@ -164,90 +167,78 @@ export function WorkflowsList() {
             </p>
           </div>
           <PermissionGate permission="workflow:create">
-            <button 
+            <Button 
               onClick={() => navigate('/app/workflows/new')}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+              variant="primary"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="h-4 w-4 mr-2" />
               Create Workflow
-            </button>
+            </Button>
           </PermissionGate>
         </div>
 
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Input
             type="text"
             placeholder="Search workflows..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-muted/50 border-0 focus:ring-2 focus:ring-primary/20 transition-all"
+            className="pl-10"
           />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         </div>
         
         <div className="flex items-center gap-2">
-          <button
+          <Button
             onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'all' 
-                ? 'bg-primary text-primary-foreground shadow-sm' 
-                : 'bg-muted text-foreground hover:bg-muted/80'
-            }`}
+            variant={filter === 'all' ? 'primary' : 'ghost'}
+            size="sm"
           >
             All
             {filter === 'all' && (
-              <span className="ml-2 px-1.5 py-0.5 rounded bg-primary-foreground/20 text-xs">
+              <Badge variant="info" className="ml-2">
                 {workflows.length}
-              </span>
+              </Badge>
             )}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setFilter('active')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'active' 
-                ? 'bg-primary text-primary-foreground shadow-sm' 
-                : 'bg-muted text-foreground hover:bg-muted/80'
-            }`}
+            variant={filter === 'active' ? 'primary' : 'ghost'}
+            size="sm"
           >
             Active
             {filter === 'active' && (
-              <span className="ml-2 px-1.5 py-0.5 rounded bg-primary-foreground/20 text-xs">
+              <Badge variant="info" className="ml-2">
                 {workflows.length}
-              </span>
+              </Badge>
             )}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setFilter('draft')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'draft' 
-                ? 'bg-primary text-primary-foreground shadow-sm' 
-                : 'bg-muted text-foreground hover:bg-muted/80'
-            }`}
+            variant={filter === 'draft' ? 'primary' : 'ghost'}
+            size="sm"
           >
             Draft
             {filter === 'draft' && (
-              <span className="ml-2 px-1.5 py-0.5 rounded bg-primary-foreground/20 text-xs">
+              <Badge variant="info" className="ml-2">
                 {workflows.length}
-              </span>
+              </Badge>
             )}
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setFilter('paused')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              filter === 'paused' 
-                ? 'bg-primary text-primary-foreground shadow-sm' 
-                : 'bg-muted text-foreground hover:bg-muted/80'
-            }`}
+            variant={filter === 'paused' ? 'primary' : 'ghost'}
+            size="sm"
           >
             Paused
             {filter === 'paused' && (
-              <span className="ml-2 px-1.5 py-0.5 rounded bg-primary-foreground/20 text-xs">
+              <Badge variant="info" className="ml-2">
                 {workflows.length}
-              </span>
+              </Badge>
             )}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -275,9 +266,12 @@ export function WorkflowsList() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
-                <Link
-                  to={`/app/workflows/${workflow.id}`}
-                  className="block group rounded-xl border bg-card p-6 hover:border-primary hover:shadow-lg transition-all"
+                <Card
+                  padding="lg"
+                  variant="default"
+                  hover
+                  onClick={() => navigate(`/app/workflows/${workflow.id}`)}
+                  className="group cursor-pointer"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1 min-w-0">
@@ -346,12 +340,13 @@ export function WorkflowsList() {
                       )}
                     </div>
                   )}
-                </Link>
+                </Card>
               </motion.div>
             );
           })}
         </div>
       )}
+      </div>
 
       {/* Create Folder Modal */}
       {showCreateFolderModal && (
@@ -391,8 +386,7 @@ export function WorkflowsList() {
         cancelText="Cancel"
         variant="danger"
       />
-      </div>
-    </div>
+    </Container>
   );
 }
 

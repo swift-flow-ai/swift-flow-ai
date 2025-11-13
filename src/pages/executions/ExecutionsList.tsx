@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Play,
@@ -15,6 +14,12 @@ import { executionService } from '../../services/execution.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { WorkflowExecution } from '../../types';
 import { cn } from '../../utils';
+import { Container, EmptyState } from '@/design-system/components';
+import Card from '@/components/common/Card';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import { Badge } from '@/components/common/Badge';
+import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 
 export function ExecutionsList() {
   const { currentWorkspace } = useWorkspace();
@@ -119,17 +124,16 @@ export function ExecutionsList() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading executions...</p>
+      <Container size="lg">
+        <div className="flex items-center justify-center h-96">
+          <LoadingSpinner size="lg" />
         </div>
-      </div>
+      </Container>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <Container size="lg" className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Executions</h1>
@@ -144,48 +148,42 @@ export function ExecutionsList() {
           <Filter className="h-5 w-5 text-muted-foreground" />
           <div className="flex gap-2">
             {filters.map((f) => (
-              <button
+              <Button
                 key={f.value}
                 onClick={() => setFilter(f.value)}
-                className={cn(
-                  'px-4 py-2 rounded-lg text-sm font-medium transition-all',
-                  filter === f.value
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                )}
+                variant={filter === f.value ? 'primary' : 'ghost'}
+                size="sm"
               >
                 {f.label}
                 {filter === f.value && f.count > 0 && (
-                  <span className="ml-2 px-2 py-0.5 rounded-full bg-primary-foreground/20 text-xs">
+                  <Badge variant="info" className="ml-2">
                     {f.count}
-                  </span>
+                  </Badge>
                 )}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
 
         <div className="relative w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input
+          <Input
             type="text"
             placeholder="Search executions..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg bg-muted border-0 focus:ring-2 focus:ring-primary/20 transition-all"
+            className="pl-10"
           />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         </div>
       </div>
 
       {/* Executions List */}
       {filteredExecutions.length === 0 ? (
-        <div className="text-center py-12">
-          <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No executions found</h3>
-          <p className="text-muted-foreground">
-            {search ? 'Try adjusting your search' : 'No workflow executions yet'}
-          </p>
-        </div>
+        <EmptyState
+          icon={AlertCircle}
+          title="No executions found"
+          description={search ? 'Try adjusting your search' : 'No workflow executions yet'}
+        />
       ) : (
         <div className="space-y-3">
           {filteredExecutions.map((execution, index) => (
@@ -195,9 +193,12 @@ export function ExecutionsList() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Link
-                to={`/app/executions/${execution.id}`}
-                className="block bg-card border border-border rounded-lg p-4 hover:border-primary/50 transition-all"
+              <Card
+                padding="md"
+                variant="default"
+                hover
+                onClick={() => window.location.href = `/app/executions/${execution.id}`}
+                className="cursor-pointer"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -256,12 +257,12 @@ export function ExecutionsList() {
                     )}
                   </div>
                 </div>
-              </Link>
+              </Card>
             </motion.div>
           ))}
         </div>
       )}
-    </div>
+    </Container>
   );
 }
 

@@ -11,6 +11,7 @@ import { MCPsTab } from './MCPsTab';
 import { CustomLLMsTab } from './CustomLLMsTab';
 import { integrationSystemService } from '../../services/integration-system.service';
 import { useWorkspace } from '../../hooks/useWorkspace';
+import { Container, StatCard } from '@/design-system/components';
 
 type Tab = 'integrations' | 'mcps' | 'custom-llms';
 
@@ -51,7 +52,7 @@ export function AppCenterPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <Container size="lg" className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">App Center</h1>
@@ -65,68 +66,56 @@ export function AppCenterPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-card border border-border rounded-xl p-4"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-              <Plug className="w-5 h-5 text-blue-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.integrationsInstalled}</p>
-              <p className="text-sm text-muted-foreground">Integrations</p>
-            </div>
-          </div>
+          <StatCard
+            label="Integrations"
+            value={stats.integrationsInstalled}
+            icon={Plug}
+            iconColor="text-blue-600 dark:text-blue-400"
+            iconBg="bg-blue-50 dark:bg-blue-950/30"
+          />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-card border border-border rounded-xl p-4"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-              <Package className="w-5 h-5 text-purple-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.mcpsInstalled}</p>
-              <p className="text-sm text-muted-foreground">MCPs Installed</p>
-            </div>
-          </div>
+          <StatCard
+            label="MCPs Installed"
+            value={stats.mcpsInstalled}
+            icon={Package}
+            iconColor="text-purple-600 dark:text-purple-400"
+            iconBg="bg-purple-50 dark:bg-purple-950/30"
+          />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-card border border-border rounded-xl p-4"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-              <Brain className="w-5 h-5 text-green-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.customLLMs}</p>
-              <p className="text-sm text-muted-foreground">Custom LLMs</p>
-            </div>
-          </div>
+          <StatCard
+            label="Custom LLMs"
+            value={stats.customLLMs}
+            icon={Brain}
+            iconColor="text-green-600 dark:text-green-400"
+            iconBg="bg-green-50 dark:bg-green-950/30"
+          />
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-card border border-border rounded-xl p-4"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-orange-500" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">${stats.llmCost.toFixed(0)}</p>
-              <p className="text-sm text-muted-foreground">LLM Cost (MTD)</p>
-            </div>
-          </div>
+          <StatCard
+            label="LLM Cost (MTD)"
+            value={`$${stats.llmCost.toFixed(0)}`}
+            icon={DollarSign}
+            iconColor="text-yellow-600 dark:text-yellow-400"
+            iconBg="bg-yellow-50 dark:bg-yellow-950/30"
+          />
         </motion.div>
       </div>
 
@@ -162,7 +151,7 @@ export function AppCenterPage() {
         {activeTab === 'mcps' && <MCPsTab />}
         {activeTab === 'custom-llms' && <CustomLLMsTab />}
       </div>
-    </div>
+    </Container>
   );
 }
 
