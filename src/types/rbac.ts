@@ -35,8 +35,6 @@ export type Permission =
   | 'workspace:edit'
   | 'workspace:delete'
   | 'workspace:manage_billing'
-  // Audit permissions
-  | 'audit:view'
   // Template permissions
   | 'template:view'
   | 'template:use'
@@ -83,7 +81,6 @@ export const ROLE_DEFINITIONS: Record<Role, RoleDefinition> = {
       'workspace:edit',
       'workspace:delete',
       'workspace:manage_billing',
-      'audit:view',
       'template:view',
       'template:use',
       'template:create',
@@ -117,7 +114,6 @@ export const ROLE_DEFINITIONS: Record<Role, RoleDefinition> = {
       'integration:delete',
       'workspace:view',
       'workspace:edit',
-      'audit:view',
       'template:view',
       'template:use',
       'template:create',

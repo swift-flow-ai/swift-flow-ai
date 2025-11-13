@@ -5,7 +5,7 @@ export interface Workspace {
   slug: string;
   logo?: string;
   color?: string; // Workspace theme color (hex code)
-  role: 'owner' | 'admin' | 'member' | 'viewer' | 'guest';
+  role: "owner" | "admin" | "member" | "viewer" | "guest";
   memberCount: number;
   activeWorkflows: number;
   pendingApprovals: number;
@@ -28,7 +28,12 @@ export interface WorkspaceDashboard {
 
 export interface Activity {
   id: string;
-  type: 'workflow_completed' | 'workflow_failed' | 'approval_needed' | 'member_joined' | 'workflow_created';
+  type:
+    | "workflow_completed"
+    | "workflow_failed"
+    | "approval_needed"
+    | "member_joined"
+    | "workflow_created";
   title: string;
   description?: string;
   workflow?: {
@@ -45,11 +50,11 @@ export interface Activity {
 
 export interface Task {
   id: string;
-  type: 'approval' | 'review' | 'manual_task';
+  type: "approval" | "review" | "manual_task";
   title: string;
   description?: string;
   workflow: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority: "low" | "medium" | "high" | "critical";
   dueAt?: string;
   createdAt: string;
 }
@@ -59,8 +64,8 @@ export interface Workflow {
   id: string;
   name: string;
   description: string;
-  status: 'active' | 'draft' | 'paused' | 'archived';
-  category: 'hr' | 'sales' | 'support' | 'operations' | 'finance' | 'custom';
+  status: "active" | "draft" | "paused" | "archived";
+  category: "hr" | "sales" | "support" | "operations" | "finance" | "custom";
   version: number;
   folderId?: string | null;
   createdBy: {
@@ -88,7 +93,16 @@ export interface WorkflowDefinition {
 
 export interface WorkflowNode {
   id: string;
-  type: 'trigger' | 'ai_agent' | 'human_task' | 'logic' | 'integration' | 'mcp' | 'data_op' | 'action' | 'smart_routing';
+  type:
+    | "trigger"
+    | "ai_agent"
+    | "human_task"
+    | "logic"
+    | "integration"
+    | "mcp"
+    | "data_op"
+    | "action"
+    | "smart_routing";
   subtype: string;
   position: { x: number; y: number };
   config: Record<string, unknown>;
@@ -108,7 +122,13 @@ export interface WorkflowExecution {
   id: string;
   workflowId: string;
   workflowName: string;
-  status: 'queued' | 'running' | 'waiting' | 'completed' | 'failed' | 'cancelled';
+  status:
+    | "queued"
+    | "running"
+    | "waiting"
+    | "completed"
+    | "failed"
+    | "cancelled";
   progress: number;
   currentNode?: string;
   input: Record<string, unknown>;
@@ -124,7 +144,7 @@ export interface WorkflowExecution {
   estimatedCompletion?: string;
   duration?: string;
   triggeredBy: {
-    type: 'manual' | 'webhook' | 'schedule' | 'api';
+    type: "manual" | "webhook" | "schedule" | "api";
     user?: { id: string; name: string };
   };
 }
@@ -132,7 +152,7 @@ export interface WorkflowExecution {
 export interface ExecutionTrace {
   nodeId: string;
   nodeName: string;
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'skipped';
+  status: "pending" | "running" | "completed" | "failed" | "skipped";
   startedAt?: string;
   completedAt?: string;
   duration?: number;
@@ -144,7 +164,7 @@ export interface ExecutionTrace {
 
 export interface ExecutionLog {
   timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
+  level: "info" | "warn" | "error" | "debug";
   message: string;
   metadata?: Record<string, unknown>;
 }
@@ -156,11 +176,11 @@ export interface Approval {
   executionId: string;
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  priority: "low" | "medium" | "high" | "critical";
+  status: "pending" | "approved" | "rejected" | "expired";
   data: Record<string, unknown>;
   aiRecommendation?: {
-    decision: 'approve' | 'reject';
+    decision: "approve" | "reject";
     confidence: number;
     reasoning: string;
     similarCases?: number;
@@ -195,21 +215,28 @@ export interface Integration {
   id: string;
   name: string;
   description: string;
-  category: 'crm' | 'communication' | 'payment' | 'database' | 'ai' | 'mcp' | 'utilities';
+  category:
+    | "crm"
+    | "communication"
+    | "payment"
+    | "database"
+    | "ai"
+    | "mcp"
+    | "utilities";
   icon: string;
   rating: number;
   installs: number;
   featured: boolean;
-  pricing: 'free' | 'paid' | 'freemium';
+  pricing: "free" | "paid" | "freemium";
   capabilities: string[];
-  authType: 'oauth2' | 'api_key' | 'basic' | 'custom';
+  authType: "oauth2" | "api_key" | "basic" | "custom";
 }
 
 export interface InstalledIntegration {
   id: string;
   integrationId: string;
   name: string;
-  status: 'connected' | 'disconnected' | 'error';
+  status: "connected" | "disconnected" | "error";
   config: Record<string, unknown>;
   usage: {
     callsThisMonth: number;
@@ -230,8 +257,8 @@ export interface Integration {
   appName: string;
   appIcon?: string;
   workspaceId: string;
-  status: 'connected' | 'disconnected' | 'error' | 'configuring';
-  authType: 'oauth2' | 'api_key' | 'basic' | 'custom';
+  status: "connected" | "disconnected" | "error" | "configuring";
+  authType: "oauth2" | "api_key" | "basic" | "custom";
   config: {
     clientId?: string;
     scopes?: string[];
@@ -250,7 +277,7 @@ export interface Integration {
     connectedBy: string;
     connectedAt: string;
     lastTestedAt?: string;
-    lastTestStatus?: 'success' | 'failed';
+    lastTestStatus?: "success" | "failed";
     lastError?: string;
   };
   settings: {
@@ -267,7 +294,7 @@ export interface IntegrationApp {
   description: string;
   icon: string;
   category: string;
-  authType: 'oauth2' | 'api_key' | 'basic' | 'custom';
+  authType: "oauth2" | "api_key" | "basic" | "custom";
   authConfig: {
     authUrl?: string;
     tokenUrl?: string;
@@ -275,7 +302,7 @@ export interface IntegrationApp {
     requiredFields?: Array<{
       key: string;
       label: string;
-      type: 'text' | 'password' | 'url' | 'select';
+      type: "text" | "password" | "url" | "select";
       required: boolean;
       placeholder?: string;
       options?: string[];
@@ -301,7 +328,7 @@ export interface WorkflowTemplate {
   id: string;
   name: string;
   description: string;
-  category: 'hr' | 'sales' | 'support' | 'operations' | 'finance' | 'custom';
+  category: "hr" | "sales" | "support" | "operations" | "finance" | "custom";
   icon?: string;
   thumbnail?: string;
   featured: boolean;
@@ -312,7 +339,7 @@ export interface WorkflowTemplate {
   variables: Array<{
     key: string;
     label: string;
-    type: 'text' | 'number' | 'email' | 'select';
+    type: "text" | "number" | "email" | "select";
     required: boolean;
     defaultValue?: string;
     options?: string[];
@@ -320,55 +347,11 @@ export interface WorkflowTemplate {
   createdBy: {
     id: string;
     name: string;
-    type: 'system' | 'user' | 'community';
+    type: "system" | "user" | "community";
   };
   tags: string[];
   createdAt: string;
   updatedAt: string;
-}
-
-// Audit Log types
-export interface AuditLog {
-  id: string;
-  workspaceId: string;
-  timestamp: string;
-  action: string;
-  category: 'workflow' | 'user' | 'integration' | 'settings' | 'security' | 'data';
-  actor: {
-    id: string;
-    name: string;
-    email: string;
-    ipAddress?: string;
-  };
-  resource: {
-    type: string;
-    id: string;
-    name: string;
-  };
-  changes?: {
-    field: string;
-    oldValue: unknown;
-    newValue: unknown;
-  }[];
-  metadata?: {
-    userAgent?: string;
-    location?: string;
-    duration?: number;
-    [key: string]: unknown;
-  };
-  severity: 'info' | 'warning' | 'critical';
-  status: 'success' | 'failed';
-}
-
-export interface AuditLogFilters {
-  category?: string;
-  action?: string;
-  actorId?: string;
-  resourceType?: string;
-  severity?: string;
-  startDate?: string;
-  endDate?: string;
-  search?: string;
 }
 
 // Analytics types
@@ -416,7 +399,7 @@ export interface WorkspaceAnalytics {
     nodeId: string;
     nodeName: string;
     avgDelay: string;
-    impact: 'high' | 'medium' | 'low';
+    impact: "high" | "medium" | "low";
     recommendation: string;
   }>;
   integrationMetrics?: Array<{
@@ -458,10 +441,10 @@ export interface WorkflowAnalytics {
     nodeName: string;
     avgTime: number;
     successRate: number;
-    status: 'healthy' | 'warning' | 'critical';
+    status: "healthy" | "warning" | "critical";
   }>;
   aiRecommendations: Array<{
-    type: 'cost_optimization' | 'speed_improvement' | 'quality_enhancement';
+    type: "cost_optimization" | "speed_improvement" | "quality_enhancement";
     title: string;
     impact: string;
     confidence: number;
@@ -471,7 +454,13 @@ export interface WorkflowAnalytics {
 // Notification types
 export interface Notification {
   id: string;
-  type: 'approval' | 'mention' | 'workflow_complete' | 'workflow_failed' | 'error' | 'system';
+  type:
+    | "approval"
+    | "mention"
+    | "workflow_complete"
+    | "workflow_failed"
+    | "error"
+    | "system";
   title: string;
   message: string;
   workspace: {
@@ -479,7 +468,7 @@ export interface Notification {
     name: string;
   };
   data?: Record<string, unknown>;
-  priority: 'low' | 'medium' | 'high' | 'critical';
+  priority: "low" | "medium" | "high" | "critical";
   read: boolean;
   createdAt: string;
 }
@@ -490,8 +479,8 @@ export interface TeamMember {
   name: string;
   email: string;
   avatar?: string;
-  role: 'owner' | 'admin' | 'member' | 'viewer' | 'guest';
-  status: 'active' | 'invited' | 'inactive';
+  role: "owner" | "admin" | "member" | "viewer" | "guest";
+  status: "active" | "invited" | "inactive";
   stats: {
     workflowsCreated: number;
     approvalsHandled: number;
@@ -507,7 +496,7 @@ export interface TeamPool {
   id: string;
   name: string;
   description: string;
-  type: 'functional' | 'approval' | 'project' | 'custom';
+  type: "functional" | "approval" | "project" | "custom";
   color?: string;
   icon?: string;
   memberIds: string[];
@@ -531,4 +520,3 @@ export interface TeamPool {
   createdAt: string;
   updatedAt: string;
 }
-

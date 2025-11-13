@@ -19,8 +19,7 @@ import {
   PanelLeft,
   Activity,
   BarChart3,
-  BookTemplate,
-  FileText
+  BookTemplate
 } from 'lucide-react';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useTheme } from '../../hooks/useTheme';
@@ -37,7 +36,6 @@ const navigation = [
   { name: 'Analytics', href: '/app/analytics', icon: BarChart3 },
   { name: 'Templates', href: '/app/templates', icon: BookTemplate },
   { name: 'App Center', href: '/app/appcenter', icon: ShoppingBag },
-  { name: 'Audit Logs', href: '/app/audit', icon: FileText },
   { name: 'Team', href: '/app/team', icon: Users },
   { name: 'Workspace', href: '/app/workspace-settings', icon: Settings },
 ];

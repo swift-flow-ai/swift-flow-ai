@@ -8,7 +8,6 @@ export * from './template.handlers';
 export * from './integration-system.handlers';
 export * from './analytics.handlers';
 export * from './team.handlers';
-export * from './audit.handlers';
 export * from './folder.handlers';
 export * from './share.handlers';
 export * from './inbox.handlers';

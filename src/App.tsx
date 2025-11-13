@@ -25,8 +25,6 @@ import { AppDetailPage } from './pages/appcenter/AppDetailPage';
 import { TemplatesPage } from './pages/templates/TemplatesPage';
 import { TemplateDetail } from './pages/templates/TemplateDetail';
 // Old integration pages removed - redirected to App Center
-import { AuditLogs } from './pages/audit/AuditLogs';
-import { AuditLogDetail } from './pages/audit/AuditLogDetail';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { LandingPage } from './pages/LandingPage';
 import ProtectedRoute from './components/layout/ProtectedRoute';
@@ -96,8 +94,6 @@ function App() {
                 {/* Redirect old integration routes to App Center */}
                 <Route path="integrations" element={<Navigate to="/app/appcenter" replace />} />
                 <Route path="integrations/*" element={<Navigate to="/app/appcenter" replace />} />
-                <Route path="audit" element={<AuditLogs />} />
-                <Route path="audit/:logId" element={<AuditLogDetail />} />
                 <Route path="appcenter" element={<AppCenterPage />} />
                 <Route path="appcenter/integration/:appId" element={<AppDetailPage />} />
                 <Route path="team" element={<TeamPage />} />

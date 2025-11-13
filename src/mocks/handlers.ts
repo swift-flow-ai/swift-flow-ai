@@ -7,7 +7,6 @@ import { executionHandlers } from "./handlers/execution.handlers";
 import { analyticsHandlers } from "./handlers/analytics.handlers";
 import { templateHandlers } from "./handlers/template.handlers";
 import { integrationSystemHandlers } from "./handlers/integration-system.handlers";
-import { auditHandlers } from "./handlers/audit.handlers";
 import { teamHandlers } from "./handlers/team.handlers";
 import { folderHandlers } from "./handlers/folder.handlers";
 import { shareHandlers } from "./handlers/share.handlers";
@@ -25,7 +24,6 @@ export const handlers = [
   ...analyticsHandlers,
   ...templateHandlers,
   ...integrationSystemHandlers,
-  ...auditHandlers,
   ...teamHandlers,
   ...folderHandlers,
   ...shareHandlers,

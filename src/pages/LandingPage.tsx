@@ -58,12 +58,6 @@ export function LandingPage() {
       description: 'Understand bottlenecks, measure performance, and optimize continuously.',
       gradient: 'from-red-500 to-rose-500',
     },
-    {
-      icon: Shield,
-      title: 'Audit & Compliance',
-      description: 'Full audit trail of every process execution. Perfect for compliance and reporting.',
-      gradient: 'from-indigo-500 to-purple-500',
-    },
   ];
 
   const stats = [
@@ -787,7 +781,6 @@ export function LandingPage() {
                   "SLA guarantees",
                   "Custom deployment",
                   "Advanced security",
-                  "Audit logs",
                   "SSO & SAML",
                 ],
                 cta: "Contact Sales",
