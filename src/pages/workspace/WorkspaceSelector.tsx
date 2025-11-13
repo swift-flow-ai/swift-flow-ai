@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Building2, Plus, Users, Zap, Clock, ChevronRight } from 'lucide-react';
@@ -10,6 +10,17 @@ export function WorkspaceSelector() {
   const { workspaces, isLoading, selectWorkspace } = useWorkspace();
   const navigate = useNavigate();
   const [logoErrors, setLogoErrors] = useState<Set<string>>(new Set());
+  const hasAnimatedRef = useRef(false);
+
+  // Memoize workspace count to prevent unnecessary re-renders
+  const workspaceCount = useMemo(() => workspaces.length, [workspaces.length]);
+
+  // Track when workspaces are first loaded
+  useEffect(() => {
+    if (!isLoading && workspaces.length > 0 && !hasAnimatedRef.current) {
+      hasAnimatedRef.current = true;
+    }
+  }, [isLoading, workspaces.length]);
 
   const handleSelectWorkspace = async (workspaceId: string) => {
     await selectWorkspace(workspaceId);
@@ -56,11 +67,7 @@ export function WorkspaceSelector() {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-10"></div>
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-16 text-white">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div>
             <div className="mb-8">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/25 backdrop-blur-sm mb-6 border border-white/40 shadow-lg">
                 <Building2 className="h-9 w-9 text-white drop-shadow-lg" />
@@ -77,12 +84,7 @@ export function WorkspaceSelector() {
 
             {/* Features List */}
             <div className="space-y-4">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2, duration: 0.4 }}
-                className="group relative overflow-hidden bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/25 hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/20"
-              >
+              <div className="group relative overflow-hidden bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/25 hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/20">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
                 <div className="relative flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 border border-white/30 shadow-lg">
@@ -95,13 +97,8 @@ export function WorkspaceSelector() {
                     <div className="text-sm text-white/90 leading-relaxed">Keep your workflows and teams organized across multiple workspaces</div>
                   </div>
                 </div>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3, duration: 0.4 }}
-                className="group relative overflow-hidden bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/25 hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/20"
-              >
+              </div>
+              <div className="group relative overflow-hidden bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/25 hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/20">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
                 <div className="relative flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 border border-white/30 shadow-lg">
@@ -114,13 +111,8 @@ export function WorkspaceSelector() {
                     <div className="text-sm text-white/90 leading-relaxed">Switch between workspaces instantly with a single click</div>
                   </div>
                 </div>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4, duration: 0.4 }}
-                className="group relative overflow-hidden bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/25 hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/20"
-              >
+              </div>
+              <div className="group relative overflow-hidden bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/25 hover:bg-white/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-black/20">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
                 <div className="relative flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 border border-white/30 shadow-lg">
@@ -133,9 +125,9 @@ export function WorkspaceSelector() {
                     <div className="text-sm text-white/90 leading-relaxed">Work together with your team members in shared workspaces</div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Decorative Elements */}
@@ -148,9 +140,9 @@ export function WorkspaceSelector() {
         <div className="w-full max-w-lg">
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
             className="text-center mb-10"
           >
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 mb-4 shadow-lg shadow-primary-500/20">
@@ -160,19 +152,23 @@ export function WorkspaceSelector() {
               Select a workspace
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {workspaces.length > 0
-                ? `You have ${workspaces.length} ${workspaces.length === 1 ? 'workspace' : 'workspaces'}`
+              {workspaceCount > 0
+                ? `You have ${workspaceCount} ${workspaceCount === 1 ? 'workspace' : 'workspaces'}`
                 : 'Choose a workspace to continue'}
             </p>
           </motion.div>
 
         {/* Workspaces List */}
-        {workspaces.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center py-16 px-6 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
-          >
+        <AnimatePresence mode="wait">
+          {workspaceCount === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="text-center py-16 px-6 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm"
+            >
             <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center mx-auto mb-4">
               <Building2 className="h-8 w-8 text-gray-400" />
             </div>
@@ -192,22 +188,29 @@ export function WorkspaceSelector() {
               Create Your First Workspace
             </motion.button>
           </motion.div>
-        ) : (
-          <div className="space-y-2 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-2">
-            {workspaces.map((workspace, index) => (
-              <motion.button
-                key={workspace.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{
-                  delay: index * 0.03,
-                  duration: 0.2,
-                }}
-                whileHover={{ x: 2 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleSelectWorkspace(workspace.id)}
-                className="group w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all text-left border border-transparent hover:border-gray-200 dark:hover:border-gray-600"
-              >
+          ) : (
+            <motion.div
+              key="list"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="space-y-2 bg-white dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-2"
+            >
+              {workspaces.map((workspace, index) => (
+                <motion.button
+                  key={workspace.id}
+                  initial={hasAnimatedRef.current ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{
+                    delay: hasAnimatedRef.current ? 0 : index * 0.03,
+                    duration: 0.2,
+                  }}
+                  whileHover={{ x: 2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleSelectWorkspace(workspace.id)}
+                  className="group w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all text-left border border-transparent hover:border-gray-200 dark:hover:border-gray-600"
+                >
                 {/* Workspace Icon/Avatar */}
                 <div
                   className={`h-12 w-12 rounded-lg ${
@@ -273,19 +276,19 @@ export function WorkspaceSelector() {
               </motion.button>
             ))}
 
-            {/* Create New Workspace */}
-            <motion.button
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{
-                delay: workspaces.length * 0.03,
-                duration: 0.2,
-              }}
-              whileHover={{ x: 2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('/workspace/create')}
-              className="group w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all text-left border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-400 dark:hover:border-primary-500/50 bg-white dark:bg-gray-800/30"
-            >
+              {/* Create New Workspace */}
+              <motion.button
+                initial={hasAnimatedRef.current ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  delay: hasAnimatedRef.current ? 0 : workspaceCount * 0.03,
+                  duration: 0.2,
+                }}
+                whileHover={{ x: 2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/workspace/create')}
+                className="group w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all text-left border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-400 dark:hover:border-primary-500/50 bg-white dark:bg-gray-800/30"
+              >
               <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center flex-shrink-0 text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors border border-gray-200 dark:border-gray-600">
                 <Plus className="h-5 w-5" />
               </div>
@@ -297,17 +300,18 @@ export function WorkspaceSelector() {
                   Start fresh with a new workspace
                 </div>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors flex-shrink-0" />
-            </motion.button>
-          </div>
-        )}
+                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors flex-shrink-0" />
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
           {/* Footer Info */}
-          {workspaces.length > 0 && (
+          {workspaceCount > 0 && (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={false}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
+              transition={{ duration: 0.2 }}
               className="mt-8 text-center"
             >
               <p className="text-xs text-gray-500 dark:text-gray-400">

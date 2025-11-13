@@ -1,4 +1,5 @@
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Workspace, WorkspaceHome } from '../types/workspace';
 import { workspaceService } from '../services/workspace.service';
 
@@ -17,11 +18,13 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 export { WorkspaceContext };
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
+  const location = useLocation();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null);
   const [home, setHome] = useState<WorkspaceHome | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasAutoSelectedRef = useRef(false);
 
   // Load workspaces on mount
   useEffect(() => {
@@ -35,15 +38,19 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     }
   }, [currentWorkspace]);
 
-  const loadWorkspaces = async () => {
+  const loadWorkspaces = async (skipAutoSelect = false) => {
     try {
       setIsLoading(true);
       setError(null);
       const data = await workspaceService.getWorkspaces();
       setWorkspaces(data);
       
-      // Auto-select first workspace or last active
-      if (data.length > 0) {
+      // Don't auto-select if we're on the workspace selector page
+      const isOnSelectorPage = location.pathname === '/select-workspace';
+      
+      // Auto-select first workspace or last active (only if not on selector page and not already selected)
+      if (data.length > 0 && !skipAutoSelect && !isOnSelectorPage && !hasAutoSelectedRef.current && !currentWorkspace) {
+        hasAutoSelectedRef.current = true;
         const lastWorkspaceId = localStorage.getItem('lastWorkspaceId');
         const workspaceId = lastWorkspaceId && data.find(w => w.id === lastWorkspaceId)
           ? lastWorkspaceId
