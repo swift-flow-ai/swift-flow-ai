@@ -1,4 +1,4 @@
-import { TeamMember, MemberStatus } from '../../types/workspace';
+import { TeamMember, TeamMemberNew, MemberStatus } from '../../types/workspace';
 import { Role } from '../../types/rbac';
 
 export const mockTeamMembers: TeamMember[] = [
@@ -158,5 +158,149 @@ export function getTeamMemberById(memberId: string): TeamMember | undefined {
 
 export function getTeamMembersByPool(poolId: string): TeamMember[] {
   return mockTeamMembers.filter(m => m.poolIds?.includes(poolId));
+}
+
+// New mock data for redesigned TeamPage
+export const mockTeamMembersNew: TeamMemberNew[] = [
+  {
+    id: 'usr_admin',
+    name: 'Admin User',
+    email: 'admin@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
+    status: 'active',
+    stats: {
+      workflowsCreated: 25,
+      approvalsHandled: 150,
+      avgResponseTime: '2.1h',
+      currentLoad: 15,
+    },
+    lastActiveAt: '2025-11-13T15:00:00Z',
+    poolIds: ['pool_change_advisory'],
+    skills: ['Management', 'Strategy', 'Operations'],
+    availability: 'available',
+  },
+  {
+    id: 'usr_john',
+    name: 'John Smith',
+    email: 'john@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+    status: 'active',
+    stats: {
+      workflowsCreated: 12,
+      approvalsHandled: 234,
+      avgResponseTime: '4.2h',
+      currentLoad: 75,
+    },
+    lastActiveAt: '2025-11-13T14:30:00Z',
+    poolIds: ['pool_change_advisory', 'pool_finance_approvers'],
+    skills: ['Development', 'Review', 'Architecture'],
+    availability: 'busy',
+  },
+  {
+    id: 'usr_sarah',
+    name: 'Sarah Lee',
+    email: 'sarah@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    status: 'active',
+    stats: {
+      workflowsCreated: 18,
+      approvalsHandled: 156,
+      avgResponseTime: '3.1h',
+      currentLoad: 45,
+    },
+    lastActiveAt: '2025-11-13T13:45:00Z',
+    poolIds: ['pool_hr_ops', 'pool_hr_recruiters'],
+    skills: ['HR', 'Recruiting', 'Operations'],
+    availability: 'available',
+  },
+  {
+    id: 'usr_mike',
+    name: 'Mike Brown',
+    email: 'mike@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mike',
+    status: 'active',
+    stats: {
+      workflowsCreated: 8,
+      approvalsHandled: 89,
+      avgResponseTime: '2.8h',
+      currentLoad: 30,
+    },
+    lastActiveAt: '2025-11-13T12:20:00Z',
+    poolIds: ['pool_support_tier1', 'pool_hr_ops'],
+    skills: ['Support', 'Customer Success', 'Technical'],
+    availability: 'available',
+  },
+  {
+    id: 'usr_lisa',
+    name: 'Lisa Chen',
+    email: 'lisa@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa',
+    status: 'active',
+    stats: {
+      workflowsCreated: 15,
+      approvalsHandled: 203,
+      avgResponseTime: '3.5h',
+      currentLoad: 60,
+    },
+    lastActiveAt: '2025-11-13T11:50:00Z',
+    poolIds: ['pool_hr_recruiters', 'pool_content_reviewers'],
+    skills: ['Content', 'Marketing', 'Communications'],
+    availability: 'busy',
+  },
+  {
+    id: 'usr_alice',
+    name: 'Alice Johnson',
+    email: 'alice@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice',
+    status: 'active',
+    stats: {
+      workflowsCreated: 5,
+      approvalsHandled: 312,
+      avgResponseTime: '2.3h',
+      currentLoad: 85,
+    },
+    lastActiveAt: '2025-11-13T14:10:00Z',
+    poolIds: ['pool_support_tier1', 'pool_content_reviewers'],
+    skills: ['Analysis', 'Documentation', 'Process'],
+    availability: 'busy',
+  },
+  {
+    id: 'usr_bob',
+    name: 'Bob Williams',
+    email: 'bob@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob',
+    status: 'active',
+    stats: {
+      workflowsCreated: 3,
+      approvalsHandled: 278,
+      avgResponseTime: '3.8h',
+      currentLoad: 20,
+    },
+    lastActiveAt: '2025-11-13T10:30:00Z',
+    poolIds: ['pool_finance_approvers'],
+    skills: ['Finance', 'Compliance', 'Auditing'],
+    availability: 'available',
+  },
+  {
+    id: 'usr_emma',
+    name: 'Emma Davis',
+    email: 'emma@acme.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
+    status: 'inactive',
+    stats: {
+      workflowsCreated: 0,
+      approvalsHandled: 0,
+      avgResponseTime: '0h',
+      currentLoad: 0,
+    },
+    lastActiveAt: '2025-11-11T09:15:00Z',
+    poolIds: [],
+    skills: ['New Hire'],
+    availability: 'away',
+  },
+];
+
+export function getTeamMembersNew(): TeamMemberNew[] {
+  return mockTeamMembersNew;
 }
 

@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { mockTeamMembers } from '../data/team';
+import { mockTeamMembers, mockTeamMembersNew } from '../data/team';
 import { mockTeamPools } from '../data/pools';
 import { config } from '../../config';
 import type { TeamPool, TeamMember } from '../../types/workspace';
@@ -343,6 +343,39 @@ export const teamHandlers = [
     mockTeamMembers.splice(memberIndex, 1);
     
     return HttpResponse.json(null, { status: 204 });
+  }),
+
+  // NEW ENDPOINTS for redesigned TeamPage
+  // Get team members for team collaboration page
+  http.get(`${apiUrl}/workspaces/:workspaceId/team/members`, ({ params }) => {
+    const { workspaceId } = params;
+    console.log('🔷 MSW: GET /workspaces/:workspaceId/team/members', { workspaceId });
+    
+    return HttpResponse.json({
+      members: mockTeamMembersNew,
+    });
+  }),
+
+  // Get team pools for team collaboration page  
+  http.get(`${apiUrl}/workspaces/:workspaceId/team/pools`, ({ params }) => {
+    const { workspaceId } = params;
+    console.log('🔷 MSW: GET /workspaces/:workspaceId/team/pools', { workspaceId });
+    
+    // Add members data to pools for the team page
+    const poolsWithMembers = mockTeamPools.map(pool => {
+      const members = mockTeamMembersNew.filter(member => 
+        pool.memberIds.includes(member.id)
+      );
+      
+      return {
+        ...pool,
+        members,
+      };
+    });
+    
+    return HttpResponse.json({
+      pools: poolsWithMembers,
+    });
   }),
 ];
 

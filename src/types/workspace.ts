@@ -198,6 +198,7 @@ export interface Workspace {
   slug: string;
   logo?: string;
   color?: string; // Workspace theme color (hex code)
+  description?: string;
   role: Role;
   memberCount: number;
   activeWorkflows: number;
@@ -693,6 +694,25 @@ export interface TeamMember {
   poolIds?: string[]; // Pools this member belongs to
 }
 
+// Team member for team collaboration page (simplified structure)
+export interface TeamMemberNew {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  status: 'active' | 'inactive';
+  stats: {
+    workflowsCreated: number;
+    approvalsHandled: number;
+    avgResponseTime: string;
+    currentLoad: number;
+  };
+  lastActiveAt: string;
+  poolIds?: string[];
+  skills?: string[];
+  availability: 'available' | 'busy' | 'away';
+}
+
 // Team Pool types (groups for specific work)
 export interface TeamPool {
   id: string;
@@ -702,7 +722,7 @@ export interface TeamPool {
   color?: string;
   icon?: string;
   memberIds: string[];
-  members?: TeamMember[];
+  members?: TeamMemberNew[];
   settings: {
     autoAssignment: boolean;
     roundRobin: boolean;
@@ -714,6 +734,7 @@ export interface TeamPool {
     totalAssignments: number;
     avgResponseTime: string;
     currentLoad: number;
+    efficiency?: number;
   };
   createdBy: {
     id: string;

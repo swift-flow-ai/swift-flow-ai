@@ -1,8 +1,12 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useAuth } from '../../hooks/useAuth';
+import { usePermissions } from '../../hooks/usePermissions';
 import { Button, Input } from '../../components/common';
+import { Avatar } from '../../components/common/Avatar';
+import { Badge } from '../../components/common/Badge';
+import { ConfirmDialog } from '../../components/common';
 import { 
   Building2, 
   Users, 
@@ -11,35 +15,177 @@ import {
   Upload,
   Save,
   AlertCircle,
-  Crown
+  Crown,
+  UserPlus,
+  Mail,
+  MoreVertical,
+  X,
+  Globe,
+  Key
 } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import axios from 'axios';
+import { config } from '../../config';
+
+interface WorkspaceMember {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role: 'owner' | 'admin' | 'member' | 'viewer';
+  status: 'active' | 'invited' | 'pending';
+  joinedAt: string;
+  lastActiveAt?: string;
+  invitedBy?: {
+    id: string;
+    name: string;
+  };
+}
+
+interface PendingInvite {
+  id: string;
+  email: string;
+  role: 'admin' | 'member' | 'viewer';
+  invitedBy: {
+    id: string;
+    name: string;
+  };
+  invitedAt: string;
+  expiresAt: string;
+}
 
 export function WorkspaceSettings() {
   const { currentWorkspace } = useWorkspace();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'general' | 'members' | 'billing' | 'danger'>('general');
+  const { isAdminOrOwner } = usePermissions();
+  const [activeTab, setActiveTab] = useState<'general' | 'members' | 'security' | 'billing' | 'danger'>('general');
   
   // General settings state
   const [workspaceName, setWorkspaceName] = useState(currentWorkspace?.name || '');
   const [workspaceSlug, setWorkspaceSlug] = useState(currentWorkspace?.slug || '');
   const [workspaceColor, setWorkspaceColor] = useState(currentWorkspace?.color || '#f87855');
+  const [workspaceDescription, setWorkspaceDescription] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
-  const isAdmin = currentWorkspace?.role === 'admin' || currentWorkspace?.role === 'owner';
+  // Members state
+  const [members, setMembers] = useState<WorkspaceMember[]>([]);
+  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<'admin' | 'member' | 'viewer'>('member');
+  const [isInviting, setIsInviting] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<WorkspaceMember | null>(null);
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+
+  // Fetch workspace members
+  const fetchMembers = useCallback(async () => {
+    if (!currentWorkspace?.id) return;
+    try {
+      const response = await axios.get(`${config.apiBaseUrl}/workspaces/${currentWorkspace.id}/members`);
+      setMembers(response.data.members || []);
+    } catch (error) {
+      console.error('Error fetching members:', error);
+    }
+  }, [currentWorkspace?.id]);
+
+  // Fetch pending invites
+  const fetchPendingInvites = useCallback(async () => {
+    if (!currentWorkspace?.id) return;
+    try {
+      const response = await axios.get(`${config.apiBaseUrl}/workspaces/${currentWorkspace.id}/invites`);
+      setPendingInvites(response.data.invites || []);
+    } catch (error) {
+      console.error('Error fetching invites:', error);
+    }
+  }, [currentWorkspace?.id]);
+
+  useEffect(() => {
+    if (currentWorkspace) {
+      fetchMembers();
+      fetchPendingInvites();
+    }
+  }, [currentWorkspace, fetchMembers, fetchPendingInvites]);
 
   const handleSaveGeneral = async (e: FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
     setSuccessMessage('');
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      await axios.patch(`${config.apiBaseUrl}/workspaces/${currentWorkspace?.id}`, {
+        name: workspaceName,
+        slug: workspaceSlug,
+        color: workspaceColor,
+        description: workspaceDescription
+      });
+      
+      setSuccessMessage('Workspace settings saved successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      console.error('Error saving workspace settings:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleInviteMember = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
     
-    setSuccessMessage('Workspace settings saved successfully!');
-    setIsSaving(false);
+    setIsInviting(true);
+    try {
+      await axios.post(`${config.apiBaseUrl}/workspaces/${currentWorkspace?.id}/invites`, {
+        email: inviteEmail,
+        role: inviteRole
+      });
+      
+      setInviteEmail('');
+      setShowInviteModal(false);
+      fetchPendingInvites();
+      setSuccessMessage('Invitation sent successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      console.error('Error inviting member:', error);
+    } finally {
+      setIsInviting(false);
+    }
+  };
+
+  const handleRemoveMember = async () => {
+    if (!selectedMember) return;
     
-    setTimeout(() => setSuccessMessage(''), 3000);
+    try {
+      await axios.delete(`${config.apiBaseUrl}/workspaces/${currentWorkspace?.id}/members/${selectedMember.id}`);
+      setMembers(members.filter(m => m.id !== selectedMember.id));
+      setSelectedMember(null);
+      setShowRemoveDialog(false);
+      setSuccessMessage('Member removed successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      console.error('Error removing member:', error);
+    }
+  };
+
+  const handleCancelInvite = async (inviteId: string) => {
+    try {
+      await axios.delete(`${config.apiBaseUrl}/workspaces/${currentWorkspace?.id}/invites/${inviteId}`);
+      setPendingInvites(pendingInvites.filter(i => i.id !== inviteId));
+      setSuccessMessage('Invitation cancelled!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      console.error('Error cancelling invite:', error);
+    }
+  };
+
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case 'owner': return 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-300';
+      case 'admin': return 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-300';
+      case 'member': return 'bg-green-100 text-green-800 dark:bg-green-500/20 dark:text-green-300';
+      case 'viewer': return 'bg-gray-100 text-gray-800 dark:bg-gray-500/20 dark:text-gray-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-500/20 dark:text-gray-300';
+    }
   };
 
   if (!currentWorkspace) {
@@ -50,7 +196,7 @@ export function WorkspaceSettings() {
     );
   }
 
-  if (!isAdmin) {
+  if (!isAdminOrOwner) {
     return (
       <div className="space-y-6">
         <div>
@@ -78,6 +224,7 @@ export function WorkspaceSettings() {
   const tabs = [
     { id: 'general' as const, label: 'General', icon: Building2 },
     { id: 'members' as const, label: 'Members', icon: Users },
+    { id: 'security' as const, label: 'Security', icon: Shield },
     { id: 'billing' as const, label: 'Billing', icon: Crown },
     { id: 'danger' as const, label: 'Danger Zone', icon: AlertCircle },
   ];
@@ -85,11 +232,22 @@ export function WorkspaceSettings() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Workspace Settings</h1>
-        <p className="text-muted-foreground mt-2">
-          Manage {currentWorkspace.name} configuration and settings
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Workspace Settings</h1>
+          <p className="text-muted-foreground mt-2">
+            Manage {currentWorkspace.name} configuration and settings
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="secondary" 
+            onClick={() => window.location.href = '/app/team'}
+          >
+            <Users className="w-4 h-4 mr-2" />
+            Team Collaboration
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -109,6 +267,11 @@ export function WorkspaceSettings() {
             >
               <tab.icon className="h-4 w-4" />
               <span className="font-medium">{tab.label}</span>
+              {tab.id === 'members' && (
+                <Badge variant="default" className="ml-2">
+                  {members.length + pendingInvites.length}
+                </Badge>
+              )}
             </button>
           ))}
         </nav>
@@ -236,6 +399,8 @@ export function WorkspaceSettings() {
                   className="w-full px-4 py-2.5 rounded-lg border border-border bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                   rows={3}
                   placeholder="What is this workspace for?"
+                  value={workspaceDescription}
+                  onChange={(e) => setWorkspaceDescription(e.target.value)}
                 />
               </div>
 
@@ -281,42 +446,276 @@ export function WorkspaceSettings() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-card border border-border rounded-xl p-6"
+          className="space-y-6"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">Team Members</h2>
-            <Button variant="primary">
-              <Users className="w-4 h-4 mr-2" />
-              Invite Members
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            {/* Current user as admin */}
-            <div className="flex items-center justify-between p-4 border border-border rounded-lg">
+          {/* Members Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border border-blue-200/20 rounded-xl p-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-sm font-medium text-primary">
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </span>
+                <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
-                  <p className="font-medium">{user?.name}</p>
-                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{members.length}</p>
+                  <p className="text-sm text-blue-600">Active Members</p>
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
-                  Admin
-                </span>
               </div>
             </div>
 
-            {/* Placeholder members */}
-            <div className="text-center py-8 text-muted-foreground">
-              <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-              <p>No other members yet</p>
-              <p className="text-sm mt-1">Invite team members to collaborate</p>
+            <div className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border border-orange-200/20 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
+                  <Mail className="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">{pendingInvites.length}</p>
+                  <p className="text-sm text-orange-600">Pending Invites</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border border-purple-200/20 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                  <Crown className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                    {members.filter(m => m.role === 'admin' || m.role === 'owner').length}
+                  </p>
+                  <p className="text-sm text-purple-600">Administrators</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-200/20 rounded-xl p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">
+                    {members.filter(m => m.status === 'active').length}
+                  </p>
+                  <p className="text-sm text-green-600">Online Now</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Active Members */}
+          <div className="bg-card border border-border rounded-xl">
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <div>
+                <h2 className="text-xl font-semibold">Team Members</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage who has access to your workspace
+                </p>
+              </div>
+              <Button variant="primary" onClick={() => setShowInviteModal(true)}>
+                <UserPlus className="w-4 h-4 mr-2" />
+                Invite Member
+              </Button>
+            </div>
+
+            <div className="divide-y divide-border">
+              {members.map((member, index) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="p-6 flex items-center justify-between hover:bg-muted/30 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <Avatar src={member.avatar} alt={member.name} size="md" />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium">{member.name}</p>
+                        {member.email === user?.email && (
+                          <Badge variant="default" className="text-xs">You</Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{member.email}</p>
+                      {member.lastActiveAt && (
+                        <p className="text-xs text-muted-foreground">
+                          Last active {formatDistanceToNow(new Date(member.lastActiveAt), { addSuffix: true })}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Badge className={getRoleColor(member.role)}>
+                      {member.role === 'owner' && <Crown className="w-3 h-3 mr-1" />}
+                      {member.role === 'admin' && <Shield className="w-3 h-3 mr-1" />}
+                      {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                    </Badge>
+
+                    {member.email !== user?.email && (
+                      <div className="relative">
+                        <button
+                          className="p-2 hover:bg-muted rounded-lg transition-colors"
+                          onClick={() => {
+                            setSelectedMember(member);
+                            setShowRemoveDialog(true);
+                          }}
+                        >
+                          <MoreVertical className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pending Invitations */}
+          {pendingInvites.length > 0 && (
+            <div className="bg-card border border-border rounded-xl">
+              <div className="p-6 border-b border-border">
+                <h3 className="text-lg font-semibold">Pending Invitations</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Invitations that haven't been accepted yet
+                </p>
+              </div>
+
+              <div className="divide-y divide-border">
+                {pendingInvites.map((invite, index) => (
+                  <motion.div
+                    key={invite.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="p-6 flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                        <Mail className="w-5 h-5 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{invite.email}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>Invited by {invite.invitedBy.name}</span>
+                          <span>•</span>
+                          <span>{formatDistanceToNow(new Date(invite.invitedAt), { addSuffix: true })}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Expires {formatDistanceToNow(new Date(invite.expiresAt), { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <Badge className={getRoleColor(invite.role)}>
+                        {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
+                      </Badge>
+
+                      <button
+                        onClick={() => handleCancelInvite(invite.id)}
+                        className="p-2 hover:bg-destructive/10 text-destructive rounded-lg transition-colors"
+                        title="Cancel invitation"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* Security Tab */}
+      {activeTab === 'security' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-6"
+        >
+          <div className="bg-card border border-border rounded-xl p-6">
+            <h2 className="text-xl font-semibold mb-6">Access Control</h2>
+            
+            <div className="space-y-6">
+              {/* Public Access */}
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Globe className="w-5 h-5 text-blue-500" />
+                  <div>
+                    <h3 className="font-medium">Public Workspace</h3>
+                    <p className="text-sm text-muted-foreground">Allow anyone with the link to request access</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              {/* Two-Factor Authentication */}
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <Key className="w-5 h-5 text-green-500" />
+                  <div>
+                    <h3 className="font-medium">Require 2FA</h3>
+                    <p className="text-sm text-muted-foreground">Require two-factor authentication for all members</p>
+                  </div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" className="sr-only peer" />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                </label>
+              </div>
+
+              {/* Single Sign-On */}
+              <div className="p-4 bg-muted/30 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <Shield className="w-5 h-5 text-purple-500" />
+                    <div>
+                      <h3 className="font-medium">Single Sign-On (SSO)</h3>
+                      <p className="text-sm text-muted-foreground">Configure SAML or OAuth for enterprise authentication</p>
+                    </div>
+                  </div>
+                  <Badge variant="default" className="bg-purple-100 text-purple-800">Pro</Badge>
+                </div>
+                <Button variant="secondary" disabled>
+                  Configure SSO
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Session Management */}
+          <div className="bg-card border border-border rounded-xl p-6">
+            <h2 className="text-xl font-semibold mb-6">Session Management</h2>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">Active Sessions</h3>
+                  <p className="text-sm text-muted-foreground">Manage active user sessions across all devices</p>
+                </div>
+                <Button variant="secondary">
+                  View Sessions
+                </Button>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">Session Timeout</h3>
+                  <p className="text-sm text-muted-foreground">Automatically log out inactive users</p>
+                </div>
+                <select className="px-3 py-2 rounded-lg border border-border bg-background">
+                  <option>Never</option>
+                  <option>1 hour</option>
+                  <option>8 hours</option>
+                  <option>1 day</option>
+                  <option>1 week</option>
+                </select>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -398,6 +797,79 @@ export function WorkspaceSettings() {
           </div>
         </motion.div>
       )}
+
+      {/* Invite Member Modal */}
+      {showInviteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-card border border-border rounded-xl p-6 max-w-md w-full"
+          >
+            <h2 className="text-xl font-semibold mb-4">Invite Team Member</h2>
+            
+            <form onSubmit={handleInviteMember} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Email Address</label>
+                <Input
+                  type="email"
+                  placeholder="colleague@example.com"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">Role</label>
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value as 'admin' | 'member' | 'viewer')}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="viewer">Viewer - Can view workflows</option>
+                  <option value="member">Member - Can create and edit workflows</option>
+                  <option value="admin">Admin - Full workspace access</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <Button 
+                  type="button" 
+                  variant="secondary" 
+                  onClick={() => setShowInviteModal(false)} 
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="primary" 
+                  isLoading={isInviting}
+                  className="flex-1"
+                >
+                  Send Invite
+                </Button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Remove Member Confirmation */}
+      <ConfirmDialog
+        isOpen={showRemoveDialog}
+        onClose={() => {
+          setShowRemoveDialog(false);
+          setSelectedMember(null);
+        }}
+        onConfirm={handleRemoveMember}
+        title="Remove Team Member"
+        message={`Are you sure you want to remove ${selectedMember?.name} from the workspace? They will lose access to all workflows and data.`}
+        confirmText="Remove Member"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

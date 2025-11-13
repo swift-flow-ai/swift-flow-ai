@@ -196,3 +196,70 @@ export function getMockHome(): WorkspaceHome {
     pendingItems,
   };
 }
+
+// Mock workspace members for workspace settings
+export const mockWorkspaceMembers = [
+  {
+    id: 'usr_admin',
+    name: 'Admin User',
+    email: 'admin@vercel.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
+    role: 'owner',
+    status: 'active',
+    joinedAt: '2024-06-01T10:00:00Z',
+    lastActiveAt: '2025-11-13T15:00:00Z',
+  },
+  {
+    id: 'usr_john_ws',
+    name: 'John Smith',
+    email: 'john@vercel.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=JohnWS',
+    role: 'admin',
+    status: 'active',
+    joinedAt: '2024-06-05T09:00:00Z',
+    lastActiveAt: '2025-11-13T14:30:00Z',
+  },
+  {
+    id: 'usr_sarah_ws',
+    name: 'Sarah Connor',
+    email: 'sarah@vercel.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SarahWS',
+    role: 'member',
+    status: 'active',
+    joinedAt: '2024-06-10T11:15:00Z',
+    lastActiveAt: '2025-11-13T13:45:00Z',
+  },
+  {
+    id: 'usr_mike_ws',
+    name: 'Mike Johnson',
+    email: 'mike@vercel.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=MikeWS',
+    role: 'member',
+    status: 'active',
+    joinedAt: '2024-07-01T08:30:00Z',
+    lastActiveAt: '2025-11-13T12:20:00Z',
+  },
+  {
+    id: 'usr_lisa_ws',
+    name: 'Lisa Park',
+    email: 'lisa@vercel.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=LisaWS',
+    role: 'viewer',
+    status: 'active',
+    joinedAt: '2024-08-15T14:00:00Z',
+    lastActiveAt: '2025-11-13T11:50:00Z',
+  },
+  {
+    id: 'usr_pending',
+    name: 'Alex Thompson',
+    email: 'alex@vercel.com',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AlexWS',
+    role: 'member',
+    status: 'invited',
+    joinedAt: '2025-11-12T16:00:00Z',
+    invitedBy: {
+      id: 'usr_admin',
+      name: 'Admin User'
+    },
+  },
+];

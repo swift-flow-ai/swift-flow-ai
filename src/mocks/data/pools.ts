@@ -20,6 +20,7 @@ export const mockTeamPools: TeamPool[] = [
       totalAssignments: 247,
       avgResponseTime: '2.5h',
       currentLoad: 12,
+      efficiency: 92,
     },
     createdBy: {
       id: 'usr_john',
@@ -47,6 +48,7 @@ export const mockTeamPools: TeamPool[] = [
       totalAssignments: 189,
       avgResponseTime: '4.2h',
       currentLoad: 8,
+      efficiency: 88,
     },
     createdBy: {
       id: 'usr_john',
@@ -74,6 +76,7 @@ export const mockTeamPools: TeamPool[] = [
       totalAssignments: 156,
       avgResponseTime: '6.8h',
       currentLoad: 5,
+      efficiency: 75,
     },
     createdBy: {
       id: 'usr_john',
@@ -101,6 +104,7 @@ export const mockTeamPools: TeamPool[] = [
       totalAssignments: 423,
       avgResponseTime: '3.2h',
       currentLoad: 15,
+      efficiency: 95,
     },
     createdBy: {
       id: 'usr_john',
@@ -128,6 +132,7 @@ export const mockTeamPools: TeamPool[] = [
       totalAssignments: 1247,
       avgResponseTime: '15m',
       currentLoad: 23,
+      efficiency: 97,
     },
     createdBy: {
       id: 'usr_mike',
@@ -155,6 +160,7 @@ export const mockTeamPools: TeamPool[] = [
       totalAssignments: 89,
       avgResponseTime: '5.4h',
       currentLoad: 4,
+      efficiency: 85,
     },
     createdBy: {
       id: 'usr_sarah',
