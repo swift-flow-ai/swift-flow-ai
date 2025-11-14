@@ -309,29 +309,37 @@ export function AppLayout() {
         {/* Sidebar */}
         <aside 
           className={cn(
-            "sticky top-16 h-[calc(100vh-4rem)] border-r border-border transition-all duration-300",
-            sidebarCollapsed ? "w-16 p-2" : "w-64 p-4"
+            "sticky top-16 h-[calc(100vh-4rem)] border-r border-border transition-all duration-300 flex flex-col",
+            sidebarCollapsed ? "w-16" : "w-64"
           )}
           style={{
             backgroundColor: actualTheme === 'dark' ? 'hsl(0, 0%, 3.9%)' : 'hsl(0, 0%, 100%)',
           }}
         >
           {/* Collapse Toggle */}
-          <div className="flex justify-end mb-4">
+          <div className={cn(
+            "flex border-b border-border",
+            sidebarCollapsed ? "justify-center py-3" : "justify-between items-center px-4 py-3"
+          )}>
+            {!sidebarCollapsed && (
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Menu
+              </span>
+            )}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              className="p-1.5 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
               title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {sidebarCollapsed ? (
-                <PanelLeft className="h-5 w-5" />
+                <PanelLeft className="h-4 w-4" />
               ) : (
-                <PanelLeftClose className="h-5 w-5" />
+                <PanelLeftClose className="h-4 w-4" />
               )}
             </button>
           </div>
 
-          <nav className="space-y-1">
+          <nav className={cn("space-y-1 flex-1 overflow-y-auto", sidebarCollapsed ? "p-2" : "p-4")}>
             {navigation.map((item) => {
               const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + '/');
               const isInbox = item.name === 'Inbox';
