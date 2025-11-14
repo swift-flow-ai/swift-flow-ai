@@ -19,7 +19,8 @@ import {
   PanelLeft,
   Activity,
   BarChart3,
-  BookTemplate
+  BookTemplate,
+  Building2
 } from 'lucide-react';
 import { useWorkspace } from '../../hooks/useWorkspace';
 import { useTheme } from '../../hooks/useTheme';
@@ -127,12 +128,21 @@ export function AppLayout() {
         <div className="flex h-16 items-center px-4 gap-4">
           {/* Workspace Switcher */}
           <div className="flex items-center gap-3 min-w-[240px]">
-            <div className="h-8 w-8 rounded-lg flex items-center justify-center">
-              <img src="/logo.svg" alt="Swift Flow AI Logo" className="h-8 w-8" />
+            <div 
+              className="h-8 w-8 rounded-lg flex items-center justify-center overflow-hidden" 
+              style={{ 
+                backgroundColor: currentWorkspace?.logo ? 'transparent' : `${currentWorkspace?.color || '#f87855'}15` 
+              }}
+            >
+              {currentWorkspace?.logo ? (
+                <img src={currentWorkspace.logo} alt={`${currentWorkspace.name} Logo`} className="h-8 w-8 object-cover" />
+              ) : (
+                <Building2 className="h-5 w-5" style={{ color: currentWorkspace?.color || '#f87855' }} />
+              )}
             </div>
             <div className="relative group">
               <button className="flex items-center gap-2 hover:text-primary transition-colors">
-                <span className="font-semibold">{currentWorkspace?.name || 'Swift Flow AI'}</span>
+                <span className="font-semibold">{currentWorkspace?.name || 'My Workspace'}</span>
                 <ChevronDown className="h-4 w-4" />
               </button>
               
